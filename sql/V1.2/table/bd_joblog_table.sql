@@ -1,0 +1,2 @@
+ create table bd_joblog ( jobid varchar ( 50 ) NULL , totalsize int NULL , success tinyint NULL , starttime datetime NULL , endtime datetime NULL , id char ( 36 ) NOT NULL , response text NULL , request text NULL , CONSTRAINT PK_BD_JOBLOG PRIMARY KEY ( id ) , ts datetime NULL , dr smallint default 0 );
+ create table ext_bd_joblog ( ext_id char ( 36 ) NOT NULL , CONSTRAINT PK_ext_bd_joblog PRIMARY KEY ( ext_id ) , ts datetime NULL , dr smallint default 0 );

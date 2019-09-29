@@ -1,0 +1,166 @@
+
+var metacustomer = {
+
+	meta:{
+        billid:{},
+        customerid:{
+
+		},
+        name:{
+			type:'string',
+			required:true,
+			// notipFlag: true,
+			hasSuccess: true,
+			nullMsg:'客户名称不能为空!'
+		},
+		//sex 0 位置，  1 男，   2 女
+		sex:{
+			type:'string',
+			// required:true,
+			// // notipFlag: true,
+			// hasSuccess: true,
+			// nullMsg:'客户性别不能为空!'
+		},
+		phone:{
+        	type:"string",
+            required:true,
+            // notipFlag: true,
+            // hasSuccess: true,
+            // regExp : /^1[34578]\d{9}$/,
+			//notipFlag : true,
+			hasSuccess : true,
+			regExp:/^[1][0-9]{10}$/,
+			errorMsg : "手机号格式不正确!",
+			nullMsg:'手机号码不能为空!'
+		},
+        linkphone:{
+        	type:"string",
+            // required:true,
+            // nullMsg:'附加联系人手机不能为空!',
+			// regExp:/^[1][0-9]{10}$/,
+			// errorMsg : "手机号格式不正确!",
+		},
+		referrer:{ //推荐人
+        	type:"string"
+		},
+		// 来源信息
+		sourcetype0:{
+			type:"string",
+			required:true,
+			nullMsg:'请选择建单渠道!'
+		},
+        sourcetype:{
+        	type:"string",
+            required:true,
+            nullMsg:'请选择了解途径!'
+		},
+		sourcetype1:{
+        	type:"string",
+            required:true,
+            nullMsg:'请选择途径细分!'
+		},
+		// 房屋信息
+        houseid:{
+
+		},
+		province:{
+			type:'string',
+            //required:true,
+            //nullMsg:'请选择省!'
+		},
+        city:{
+			type:'string',
+            //required:true,
+            //nullMsg:'请选择市!'
+		},
+        district:{
+			type:'string',
+            //required:true,
+            //nullMsg:'请选择区!'
+		},
+        address:{
+			type:'string',
+            //required:true,
+            //nullMsg:'请填写详细地址!'
+		},
+		// 房屋类型
+        type:{
+			type:'string',
+            //required:true,
+            //nullMsg:'请选择房屋类型!'
+		},
+		// part 漏水部位
+        part:{
+			type:'string',
+			//required:true,
+            //nullMsg:'漏水部位不能为空!'
+		},
+		// area 维修面积
+        area:{
+			type:'float',
+			//require:true,
+            //errorMsg: "请填写正确的维修面积！",
+            //nullMsg:'维修面积不能为空!'
+        },
+		// reason  交易信息
+        reason:{
+			type:'string'
+		},
+        // issurvey  是否需要上门勘察
+        issurvey:{
+			type:'string',
+            default:'Y'
+		},
+		// surveydate  上门勘察时间
+        surveydate:{
+			type:'date'
+		},
+        // 跟进时间
+        followdate:{},
+        // 跟进详情
+        follownote:{},
+        state:{},
+       	//所在小区
+       	community:{},
+	}
+
+};
+
+var metafollowup = {
+	meta: {
+
+	}
+}
+
+
+	// }跟进分配
+var metaagent = {
+    meta:{
+        // 代理商编号
+        agentcode:{
+            type:"string",
+            required:true,
+        },
+        // 代理商名称
+        agentname:{
+            type:"string",
+            required:true,
+        },
+        // 代理商  负责区域
+        agentprovince:{
+            type:"string",
+        },
+        //
+        agentcity:{
+            type:"string",
+        },
+        //
+        agentdistrict:{
+            type:"string",
+        },
+        // 备注
+        agentcmemo:{
+            type:"string",
+        },
+    }
+}

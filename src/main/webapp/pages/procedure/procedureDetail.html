@@ -1,0 +1,199 @@
+<div class="u-container-fluid padding-0" id="procedureDetail">
+    <div class="js_href padding-15 padding-left-20 content-title margin-0">
+        <a href="#/procedure/procedure" class="c_green c_size_24"> &lt; 流程列表</a>
+    </div>
+
+    <div class="u-form"  >
+        <!--细项信息-->
+        <div class="padding-20" id="add-procedure">
+            <div class="u-row">
+                <div class="u-col-md-1 tab-1-name">流程名称：</div>
+                <div class="u-col-md-2">
+                    <div class=" u-has-feedback" u-meta='{"type":"u-text","data":"objdata","field":"procedurename"}'>
+                        <div class="u-input-group-before" style="color: red;">*</div>
+                        <input type="text" class="u-form-control" placeholder=""  >
+                    </div>
+                </div>
+                <div class="u-col-md-1 tab-1-name">流程编码：</div>
+                <div class="u-col-md-2">
+                    <div class=" u-has-feedback" u-meta='{"type":"u-text","data":"objdata","field":"procedurecode"}'>
+                        <div class="u-input-group-before" style="color: red;">*</div>
+                        <input type="text" class="u-form-control" placeholder="" id="objdata_code">
+                    </div>
+                </div>
+                <div class="u-col-md-1 tab-1-name">流程版本：</div>
+                <div class="u-col-md-2 ">
+                    <div class=" u-has-feedback" u-meta='{"type":"u-text","data":"objdata","field":"version"}'>
+                        <div class="u-input-group-before" style="color: red;">*</div>
+                        <input type="text" class="u-form-control" placeholder="" id="objdata_version"
+                            onkeyup="value=value.replace(/[^\d{1,}\.\d{1,}|\d{1,}]/g,'')"
+                            />
+                    </div>
+                </div>
+                <div class="u-col-md-1 tab-1-name">流程说明：</div>
+                <div class="u-col-md-2 ">
+                    <div class=" u-has-feedback" u-meta='{"type":"u-text","data":"objdata","field":"memo"}'>
+                        <!--<div class="u-input-group-before" style="color: red;">*</div>-->
+                        <input type="text" class="u-form-control" placeholder=""  >
+                    </div>
+                </div>
+            </div>
+            <div class="u-row margin-top-15">
+                <div class="padding-left-15 margin-top-15 ">
+                    <button id="add_item" class="u-msg-ok u-button u-button-primary bg_blue"
+                            data-bind="click: event.add_item">添加<span class="u-button-container"></span>
+                    </button>
+                    <button id="edit_item" class="u-msg-ok u-button u-button-primary bg_blue"
+                            data-bind="click: event.edit_item">编辑<span class="u-button-container"></span>
+                    </button>
+                    <button id="del_item" class="u-msg-ok u-button u-button-primary bg_blue"
+                            data-bind="click: event.del_item">删除<span class="u-button-container"></span>
+                    </button>
+                </div>
+                <div class="main-container padding-15 contacts-container">
+                    <div class="hr-table ">
+                        <div class="u-table b-table width-full"
+                             u-meta='{"id":"itemdata","type":"grid","data":"itemdata","columnWidth":"150px"}'>
+                            <div options='{"field":"itemorder","title":"序号","dataType":"String","editType":"string"}'></div>
+                            <div options='{"field":"itemname","title":"细项名称","dataType":"String","editType":"string"}'></div>
+                            <div options='{"field":"type","title":"类型","dataType":"String","editType":"string","renderType":"event.renderTypeAjax"}'></div>
+                            <div options='{"field":"formname","title":"表单名","dataType":"String","editType":"String"}'></div>
+                            <div options='{"field":"vdef1","title":"操作用户类型","dataType":"String","editType":"String","renderType":"event.renderUserType"}'></div>
+                            <div options='{"field":"vdef2","title":"是否依赖上级","dataType":"String","editType":"String","renderType":"event.renderType"}'></div>
+                            <!-- <div options='{"field":"formid","title":"表单编码","dataType":"String","editType":"String"}'></div> -->
+                            <div options='{"field":"memo","title":"备注","dataType":"String","editType":"string"}'></div>
+                        </div>
+                    </div>
+                    <!--<div id='pagination' class='pagination u-pagination pagination-sm'></div>-->
+                </div>
+            </div>
+            <div class="edit">
+                <div class="padding-top-15">
+                    <button id="saveProcedurebody" class="u-msg-ok u-button u-button-primary bg_blue"
+                            data-bind="click: event.saveClick">保存
+                        <span class="u-button-container"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--添加流程细项-->
+    <div id="dialog_item" tabindex="-1" role="dialog" style="display:none;">
+        <div class="u-msg-title">
+            <h4 class="treetitle" id="tree-title">流程细项</h4>
+        </div>
+        <HR width="100%" color=#F8F9FB SIZE=3 align="center"/>
+        <div class="u-msg-content add-man">
+            <div class="u-form material" id="add-form">
+                <div class="u-col-md-12 form-group">
+                    <div class="u-col-md-3 control-label">
+                        <label style="color: red;">*</label>
+                        <label >序号</label>
+                    </div>
+                    <input class="u-col-md-6 u-form-control " type="text" id="add_order"
+                           u-meta='{"type":"string","data":"itemdatanew","field":"itemorder"}'
+                           placeholder="请输入序号"
+                            />
+                </div>
+                <div class="u-col-md-12 form-group margin-top-30">
+                    <div class="u-col-md-3 control-label">
+                        <label style="color: red;">*</label>
+                        <label>名称</label>
+                    </div>
+                    <input class="u-col-md-6 u-form-control " type="text" id="add_name"
+                           u-meta='{"type":"string","data":"itemdatanew","field":"itemname"}'
+                           placeholder="请输入名称"
+                            />
+                </div>
+                <div class="u-col-md-12 form-group margin-top-30">
+                    <div class="u-col-md-3 control-label">
+                        <label style="color: red;">*</label>
+                        <label >类型</label>
+                    </div>
+                    <div class="u-combo u-col-md-6 padding-0"
+                            u-meta='{"type":"u-combobox","datasource":"typeList","data":"itemdatanew","field":"type","onlySelect":true}'>
+                        <div class="u-input-group u-has-feedback">
+                            <span class="u-form-control-feedback fa fa-angle-down"
+                                data-role="combo-button"></span>
+                            <input placeholder="请选择类型" class="u-form-control" readonly/>
+                        </div>
+                    </div>
+                    <!-- <input class="u-col-md-6 u-form-control " type="text" id="add_type"
+                           u-meta='{"type":"string","data":"itemdatanew","field":"type"}'
+                           placeholder="请输入类型"
+                            /> -->
+                </div>
+                <div class="u-col-md-12 form-group margin-top-30">
+                    <div class="u-col-md-3 control-label">
+                        <label style="color: red;">*</label>
+                        <label >表单</label>
+                    </div>
+                    <div class="u-combo u-col-md-6 padding-0"
+                            u-meta='{"type":"u-combobox","datasource":"formList","data":"itemdatanew","field":"formid","onlySelect":true}'>
+                            <div class="u-input-group u-has-feedback">
+                                <span class="u-form-control-feedback fa fa-angle-down"
+                                    data-role="combo-button"></span>
+                                <input placeholder="请选择表单" class="u-form-control" name="" id="formname-formid" readonly/>
+                            </div>
+                        </div>
+                </div>
+                <div class="u-col-md-12 form-group margin-top-30">
+                    <div class="u-col-md-3 control-label">
+                        <label style="color: red;">*</label>
+                        <label >操作用户类型</label>
+                    </div>
+                    <div class="u-combo u-col-md-6 padding-0"
+                            u-meta='{"type":"u-combobox","datasource":"vdef1List","data":"itemdatanew","field":"vdef1","onlySelect":true}'>
+                            <div class="u-input-group u-has-feedback">
+                                <span class="u-form-control-feedback fa fa-angle-down"
+                                    data-role="combo-button"></span>
+                                <input placeholder="请选择操作用户类型" class="u-form-control" name="" id="formname-vdef1" readonly/>
+                            </div>
+                        </div>
+                </div>
+                <div class="u-col-md-12 form-group margin-top-30">
+                    <div class="u-col-md-3 control-label">
+                        <label style="color: red;">*</label>
+                        <label >是否依赖上级</label>
+                    </div>
+                    <div class="u-combo u-col-md-6 padding-0"
+                            u-meta='{"type":"u-combobox","datasource":"vdef2List","data":"itemdatanew","field":"vdef2","onlySelect":true}'>
+                            <div class="u-input-group u-has-feedback">
+                                <span class="u-form-control-feedback fa fa-angle-down"
+                                    data-role="combo-button"></span>
+                                <input placeholder="请选择是否依赖" class="u-form-control" name="" id="formname-vdef2" readonly/>
+                            </div>
+                    </div>
+                </div>
+
+                <div class="u-col-md-12 form-group margin-top-30">
+                    <div class="u-col-md-3 control-label">
+                        <label style="color: red;">&nbsp;&nbsp;</label>
+                        <label >备注</label>
+                    </div>
+                    <textarea class="u-col-md-6 u-form-control " type="text" id="add_note"
+                           placeholder="请输入备注"
+                           u-meta='{"type":"textarea","data":"itemdatanew","field":"memo"}'
+                    ></textarea>
+                    <!--<textarea  class="u-col-md-6 u-form-control" id="add_note_area"-->
+                           <!--placeholder="请输入备注" -->
+                           <!--rows="3" cols="10" ></textarea>-->
+                </div>
+            </div>
+        </div>
+        <!-- 保存和取消按钮 -->
+        <div class="u-msg-footer">
+            <button id="savematerial" class="u-msg-ok u-button u-button-primary bg_blue"
+                    data-bind="click: event.confirm_item">确定
+                <span class="u-button-container"></span>
+            </button>
+            <button id="cancelmaterial" class="u-msg-cancel u-button u-button-white"
+                    data-bind="click: event.cancel_item">取消
+                <span class="u-button-container"></span>
+            </button>
+        </div>
+
+    </div>
+
+</div>

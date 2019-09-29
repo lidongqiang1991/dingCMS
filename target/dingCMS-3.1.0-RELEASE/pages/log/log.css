@@ -1,0 +1,21 @@
+div#content{
+    background:#fff !important;
+}
+/*标题*/
+.ec-search{
+    border-bottom:1px solid #ccc;
+}
+.c_rela{
+    position:relative;
+}
+.c-title{
+    margin:0;
+    line-height: 30px;
+}
+.log .form-group{
+    margin-bottom:15px;
+    line-height: 36px;  
+}
+.log .control-label{
+    text-align:center;
+}

@@ -1,0 +1,1 @@
+alter table sys_log MODIFY actcontent VARCHAR(500);

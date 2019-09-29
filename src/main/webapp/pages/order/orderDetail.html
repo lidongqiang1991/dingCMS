@@ -1,0 +1,51 @@
+
+<div class="u-container-fluid padding-0 orderDetail" id="customerDetail">
+    <div class="js_href padding-15 padding-left-20 margin-0 content-title">
+        <a href="#/order/order" class="c_green c_size_24"> &lt; 订单列表</a>
+    </div>
+
+    <!--tabs控件 切换active状态包括线性跟随和背景跟随 tabs控件依赖 u-tabs 类，状态类是共用的。 改变修饰类可以改变active样式。 默认是active状态为线性跟随 添加修饰类.u-tabs-pill 为背景跟随-->
+    <div class="u-tabs c_border_box">
+        <div class="u-tabs__tab-bar" style="justify-content:flex-start;">
+            <a href="#tab-panel-1" class="u-tabs__tab is-active" data-type="1">套餐细项</a>
+            <a href="#tab-panel-2" class="u-tabs__tab" data-type="2">物料明细</a>
+        </div>
+        <!--套餐细项-->
+        <div class="u-tabs__panel is-active" id="tab-panel-1">
+            <div class="padding-15">
+                <!--套餐细项列表-->
+                <div class="main-container padding-0 contacts-container" style="margin-top: 0px !important;">
+                    <div class="hr-table ">
+                        <div class="u-table b-table width-full"
+                             u-meta='{"id":"flew","type":"grid","data":"flewdata","columnWidth":"150px"}'>
+                            <div options='{"field":"itemname","title":"细项名称","dataType":"String","editType":"string"}'></div>
+                            <div options='{"field":"num","title":"平米数（㎡）","dataType":"String","editType":"string"}'></div>
+                            <div options='{"field":"price","title":"细项单价（元/㎡）","dataType":"String","editType":"string"}'></div>
+                            <div options='{"field":"amount","title":"细项总金额（元）","dataType":"String","editType":"string"}'></div>
+                        </div>
+                    </div>
+                    <!-- <div id='pagination_allot' class='pagination u-pagination pagination-sm'></div> -->
+                </div>
+            </div>
+        </div>
+        <!--物料明细-->
+        <div class="u-tabs__panel" id="tab-panel-2">
+            <div class="padding-15">
+            	<!--物料明细列表 -->
+                <div class="main-container padding-0 contacts-container">
+                    <div class="hr-table ">
+                        <div class="u-table b-table width-full" u-meta='{"id":"material","type":"grid","data":"materialdata","columnWidth":"150px"}'>
+                            <div options='{"field":"material","title":"物料名称","dataType":"String","editType":"string"}'></div>
+                            <div options='{"field":"num","title":"物料用量","dataType":"String","editType":"string"}'></div>
+                            <div options='{"field":"price","title":"物料单价（元）","dataType":"String","editType":"string"}'></div>
+                        	<div options='{"field":"amount","title":"物料总金额（元）","dataType":"String","editType":"string"}'></div>
+                        </div>
+                    </div>
+                    <!-- <div id='pagination_follow' class='pagination u-pagination pagination-sm'></div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>

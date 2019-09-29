@@ -1,0 +1,135 @@
+<!-- 页面内容区(HTML片段，不能放置HTML 及 BODY 标签 )-->
+<!-- 若要正常使用实时预览功能，请在首页index.html中添加路由#board/board -->
+<div id="board">
+	<div class="u-row margin-0 padding-top-0 padding-left-0 content-title">
+		<div class="u-col-md-12 u-col-sm-12 u-media-middle margin-0 padding-0">
+			<h3 class="c-title pull-left padding-15 padding-left-20 c_size_28">当月数据</h3>
+			<div class="download pull-right padding-top-10 padding-right-10">
+				<div class="margin-right-10 u-button u-button-primary u-buttom-sm bg_blue"  data-filename="数据">数据报表</div>
+				<div class="margin-right-10 u-button u-button-primary u-buttom-sm bg_blue"  data-filename="市场">市场报表</div>
+				<div class="margin-right-10 u-button u-button-primary u-buttom-sm bg_blue"  data-filename="服务">服务报表</div>
+			</div>
+		</div>
+	</div>
+	<div class="u-row padding-10 c_hide">
+		<div class="u-col-md-2 u-col-xs-4 " style="">
+			<div class=" u-form-control "  id="combobox_orgname" style="padding:0;"
+				 u-meta='{"type":"u-combobox","datasource":"rangeList","data":"searchdatanew","field":"timerange","onlySelect":true}'>
+				<div class="c_rela">
+						<span class="u-form-control-feedback fa fa-angle-down"
+							  data-role="combo-button" data-bind=""></span>
+					<input placeholder="选择日期区间" class="u-form-control" style="border:0;width:100%;height:32px;background:#fff;" readonly/>
+				</div>
+			</div>
+		</div>
+		<div class="u-col-md-2 filter-rolling c_hide">
+			<div class=" u-form-control "  id="" style="padding:0;"
+				 u-meta='{"type":"u-combobox","datasource":"rollingList","data":"searchdatanew","field":"rolling","onlySelect":true}'>
+				<div class="c_rela">
+						<span class="u-form-control-feedback fa fa-angle-down"
+							  data-role="combo-button" data-bind=""></span>
+					<input placeholder="选择日期区间" class="u-form-control" style="border:0;width:100%;height:32px;background:#fff;" readonly/>
+				</div>
+			</div>
+		</div>
+		<div class="u-col-md-2 filter-custom c_hide">
+			<div class="">
+				<div class=""
+					 u-meta='{"type":"u-date","data":"searchdatanew","field":"startTime"}'>
+					<input type="text" class="u-form-control" placeholder="开始日期" style="background:#fff;padding-right:0;"  >
+				</div>
+			</div>
+		</div>
+		<div class="u-col-md-2 filter-custom c_hide">
+			<div class="">
+				<div class="	"
+					 u-meta='{"type":"u-date","data":"searchdatanew","field":"endtime"}'>
+					<input type="text" class="u-form-control" placeholder="结束日期" style="background:#fff;padding-right:0;"  >
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="board-list c_hide">
+		<div class="board-group">
+			<div class="board-header c_p_10 c_blue">
+				test1
+			</div>
+			<div class="board-body">
+				<div id="board-main-1" style="width: 100%;height:400px;"></div>
+			</div>
+		</div>
+		<div class="board-group">
+			<div class="board-header c_p_10 c_blue">
+				test2
+			</div>
+			<div class="board-body">
+				<div id="board-main-2" style="width: 100%;height:400px;"></div>
+			</div>
+		</div>
+	</div>
+
+	<div class="u-row padding-20">
+		<div class="u-col-4 margin-bottom-15">
+			<div class="group c_flex c_align_center">
+				<div   class="c_center">
+					<div  class="title">当月客户</div>
+					<div  class="num board-addcustomer">
+						0
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="u-col-4 margin-bottom-15">
+			<div class="group c_flex c_align_center">
+				<div   class="c_center">
+					<div class="title">已分配客户</div>
+					<div class="num board-allotedcustomer">
+						0
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="u-col-4 margin-bottom-15">
+			<div class="group c_flex c_align_center">
+				<div   class="c_center">
+					<div   class="title">施工中工程</div>
+					<div   class="num board-servicing" >
+						0
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="u-col-4 margin-bottom-15">
+			<div class="group c_flex c_align_center">
+				<div   class="c_center">
+					<div   class="title">已完工工程</div>
+					<div   class="num board-serviced">
+						0
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="u-col-4 margin-bottom-15">
+			<div class="group c_flex c_align_center">
+				<div   class="c_center">
+					<div   class="title">合同金额(元)</div>
+					<div   class="num board-totalamount" style='font-size:45px;'>
+						0
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="u-col-4 margin-bottom-15">
+			<div class="group c_flex c_align_center">
+				<div   class="c_center">
+					<div   class="title">实收金额(元)</div>
+					<div   class="num board-paidamount" style='font-size:45px;'>
+						0
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+</div>

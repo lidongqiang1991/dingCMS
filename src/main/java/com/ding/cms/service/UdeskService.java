@@ -1,0 +1,434 @@
+package com.ding.cms.service;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
+import org.apache.commons.httpclient.HttpException;
+import org.apache.velocity.app.event.ReferenceInsertionEventHandler.referenceInsertExecutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.spi.LoggerFactoryBinder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.ding.cms.entity.Customer;
+import com.ding.cms.entity.CustomerListEntity;
+import com.ding.cms.util.DateUtils;
+import com.ding.cms.util.HttpUtils;
+import com.ding.cms.util.SHA1Util;
+import com.yonyou.iuap.system.entity.InterfaceLog;
+import com.yonyou.iuap.system.entity.Log;
+import com.yonyou.iuap.system.service.InterfaceLogService;
+import com.yonyou.iuap.system.service.LogService;
+
+@Service
+public class UdeskService {
+	@Autowired
+	private InterfaceLogService logService;
+	@Autowired
+	private LogService sysLogService;
+	@Autowired
+	private CustomerListService cusService;
+	private Logger logger = LoggerFactory.getLogger(UdeskService.class);
+	private String host = "https://yuhong.s2.udesk.cn";
+	private String openUrl = "/open_api_v1";
+	private String tokenUrl = "/log_in";
+	private String pushUrl = "/customers/batch_import_async";
+	private String cusUrl = "/customers/get_customer";
+	private String ticUrl = "/tickets/detail";
+	private String ticketsUrl = "/tickets";
+	private String upCusUrl = "/customers/update_customer";
+	private String fieldsUrl = "/custom_fields";
+	private String email = "zhaoym@yuhong.com.cn";
+	private String password = "zym19900616";
+	private String token;
+
+	// 往Udesk推送数据
+	public void push(String endtime,InterfaceLog log) throws InterruptedException {
+		String starttime = logService
+				.getStartDate(this.pushUrl, log.getSender(), "UDESK");
+		if (starttime == null)
+			starttime = "2019-07-30 00:00:00";
+		starttime = DateUtils.addMINUTE(starttime, -30);
+		List<CustomerListEntity> customerList = cusService.getCustomers(starttime,
+				endtime);
+		int count = 0;
+		do {
+			JSONArray customers = new JSONArray();
+			for (; count < customerList.size(); count++) {
+				CustomerListEntity item = customerList.get(count);
+				JSONObject object = new JSONObject();
+				String[] phones = { item.getPhone() };
+				JSONObject customFields = new JSONObject();
+				customFields.put(
+						"TextField_1697",
+						item.getSourcetype1() == null ? "顶之美" : item
+								.getSourcetype1());
+				String createTime = item.getCreatetime();
+				customFields.put("TextField_2134",
+						createTime.substring(0, createTime.lastIndexOf(":")));
+				object.put("nick_name", "".equals(item.getName()) ? "未命名"
+						: item.getName());
+				object.put("cellphones", phones);
+				object.put("custom_fields", customFields);
+				customers.add(object);
+				if (count != 0 && (count + 1) % 100 == 0) {
+					count++;
+					break;
+				}
+			}
+			JSONObject param = new JSONObject();
+			param.put("customers", customers);
+			String str = send(this.pushUrl, null, param.toString(), "POST", log);
+			if (str == null)
+				count = count + 1 - 100 < 0 ? 0 : count + 1 - 100;
+			if (count >= customerList.size())
+				break;
+			Thread.sleep(60 * 1000);
+		} while (true);
+	}
+
+	// 获取Udesk用户详情
+	public String getCustomer(String cusUrl, String type, String value) {
+		cusUrl = cusUrl == null ? this.cusUrl : cusUrl;
+		if (value == null)
+			throw new NullPointerException("查询参数不能为空");
+		Map<String, Object> urlParam=new HashMap<String, Object>();
+		urlParam.put("type", type);
+		urlParam.put("content", value);
+		return send(this.cusUrl, urlParam, null, "GET", new InterfaceLog());
+
+	}
+
+	// 获取工单详情
+	public String getTicket(String ticUrl, Integer tid) {
+		if (tid == null)
+			throw new NullPointerException("tid不能为空");
+		Map<String, Object> urlParam=new HashMap<String, Object>();
+		urlParam.put("id", tid);
+		return send(this.ticUrl,urlParam, null, "GET", new InterfaceLog());
+	}
+	// 生成Udesk的签名
+	public String sign(String timestamp) {
+		if (token == null || timestamp == null)
+			throw new NullPointerException("token或timestamp不能为空");
+		return SHA1Util.encode(email + "&" + token + "&" + timestamp);
+	}
+
+	// 获取Token
+	public String getToken(String host, String email, String password) {
+		Map<String, Object> param = new HashMap<String, Object>();
+		param.put("email", this.email);
+		param.put("password", this.password);
+		String str = "";
+		for (int i = 0; i < 3; i++) {
+			try {
+				logger.info("尝试获取udesk token");
+
+				str = HttpUtils.requestPost(
+						host + this.openUrl + this.tokenUrl, param, null);
+				logger.info("获取udesk token成功");
+				break;
+			} catch (Exception e) {
+				if (i == 2) {
+					logger.error("获取udesk token失败");
+					return null;
+				}
+			}
+		}
+		JSONObject response = JSONObject.fromObject(str);
+		if (Integer.parseInt(response.get("code").toString()) == 1000) {
+			this.token = response.getString("open_api_auth_token");
+			this.email = email;
+			this.password = password;
+			this.host = host;
+			return this.token;
+		}
+		return null;
+	}
+
+	// 创建工单
+	public String createTicket(String url, String dealId, String phone) {
+		JSONObject ticket = ticket(dealId, phone);
+		return send(this.ticketsUrl,null,ticket.toString(), "POST", new InterfaceLog());
+	}
+	public String createTicket(CustomerListEntity customerListEntity) {
+		//创建工单
+		JSONObject ticket = ticket(customerListEntity);
+		
+		return send(this.ticketsUrl,null,ticket.toString(), "POST", new InterfaceLog());
+	}
+
+	// 更新工单
+	public String updateTicket(String url, String tid, String json) {
+		return send(this.ticketsUrl+"/"+tid,null, json,"PUT", new InterfaceLog());
+	}
+
+	// 更新客户
+	public String updateCustomer(String type, String value, String json) {
+		Map<String, Object> urlParam = new HashMap<String, Object>();
+		urlParam.put("type", type);
+		urlParam.put("content", value);
+		return send(upCusUrl, urlParam, json, "PUT", new InterfaceLog());
+	}
+	//获得自定义字段
+	public String customerFields(Fields type){
+		Map<String, Object> urlParam = new HashMap<String, Object>();
+		urlParam.put("category", type.getType());
+		return send(fieldsUrl,urlParam,null,"GET",new InterfaceLog());
+	}
+	public Integer getcustomerFieldValue(Fields type,String name,String title){
+		String result=customerFields(type);
+		if(result!=null){
+			JSONArray fieldlist = JSONObject.fromObject(result).getJSONArray("fields");
+			for (Object object : fieldlist) {
+				JSONObject item = JSONObject.fromObject(object);
+				if(item.getString("field_name").equals(name)){
+					for (Object options : JSONArray.fromObject(item.get("options"))) {
+						JSONObject option = JSONObject.fromObject(options);
+						if(option.getString("title").equals(title)){
+							return option.getInt("value");
+						}
+					}
+					return null;
+				}
+			}
+		}
+		return null;
+	}
+	public String getcustomerFieldTitle(Fields type,String name,Integer value){
+		String result=customerFields(type);
+		if(result!=null){
+			JSONArray fieldlist = JSONObject.fromObject(result).getJSONArray("fields");
+			for (Object object : fieldlist) {
+				JSONObject item = JSONObject.fromObject(object);
+				if(item.getString("field_name").equals(name)){
+					JSONArray options=JSONArray.fromObject(item.get("options"));
+					return options.getJSONObject(value).getString("title");
+				}
+			}
+		}
+		return null;
+	}
+	/**
+	 * 
+	 * @param url 地址
+	 * @param urlParam 地址中的参数
+ 	 * @param json 
+	 * @param type 类型
+	 * @param log 实体类sys_interface_log
+	 * @return
+	 */
+	public String send(String url, Map<String, Object> urlParam, String json,
+			String type, InterfaceLog log) {
+		log.setReceiver("UDESK");
+		log.setType(url);
+		if (log.getSender() == null)
+			log.setSender("DZM");
+		if (log.getStarttime() == null)
+			log.setStarttime(DateUtils.format(new Date(),
+					DateUtils.YMDHMS_PATTERN));
+		if(token==null){
+			if (getToken(host, email, password) == null) {
+				log.setIssuccess(false);
+				log.setException("token 获取失败");
+				logService.save(log);
+				interfaceLogSaveSysLog(log);
+				return null;
+			}
+		}
+		StringBuilder sb = new StringBuilder(host + openUrl + url);
+		if (urlParam != null) {
+			sb.append("?");
+			for (Entry<String, Object> item : urlParam.entrySet()) {
+				sb.append(item.getKey());
+				sb.append("=");
+				sb.append(item.getValue().toString());
+				sb.append("&");
+			}
+			sb.delete(sb.length() - 1, sb.length());
+		}
+		String timestamp = new Long(System.currentTimeMillis() / 1000)
+				.toString();
+		url = url(sb.toString(), timestamp);
+		int retryCount = 3;
+		String result = null;
+		while (retryCount > 0) {
+			try {
+				switch (type) {
+				case "GET":
+					result = HttpUtils.requestGet(url);
+					break;
+				case "POST":
+					result = HttpUtils.requestPost(url, json, null);
+					break;
+				case "PUT":
+					result = HttpUtils.requestPut(url, json, null);
+					break;
+				default:
+					throw new HttpException("不可支持的请求类型");
+				}
+				log.setContent(result);
+				if (JSONObject.fromObject(result).getInt("code") != 1000)
+					throw new HttpException("请求失败");
+				log.setIssuccess(true);
+				break;
+			} catch (HttpException e) {
+				log.setIssuccess(false);
+				log.setException(e.getMessage());
+				token=null;
+			} catch (Exception e) {
+				if (--retryCount == 0) {
+					log.setIssuccess(false);
+					log.setException(e.getMessage());
+				}
+				token=null;
+			}
+		}
+		log.setEndtime(DateUtils.format(new Date(), DateUtils.YMDHMS_PATTERN));
+		logService.save(log);
+		interfaceLogSaveSysLog(log);
+		return result;
+	}
+
+	public String url(String url, String timestamp) {
+		url += url.indexOf("?") == -1 ? "?" : "&";
+		return url + "email=" + email + "&timestamp=" + timestamp + "&sign="
+				+ sign(timestamp);
+	}
+	private JSONObject ticket(String dealId,String phone){
+		CustomerListEntity customerListEntity=cusService.getCustomerListEntity(dealId);
+		customerListEntity.setPhone(phone);
+		return ticket(customerListEntity);
+	}
+	private JSONObject ticket(CustomerListEntity customerListEntity) {
+		JSONObject json = new JSONObject();
+		Map<String, Object> ticket = new HashMap<String, Object>();
+		ticket.put("subject", "顶之美工单");
+		ticket.put("content", "顶之美新建工单");
+		ticket.put("type", "cellphone");
+		// 添加自定义
+		JSONObject ticketField = new JSONObject();
+		ticketField.put("TextField_2370", customerListEntity.getBillid());
+		ticketField=customerToTicketFields(customerListEntity,ticketField);
+		ticket.put("type_content", customerListEntity.getPhone());
+		ticket.put("ticket_field", ticketField);
+		ticket.put("agent_group_name", "默认组");
+		json.put("ticket", JSONObject.fromObject(ticket));
+		return json;
+	}
+	public String ticket(String tid,CustomerListEntity customerListEntity){
+		String result = getTicket(null, Integer.parseInt(tid));
+		if (result == null)
+			return null;
+		JSONObject ticket = JSONObject.fromObject(result).getJSONObject("ticket");
+		JSONObject customFields = ticket.getJSONObject("custom_fields");
+		String id = customerListEntity.getBillid();
+		customerListEntity.setTid(tid);
+		customFields=customerToTicketFields(customerListEntity,customFields);
+		customFields.put("TextField_2370", id);
+		Map<String, Object> newTicket = new HashMap<String, Object>();
+		newTicket.put("subject", ticket.getString("subject"));
+		newTicket.put("custom_fields", customFields);
+		newTicket.put("agent_id", ticket.get("assignee_id"));
+		newTicket.put("agent_group_id", ticket.get("user_group_id"));
+		return "{\"ticket\":"+ JSONObject.fromObject(newTicket).toString() + "}";
+	}
+	public JSONObject customerToTicketFields(CustomerListEntity customerListEntity,JSONObject customFields){
+		customFields.put("TextField_2506", customerListEntity.getProvince());
+		customFields.put("TextField_1724", customerListEntity.getCity());
+		customFields
+				.put("TextField_1725", customerListEntity.getDistrict());
+		customFields.put("TextField_1730",
+				customerListEntity.getCommunity());
+		customFields.put("TextField_1729", customerListEntity.getAddress());
+		//2019年9月24日10:29:48dongl修改为三级:建单渠道(Sourcetype0);了解途径(Sourcetype);途径细分(Sourcetype1)
+		customFields.put("TextField_1720", customerListEntity.getSourcetype0());
+		customFields.put("TextField_1722", customerListEntity.getSourcetype());
+		customFields.put("TextField_1723",customerListEntity.getSourcetype1());
+		customFields.put("TextField_1726",customerListEntity.getName());
+		Integer sex=customerListEntity.getSex();
+		customFields.put("TextField_1727", (sex==null?"未知":sex==1?"男":"女"));
+		customFields.put("TextField_1728", customerListEntity.getPhone());
+		customFields.put("TextField_1731", customerListEntity.getType());
+		String part=customerListEntity.getPart();
+		if(part!=null) {
+			Integer index=getcustomerFieldValue(Fields.TICKET,"SelectField_754",part);
+			if(index!=null)
+				customFields.put("SelectField_754", index.toString());
+		}
+		if(customerListEntity.getIssurvey()!=null&&"Y".equals(customerListEntity.getIssurvey()))
+			customFields.put("SelectField_755", "0");
+		customFields.put("SelectField_1284", customerListEntity.getLifestages().toString());
+		return customFields;
+	}
+	public CustomerListEntity ticketFieldsToCustomer(JSONObject customFields,CustomerListEntity customerListEntity){
+		if(customFields.containsKey("TextField_2506"))
+			customerListEntity.setProvince(customFields.getString("TextField_2506"));
+		if(customFields.containsKey("TextField_1724"))
+			customerListEntity.setCity(customFields.getString("TextField_1724"));
+		if(customFields.containsKey("TextField_1725"))
+			customerListEntity.setDistrict(customFields.getString("TextField_1725"));
+		if(customFields.containsKey("TextField_1730"))
+			customerListEntity.setCommunity(customFields.getString("TextField_1730"));
+		if(customFields.containsKey("TextField_1729"))
+			customerListEntity.setAddress(customFields.getString("TextField_1729"));
+		//建单渠道
+		if(customFields.containsKey("TextField_1720"))
+			customerListEntity.setSourcetype0(customFields.getString("TextField_1720"));
+		//了解途径
+		if(customFields.containsKey("TextField_1722"))
+			customerListEntity.setSourcetype(customFields.getString("TextField_1722"));
+		//途径细分
+		if(customFields.containsKey("TextField_1723"))
+			customerListEntity.setSourcetype1(customFields.getString("TextField_1723"));
+		if(customFields.containsKey("TextField_1726"))
+			customerListEntity.setName(customFields.getString("TextField_1726"));
+		if(customFields.containsKey("TextField_1728"))
+			customerListEntity.setPhone(customFields.getString("TextField_1728"));
+		if(customFields.containsKey("TextField_1731"))
+			customerListEntity.setType(customFields.getString("TextField_1731"));
+		if(customFields.containsKey("TextField_1727")){
+			String sex= customFields.getString("TextField_1727");
+			customerListEntity.setSex(sex.equals("男")?1:sex.equals("女")?2:0);
+		}
+		if(customFields.containsKey("SelectField_754"))
+			customerListEntity.setPart(getcustomerFieldTitle(Fields.TICKET,"SelectField_754",Integer.parseInt(customFields.getString("SelectField_754"))));
+		if(customFields.containsKey("SelectField_755"))
+			customerListEntity.setIssurvey(Integer.parseInt(customFields.getString("SelectField_755"))==0?"Y":"N");
+		if(customFields.containsKey("SelectField_1284"))
+			customerListEntity.setLifestages(Integer.parseInt(customFields.getString("SelectField_1284")));
+		else customerListEntity.setLifestages(0);
+		return customerListEntity;
+	}
+	private void interfaceLogSaveSysLog(InterfaceLog log){
+		Log sysLog=new Log();
+		sysLog.setUsername(log.getSender());
+		sysLog.setOrgname(log.getSender());
+		sysLog.setActcontent(log.getSender()+"调用"+log.getReceiver()+"的"+log.getType()+(log.getIssuccess()?"调用成功":"调用失败"));
+		sysLog.setAction("接口调用");
+		sysLog.setObject("交互");
+		sysLogService.save(sysLog);
+	}
+	public enum Fields{
+		TICKET("ticket"),
+		CUSTOMER("customer"),
+		ORGANIZATION("organization");
+		private String type;
+		private Fields(String type){
+			this.type=type;
+		}
+		public String getType() {
+			return type;
+		}
+		public void setType(String type) {
+			this.type = type;
+		}
+	}
+}

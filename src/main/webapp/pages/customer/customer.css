@@ -1,0 +1,42 @@
+#customer .c_rela{
+	position:relative;
+}
+#customer .c-title{
+	margin:0;
+	line-height: 30px;
+}
+#customer .u-form-control{
+	font-size: 12px;
+}
+#customer .u-input-group{
+	width: 100%;
+}
+#customer .u-input-group input{
+	border-radius: 4px;
+}
+#customer .u-badge{
+	display:inline-block;
+	line-height:19px;
+}
+#customer .u-badge[data-badge]:after {
+	font-weight:normal;
+	left:0px;
+	top:-13px;
+	font-size:10px;
+}
+#customer .u-badge-primarys.u-badge[data-badge]:after{
+	background-color:rgb(3,162,228);
+}
+#customer #addBtn{
+	position:relative;
+}
+#customer i.uf-plus{
+	position:absolute;
+	color: #fff;
+	left: 4px;
+	top: 6px;
+	font-size:10px;
+	cursor: pointer;
+}
+
+

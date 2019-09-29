@@ -1,0 +1,39 @@
+<div class="u-container-fluid padding-0">
+	<div class="u-row margin-0 padding-15">
+		<div class="ec-search u-col-md-12 u-col-sm-12 padding-bottom-15 u-media-middle ">
+			<h3 class="c-title pull-left c_size_18">工人列表</h3>
+			<div class="pull-right">
+				<div class="margin-right-10 pull-right">
+					<input type="button" class="margin-right-10 u-button u-button-primary u-buttom-sm bg_blue"
+					  value="删除" data-bind="click: event.delClick">
+				</div>
+				<div class="margin-right-10 pull-right">
+					<input type="button" class="margin-right-10 u-button u-button-primary u-buttom-sm bg_blue"
+					  value="新建" data-bind="click: event.addClick">
+				</div>
+				<div id="searchdiv" class="margin-right-10 pull-right  u-has-feedback  input_enter">
+					<input type="text" class="u-form-control c-sm " id="search"
+					placeholder="姓名/手机号">
+					<span class="u-form-control-feedback uf uf-search-light-2" id="searchBtn"
+					data-bind="click: event.searchClick"></span>
+					<span class="u-form-control-feedback-1  uf-search-light-0 " id="returnBtn"
+		  		    data-bind="click: event.returnClick">×</span>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--列表展示-->
+	<div class="main-container padding-15 contacts-container">
+		<div class="hr-table ">
+			<div class="u-table b-table width-full"
+			u-meta='{"id":"teamdata","type":"grid","data":"teamdata","columnWidth":"150px","onDblClickFun":"event.selectClick"}'>
+				<div options='{"field":"teamname","title":"工人姓名","dataType":"String","editType":"string","renderType":"event.renderTypeAjax"}'></div>
+				<div options='{"field":"phone","title":"手机号","dataType":"String","editType":"string"}'></div>
+				<div options='{"field":"jobscope","title":"工种","dataType":"String","editType":"string"}'></div>
+				<div options='{"field":"teammemo","title":"备注","dataType":"String","editType":"string"}'></div>
+			</div>
+		</div>
+		<div id='pagination' class='pagination u-pagination pagination-sm'></div>
+	</div>
+
+</div>

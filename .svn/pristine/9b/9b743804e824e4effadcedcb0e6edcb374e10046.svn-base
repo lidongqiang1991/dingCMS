@@ -1,0 +1,128 @@
+package com.ding.cms.service;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.alibaba.druid.util.StringUtils;
+import com.ding.cms.entity.BillDeal;
+import com.ding.cms.entity.BillService;
+import com.ding.cms.entity.CustomerListEntity;
+import com.ding.cms.entity.LogOrderAllot;
+import com.ding.cms.entity.LogOrderNote;
+import com.ding.cms.repository.BillDealDao;
+import com.ding.cms.util.DateUtils;
+import com.yonyou.iuap.context.InvocationInfoProxy;
+import com.yonyou.iuap.system.entity.SysUser;
+
+@Service
+public class BillDealService {
+
+	@Autowired
+	private BillDealDao dealDao;
+	
+	public String saveForCustomerList(CustomerListEntity custList){
+		BillDeal temp=new BillDeal();
+		if (custList.getState()!=null) {
+			temp.setState(custList.getState());
+		} else {
+			/*custList.setState(BillDeal.DEAL_STATE_01);//待确认
+			temp.setState(BillDeal.DEAL_STATE_01);*/
+			custList.setState(BillDeal.DEAL_STATE_02);//待分配
+			temp.setState(BillDeal.DEAL_STATE_02);
+		}
+		temp.setBillid(custList.getBillid());
+		temp.setCustomerid(custList.getCustomerid());
+		temp.setHouseid(custList.getHouseid());
+		temp.setSourcetype(custList.getSourcetype());
+		temp.setSurveydate(custList.getSurveydate());
+		temp.setCommunity(custList.getCommunity());
+		temp.setIssurvey(custList.getIssurvey());
+		temp.setReferrerid(custList.getReferrerid());
+		temp.setRootoid(custList.getRootoid());
+		temp.setReferrer(custList.getReferrer());
+		temp.setReferrerphone(custList.getReferrerphone());
+		temp.setLifestages(custList.getLifestages());
+		temp.setJobid(custList.getJobid());
+		temp.setAgentid(custList.getAgentid());
+		temp.setCreatetime(custList.getCreatetime());
+		temp.setTid(custList.getTid());
+		//上门勘察状态改变为待分配
+//		if("Y".equals(custList.getIssurvey())){
+//			deal.setState(1);
+//		}
+//		String[] dealAttributes={"contactid","contract","houseid"};
+//		String[] custAttributes={"customerid","name","houseid"};
+//		
+//		for (int i = 0; i < dealAttributes.length; i++) {
+//			deal.setAttribute(dealAttributes[i], custList.getAttribute(custAttributes[i]));
+//		}
+		return dealDao.save(temp);
+	}
+	
+	public Page<LogOrderNote> selectNoteByPage(PageRequest pageRequest, Map<String, Object> searchParams){
+		return dealDao.selectNoteByPage(pageRequest, searchParams);
+	}
+	
+	public LogOrderNote saveNote(LogOrderNote entity){
+		return dealDao.saveNote(entity);
+	}
+	//客户回访
+	public LogOrderNote saveNoteVisit(LogOrderNote entity,String nps,String visitstate){
+		if(visitstate.equals("1"))changeState(entity.getDealid(),BillDeal.DEAL_STATE_06);
+		setNPS(entity.getDealid(),Double.valueOf(nps));
+		return dealDao.saveNoteVisit(entity);
+	}
+	
+	public Page<LogOrderAllot> selectAllotByPage(PageRequest pageRequest, Map<String, Object> searchParams){
+		return dealDao.selectAllotByPage(pageRequest, searchParams);
+	}
+	
+	public void allot(String dealid,String agentid,String reason){
+		
+		 dealDao.reAllot( dealid, agentid, reason);
+	}
+	
+	//将交易更改为待回访状态
+	public void changeFollowUp(String serviceid){
+		dealDao.changeFollowUp(serviceid);
+	}
+	//更改交易状态
+	public void changeState(String serviceid,int state){
+		dealDao.changeState(serviceid,state);
+	}
+	public void setNPS(String serviceid,double nps){
+		dealDao.setNPS(serviceid,nps);
+	}
+	
+	public BillService createServiceIfNotExist(String dealid){
+		return dealDao.createServiceIfNotExist(dealid);
+	}
+	
+	/**
+	 * 将待回访交易变更为已分配，继续施工
+	 */
+	public void resumeDeal(String dealid){
+		dealDao.resumeDeal(dealid);
+	}
+	public List<String> getBealIdByPhone(String phone){
+		return dealDao.getBealIdByPhone(phone);
+	}
+	public void addTidByBealId(String dealId,String tid){
+		dealDao.addTidByBealId(dealId,tid);
+	}
+	
+	/**
+	 * 关闭客户
+	 * @param billid
+	 */
+	@Transactional
+	public void closeCustomer(String billid,String note){
+		dealDao.closeCustomer(billid,note);
+	}
+}

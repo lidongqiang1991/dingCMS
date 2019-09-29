@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?><component conRouterType="曼哈顿直角" createIndustry="0" createTime="2018-10-18 13:36:32" creator="" description="" displayName="bill_order_b" fromSourceBmf="true" gencodestyle="标准样式" help="" id="3829d770-9b0d-405f-8b35-1100d1fa16ac" industry="0" industryChanged="false" industryIncrease="false" industryName="0" isSource="false" isbizmodel="false" mainEntity="" metaType=".bmf" modifier="" modifyIndustry="0" modifyTime="2018-10-18 13:36:32" name="bill_order_b" namespace="dingCMS" ownModule="dingCMS" preLoad="false" programcode="0" resModuleName="bill_order_b" resid="" version="0" versionType="0">
+    <celllist/>
+    <connectlist/>
+    <refdepends/>
+    <refdependLoseIDs/>
+    <cellRemoveLog/>
+    <rulers>
+        <ruler isHorizontal="true" unit="0">
+            <guideList/>
+        </ruler>
+        <ruler isHorizontal="false" unit="0">
+            <guideList/>
+        </ruler>
+    </rulers>
+</component>

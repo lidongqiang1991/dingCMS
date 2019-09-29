@@ -1,0 +1,24 @@
+
+div#content{
+    background:#fff !important;
+}
+/*标题*/
+.ec-search{
+    border-bottom:1px solid #ccc;
+    line-height:36px;
+    text-height: center;
+}
+.c_rela{
+    position:relative;
+}
+.c-title{
+    margin:0;
+    line-height: 20px;
+}
+.material .form-group{
+    margin-bottom:15px;
+    line-height: 36px;  
+}
+.material .control-label{
+    text-align:center;
+}

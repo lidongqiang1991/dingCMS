@@ -1,0 +1,5 @@
+#formDetail .tab-1-name{
+    white-space: nowrap;
+    overflow: hidden;
+    line-height: 32px;
+}

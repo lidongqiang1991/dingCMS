@@ -1,0 +1,151 @@
+<!-- 页面内容区(HTML片段，不能放置HTML 及 BODY 标签 )-->
+<!-- 若要正常使用实时预览功能，请在首页index.html中添加路由#message/message -->
+<div  id="log">
+    <div class="u-container-fluid  padding-0">
+        <div class="u-row margin-0 padding-0 content-title">
+            <div class="u-col-md-12 u-col-sm-12 u-media-middle margin-0 padding-0">
+                <h3 class="c-title pull-left padding-15 padding-left-20 c_size_28">日志列表</h3>
+                <div class="pull-right padding-15 padding-left-0 padding-right-0">
+                    <div id="searchdiv" class="margin-right-10 pull-right u-has-feedback input_enter">
+                        <input type="text" class="u-form-control c-sm" id="search" placeholder="操作对象/操作人">
+                        <span class="uf zoom uf-search-light-2" id="searchBtn" data-bind="click: event.searchClick"></span>
+                        <span class="u-form-control-feedback-1  uf-search-light-0 uf uf-close" id="returnBtn"
+                              data-bind="click: event.returnClick"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 筛选日期 -->
+        <div class="u-container-fluid padding-10 prefilter">
+            <div class="u-row" id="condition-row-user">
+                <div class="u-row ">
+                    <div class="u-col-md-2" id="time" style="width: 200px;margin-left: 15px;">
+                        <!-- searchdatanew 值改变事件 -->
+                        <div class="u-combo"
+                             u-meta='{"type":"u-combobox","datasource":"typeList","data":"searchdatanew","field":"logtime","onlySelect":true}'>
+                            <div class="u-input-group u-has-feedback">
+						<span class="u-form-control-feedback fa fa-angle-down"
+                              data-role="combo-button"></span>
+                                <input id="searchType" placeholder="时间周期" class="u-form-control padding-right-20" readonly/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="u-col-md-2">
+                        <div class="">
+                            <div class="u-input-group u-has-feedback"  id="startTime"
+                                 u-meta='{"type":"u-date","data":"searchdatanew","field":"startTime"}'>
+                                <input type="text" class="u-form-control" placeholder="开始日期" style="background:#fff;padding-right:0;"  >
+                            </div>
+                        </div>
+                    </div>
+                    <div class="u-col-md-2">
+                        <div class="">
+                            <div class="u-input-group u-has-feedback"  id="endTime"
+                                 u-meta='{"type":"u-date","data":"searchdatanew","field":"endTime"}'>
+                                <input type="text" class="u-form-control" placeholder="截止日期" style="background:#fff;padding-right:0;"  >
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="u-col-md-1" id="choose">
+                        <input type="button" class="margin-right-10 u-button u-button-primary bg_blue"
+                               value="筛选" data-bind="click: event.searchClick">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- log 系统日志 展示列表 -->
+        <div class="main-container padding-top-0 contacts-container">
+            <div class="hr-table ">
+                <div class="u-table b-table width-full"
+                     u-meta='{"id":"gridaddress","type":"grid","data":"logDa","columnWidth":"150px","onDblClickFun":"event.dblClick"}'>
+                    <div
+                            options='{"field":"object","title":"操作对象","dataType":"String","editType":"string"}'></div>
+                    <div
+                            options='{"field":"action","title":"操作","dataType":"String","editType":"string"}'></div>
+                    <div
+                            options='{"field":"actcontent","title":"操作具体内容","dataType":"String","editType":"string"}'></div>
+                    <div
+                            options='{"field":"username","title":"操作人","dataType":"String","editType":"string"}'></div>
+                    <div
+                            options='{"field":"orgname","title":"操作人所属组织","dataType":"String","editType":"string"}'></div>
+                    <div
+                            options='{"field":"ts","title":"操作时间","dataType":"date","editType":"date"}'></div>
+                </div>
+            </div>
+            <div id='pagination' class='pagination u-pagination pagination-sm'></div>
+        </div>
+
+        <!--  查看详情系统日志-->
+        <div id="dialog_content_log" class="modal-dialog" style="display:none;">
+            <div class="u-msg-title">
+                <h4>日志详情</h4>
+            </div>
+            <HR width="100%" color=#F8F9FB SIZE=3 align="center"/>
+            <div class="u-msg-content add-man">
+                <div class="u-form material" id="add-form">
+                    <div class="u-col-md-12 form-group">
+                        <div class="u-col-md-3 control-label">
+                            <label style="color: red;"></label>
+                            <label>操作对象</label>
+                        </div>
+                        <input class="u-col-md-6 u-form-control " type="text" id="add_object"
+                               u-meta='{"type":"string","data":"logDaNew","field":"object"}'
+                               placeholder=""
+                        />
+                    </div>
+
+                    <div class="u-col-md-12 form-group">
+                        <div class="u-col-md-3 control-label">
+                            <label style="color: red;"></label>
+                            <label >操作</label>
+                        </div>
+                        <input class="u-col-md-6 u-form-control " type="text" id="add_action"
+                               u-meta='{"type":"string","data":"logDaNew","field":"action"}'
+                               placeholder=""
+                        />
+                    </div>
+                    <div class="u-col-md-12 form-group">
+                        <div class="u-col-md-3 control-label">
+                            <label style="color: red;"></label>
+                            <label >操作具体内容</label>
+                        </div>
+                        <input class="u-col-md-6 u-form-control " type="text" id="add_actcontent"
+                               u-meta='{"type":"string","data":"logDaNew","field":"actcontent"}'
+                               placeholder=""
+                        />
+                    </div>
+                    <div class="u-col-md-12 form-group" style="">
+                        <div class="u-col-md-3 control-label">
+                            <label style="color: red;"></label>
+                            <label>操作者</label>
+                        </div>
+                        <input class="u-col-md-6 u-form-control " type="text" id="add_username"
+                               u-meta='{"type":"string","data":"logDaNew","field":"username"}'
+                               placeholder=""
+                        />
+                    </div>
+                    <div class="u-col-md-12 form-group" style="">
+                        <div class="u-col-md-3 control-label">
+                            <label style="color: red;"></label>
+                            <label>所属组织</label>
+                        </div>
+                        <input class="u-col-md-6 u-form-control " type="text" id="add_orgname"
+                               u-meta='{"type":"string","data":"logDaNew","field":"orgname"}'
+                               placeholder=""
+                        />
+                    </div>
+                </div>
+            </div>
+            <div class="u-msg-footer" style="display:none;">
+                <button id="cancellog" class="u-msg-cancel u-button bg-blue"
+                        data-bind="click: event.cancelManClick">取消
+                    <span class="u-button-container"></span>
+                </button>
+
+            </div>
+        </div>
+
+
+    </div>
+</div>

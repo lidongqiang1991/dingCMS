@@ -1,0 +1,109 @@
+<div class="u-container-fluid padding-0">
+
+	<h3 class="js_href padding-15 c_size_18" style="border-bottom: 1px solid #ccc;margin: 0 15px;">
+		<a href="#/team/team" class="c_blue"> &lt; 工人列表</a>
+	</h3>
+
+	<!--tabs控件 切换active状态包括线性跟随和背景跟随 tabs控件依赖 u-tabs 类，状态类是共用的。 改变修饰类可以改变active样式。 默认是active状态为线性跟随 添加修饰类.u-tabs-pill 为背景跟随-->
+	<div class="u-tabs  padding-15 c_border_box">
+
+		<div class="u-form" id="add-form">
+			<!--工人信息-->
+			<div class="padding-15">
+				<div class="u-row">
+					<div class="u-col-md-2 tab-1-name">
+						工人姓名：
+					</div>
+					<div class="u-col-md-3 ">
+						<div class=" u-has-feedback"
+						u-meta='{"type":"u-text","data":"teamdatanew","field":"teamname"}'>
+							<div class="u-input-group-before" style="color: red;">
+								*
+							</div>
+							<input type="text" class="u-form-control" placeholder=""  >
+						</div>
+					</div>
+				</div>
+				<div class="u-row">
+					<div class="u-col-md-2 tab-1-name">
+						手机号：
+					</div>
+					<div class="u-col-md-3 ">
+						<div class=" u-has-feedback"
+						u-meta='{"type":"u-text","data":"teamdatanew","field":"phone"}'>
+							<div class="u-input-group-before" style="color: red;">
+								*
+							</div>
+							<input type="text" class="u-form-control" placeholder=""  >
+						</div>
+					</div>
+				</div>
+				<div class="u-row">
+					<div class="u-col-md-2 tab-1-name">
+						工种：
+					</div>
+					<div class="u-col-md-3">
+						<div class="u-combo"
+						u-meta='{"type":"u-combobox","datasource":"jobscopeList","data":"teamdatanew","field":"jobscope","onlySelect":false}'>
+							<div class="u-input-group u-has-feedback">
+								<div class="u-input-group-before" style="color: red;">
+									*
+								</div>
+								<span class="u-form-control-feedback fa fa-angle-down"
+								data-role="combo-button"></span>
+								<input placeholder="请选择工种" class="u-form-control" readonly/>
+							</div>
+						</div>
+
+					</div>
+				</div>
+				<div class="u-row">
+					<div class="u-col-md-2 tab-1-name">
+						接口人：
+					</div>
+					<div class="u-col-md-3 ">
+						<div class="u-combo"
+						u-meta='{"type":"u-combobox","datasource":"ownerList","data":"teamdatanew","field":"owner","onlySelect":false}'>
+							<div class="u-input-group u-has-feedback">
+								<div class="u-input-group-before" style="color: red;">
+									*
+								</div>
+								<span class="u-form-control-feedback fa fa-angle-down"
+								data-role="combo-button"></span>
+								<input placeholder="请选择接口人" class="u-form-control" readonly/>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="u-row">
+					<div class="u-col-md-2 tab-1-name">
+						备注：
+					</div>
+					<div class="u-col-md-3 ">
+						<div class=" u-has-feedback"
+						u-meta='{"type":"u-text","data":"teamdatanew","field":"teammemo"}'>
+							
+							<input type="text" class="u-form-control" placeholder=""  >
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="padding-20">
+				<div class="edit">
+					<div class="padding-top-15">
+						<button id="saveman" class="u-msg-ok u-button u-button-primary bg_blue"
+						data-bind="click: event.saveClick">
+							保存 <span class="u-button-container"></span>
+						</button>
+						<!--<button id="cancelman" class="u-msg-cancel u-button u-button-white"-->
+						<!--data-bind="click: event.cancelClick">取消-->
+						<!--<span class="u-button-container"></span>-->
+						<!--</button>-->
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+</div>

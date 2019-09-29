@@ -1,0 +1,207 @@
+<!-- 页面内容区(HTML片段，不能放置HTML 及 BODY 标签 )-->
+<!-- 若要正常使用实时预览功能，请在首页index.html中添加路由#payment/paymentDetail -->
+<div>
+	<div class="u-container-fluid padding-0" id="paymentDetail">
+		<div class="u-row margin-0 padding-top-0 padding-left-0">
+			<div class="u-col-md-12 u-col-sm-12 u-media-middle margin-0 padding-0">
+				<div class="js_href padding-15 padding-left-20 content-title margin-0">
+					<a href="#/payment/payment" class="c_green c_size_24"> &lt; 订单列表</a>
+					<!--<div id="searchdiv" class="margin-right-10 pull-right  u-has-feedback  input_enter">
+                        <input type="text" class="u-form-control c-sm " id="search"
+                        placeholder="流水号">
+                        <span class="u-form-control-feedback uf uf-search-light-2" id="searchBtn"
+                        data-bind="click: event.searchClick"></span>
+                    </div>-->
+					<div id="searchdiv" class="margin-right-10 pull-right u-has-feedback input_enter">
+						<input type="text" class="u-form-control c-sm" id="search" placeholder="流水号">
+						<span class="uf zoom uf-search-light-2" id="searchBtn" data-bind="click: event.searchClick"></span>
+						<span class="u-form-control-feedback-1  uf-search-light-0 uf uf-close" id="returnBtn"
+							  data-bind="click: event.returnClick"></span>
+					</div>
+					<div class="pull-right">
+						<div class="u-combo">
+							<input type="button" class="margin-right-15 u-button u-button-primary u-buttom-sm bg_blue"
+								   value="删除" data-bind="click: event.deleteClick">
+						</div>
+					</div>
+					<div class="pull-right">
+						<div class="u-combo">
+							<input type="button" class="margin-right-15 u-button u-button-primary u-buttom-sm bg_blue"
+								   value="撤回" data-bind="click: event.recallClick">
+						</div>
+					</div>
+					<div class="pull-right">
+						<div class="u-combo">
+							<input type="button" class="margin-right-15 u-button u-button-primary u-buttom-sm bg_blue"
+								   value="编辑" data-bind="click: event.editClick">
+						</div>
+					</div>
+					<div class="pull-right">
+						<div class="u-combo">
+							<input type="button" class="margin-right-15 u-button u-button-primary u-buttom-sm bg_blue"
+								   value="提交" data-bind="click: event.confirmClick">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="u-row  padding-10 prefilter">
+			<div class="">
+				<div class="u-col-md-2 padding-left-0">
+					<div class="u-combo"
+						 u-meta='{"type":"u-combobox","datasource":"typeList","data":"searchdatanew","field":"type","onlySelect":true}'>
+						<div class="u-input-group u-has-feedback">
+						<span class="u-form-control-feedback fa fa-angle-down"
+							  data-role="combo-button"></span>
+							<input id="searchType" placeholder="账单类型" class="u-form-control" readonly/>
+						</div>
+					</div>
+				</div>
+				<div class="u-col-md-2 ">
+					<div class="u-combo"
+						 u-meta='{"type":"u-combobox","datasource":"statusList","data":"searchdatanew","field":"paymentDetailstate","onlySelect":true}'>
+						<div class="u-input-group u-has-feedback">
+						<span class="u-form-control-feedback fa fa-angle-down"
+							  data-role="combo-button"></span>
+							<input id="searchStatus" placeholder="审核状态"  class="u-form-control" readonly/>
+						</div>
+					</div>
+				</div>
+				<div class="u-col-md-2 ">
+					<div class="u-combo"
+						 u-meta='{"type":"u-combobox","datasource":"timeList","data":"searchdatanew","field":"paymentDetailstate","onlySelect":true}'>
+						<div class="u-input-group u-has-feedback">
+						<span class="u-form-control-feedback fa fa-angle-down"
+							  data-role="combo-button"></span>
+							<input id="searchTime" placeholder="快捷时间"  class="u-form-control" readonly/>
+						</div>
+					</div>
+				</div>
+				<div class="margin-right-20 pull-left">
+					<div class="u-combo">
+						<input type="button" class="margin-right-10 u-button u-button-primary u-buttom-sm bg_blue"
+							   value="过滤" data-bind="click: event.searchClick">
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!--列表展示-->
+		<div class="main-container padding-top-0 contacts-container">
+			<div class="hr-table ">
+				<div class="u-table b-table width-full"
+					 u-meta='{"id":"paymentDetaildata","type":"grid","data":"objdata","columnWidth":"150px","onDblClickFun":"event.selectClick"}'>
+					<div options='{"field":"serialnum","title":"流水号","dataType":"String","editType":"string","renderType":"event.renderTypeAjax"}'></div>
+					<div options='{"field":"auditstate","title":"状态","dataType":"String","editType":"string","renderType":"event.renderStatus"}'></div>
+					<div options='{"field":"type","title":"类型","dataType":"String","editType":"string","renderType":"event.renderType"}'></div>
+					<div options='{"field":"paymoney","title":"金额","dataType":"String","editType":"string"}'></div>
+					<div options='{"field":"auditnote","title":"审核批语","dataType":"String","editType":"string"}'></div>
+					<!-- <div options='{"field":"paidamount","title":"已付金额","dataType":"String","editType":"string"}'></div> -->
+					<!-- <div options='{"field":"totalamount","title":"付款总金额","dataType":"String","editType":"string"}'></div> -->
+					<div options='{"field":"paymenter","title":"付款人","dataType":"String","editType":"string"}'></div>
+					<div options='{"field":"paymentmethod","title":"付款方式","dataType":"String","editType":"string","renderType":"event.renderPayMethod"}'></div>
+					<div options='{"field":"paymenttype","title":"款项类型","dataType":"String","editType":"string","renderType":"event.renderPayType"}'></div>
+					<div options='{"width":"180","field":"paymenttime","title":"付款时间","dataType":"String","editType":"string"}'></div>
+					<!--
+                                    <div options='{"field":"billnote","title":"业务摘要","dataType":"String","editType":"string"}'></div>
+                    -->
+					<div options='{"field":"memo","title":"备注","dataType":"String","editType":"string"}'></div>
+					<!-- <div options='{"field":"modifytime","title":"审核时间","dataType":"String","editType":"string"}'></div>
+                    <div options='{"field":"createtime","title":"创建时间","dataType":"String","editType":"string"}'></div> -->
+				</div>
+			</div>
+			<div id='pagination' class='pagination u-pagination pagination-sm'></div>
+		</div>
+
+		<!--编辑支付-->
+		<div id="dialog_content_payment" class="modal-dialog" style="display:none;">
+			<div class="u-msg-title">
+				<h4>编辑</h4>
+			</div>
+			<HR width="100%" color=#F8F9FB SIZE=3 align="center"/>
+			<div class="u-msg-content payment ">
+				<div class="u-form" id="add-form">
+					<div class="u-col-md-12 form-group" style="line-height: 36px;margin-bottom: 15px;">
+						<div class="u-col-md-3 control-label">
+							<label style="color: red;">*</label>
+							<label>金额</label>
+						</div>
+						<input class="u-col-md-6 u-form-control " type="float" id="paymoney"
+							   u-meta='{"type":"float","data":"objdatanew","field":"paymoney"}'
+							   onkeyup="value=value.replace(/[^\d{1,}\.\d{1,}|\d{1,}]/g,'')"
+							   placeholder="请输入金额"/>
+					</div>
+					<div class="u-col-md-12 form-group" style="line-height: 36px;margin-bottom: 15px;" >
+						<div class="u-col-md-3 control-label">
+							<label style="color: red;">*</label>
+							<label>付款人姓名</label>
+						</div>
+						<input class="u-col-md-6 u-form-control " type="text" id="paymenter"
+							   u-meta='{"type":"string","data":"objdatanew","field":"paymenter"}' placeholder="请输入付款人姓名"/>
+					</div>
+
+					<div class="u-col-md-12 form-group" style="line-height: 36px;margin-bottom: 15px;">
+						<div class="u-col-md-3">
+							<label style="color: red;">*</label>
+							<label>付款方式</label>
+						</div>
+						<div class="u-combo"   style="width: 50%; float: left; "
+							 u-meta='{"type":"u-combobox","datasource":"paymentmethodList","data":"objdatanew","field":"paymentmethod","onlySelect":true}'>
+							<div class="u-input-group u-has-feedback">
+								<span class="u-form-control-feedback fa fa-angle-down"
+									  data-role="combo-button"></span>
+								<input class="u-form-control" placeholder="付款方式" readonly/>
+							</div>
+						</div>
+					</div>
+
+					<div class="u-col-md-12 form-group" style="line-height: 36px;margin-bottom: 15px;">
+						<div class="u-col-md-3">
+							<label style="color: red;">*</label>
+							<label>款项类型</label>
+						</div>
+						<div class="u-combo "  style="width: 50%; float: left;"
+							 u-meta='{"type":"u-combobox","datasource":"moneytypeList","data":"objdatanew","field":"paymenttype","onlySelect":true}'>
+							<div class="u-input-group u-has-feedback">
+								<span class="u-form-control-feedback fa fa-angle-down"
+									  data-role="combo-button"></span>
+								<input  class="u-form-control" placeholder="款项类型" readonly/>
+							</div>
+						</div>
+					</div>
+
+					<div class="u-col-md-12 form-group" style="line-height: 36px;margin-bottom: 15px;">
+						<div class="u-col-md-3 control-label">
+							<label style="color: red;">*</label>
+							<label>付款时间</label>
+						</div>
+						<div class="u-input-group u-has-feedback" style="width: 50%;"
+							 u-meta='{"type":"u-datetime","format":"YYYY-MM-DD h:00:00 a","data":"objdatanew","field":"paymenttime"}'>
+							<input type="text" class="u-form-control" placeholder="选择付款时间"  >
+						</div>
+					</div>
+
+					<div class="u-col-md-12 form-group" style="line-height: 36px;margin-bottom: 15px;" >
+						<div class="u-col-md-3 control-label">
+							<label>备注</label>
+						</div>
+						<textarea class="u-col-md-6 u-form-control " type="text"
+								  u-meta='{"type":"textarea","data":"objdatanew","field":"memo"}' placeholder="备注"
+						></textarea>
+					</div>
+				</div>
+			</div>
+			<div class="u-msg-footer">
+				<button id="savepayment" class="u-msg-ok u-button u-button-primary bg_blue"
+						data-bind="click: event.saveClick">
+					保存并提交 <span class="u-button-container"></span>
+				</button>
+				<button id="cancelpayment" class="u-msg-cancel u-button u-button-white"
+						data-bind="click: event.cancelClick">
+					取消 <span class="u-button-container"></span>
+				</button>
+			</div>
+		</div>
+
+	</div>
+</div>

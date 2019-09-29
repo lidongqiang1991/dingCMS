@@ -1,0 +1,149 @@
+#contract .material .form-group {
+	margin-bottom: 15px;
+	line-height: 36px;
+}
+#contract .material .control-label {
+	text-align: center;
+}
+#contract  .u-combo {
+	float: left;
+	width: 317px;
+}
+#add-form {
+	height: 200px;
+}
+.model_contract .imgDiv .delete {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	width: 50px;
+	height: 50px;
+	display: none;
+}
+
+.model_contract .item,#item_,#item_batch{
+	float: left;
+    padding: 12.5px;
+    position: relative;
+    width:60px;
+    height:60px;
+}
+
+.model_contract .item span {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+    background: rgba(0,0,0,.5);
+    border-radius: 50%;
+    color: #fff;
+    text-align: center;
+    line-height: 12px;
+    z-index: 10;
+    cursor: pointer;
+}
+
+.model_contract  #item_ img,.model_contract  #item_batch img,
+.model_contract #item_ input,.model_contract #item_batch input{
+	width:100%;
+	height:100%;
+	z-index:10;
+	display:inline-block;
+}
+.model_contract  #item_ input,.model_contract #item_batch input{
+	position:absolute;
+	top:0;
+	left:0;
+	z-index:15;
+	opacity: 0;
+	cursor: pointer;
+}
+ .item>a{
+	position: relative;
+	display:inline-block;
+	width: 60px;
+	height:60px;
+	z-index: 7;
+}
+.item_model{
+	width:100%;
+	height:100%;
+	position:absolute;
+	top:0;
+	left:0;
+	display:flex;
+	align-items:center;
+	justify-content: center;
+	z-index:10;
+	overflow:hidden;
+	word-break: break-all;
+	background: #9E9E9C;
+	color:#fff;
+}
+#contract .u-button:active,
+#contract .u-button:focus,
+#contract .u-button:hover{
+	border-right-color: #fff;
+}
+
+#expressMsg{
+	position: absolute;
+	text-align: center;
+	background-color: #FFFFFF;
+	left:calc(50% - 200px);
+	width: 400px;
+	height: 100px;
+	top:250px;
+	padding: 0;
+	border-radius: 2px;
+	will-change: top, opacity;
+	filter: alpha(opacity=1);
+	opacity: 1;
+	filter: alpha(opacity=100) \9;
+	-webkit-transform: scaleX(1);
+	transform: scaleX(1);
+	box-shadow: 0 16px 28px 0 rgba(0, 0, 0, 0.22), 0 25px 55px 0 rgba(0, 0, 0, 0.21);
+	display: none;
+}
+#expressMsg p{
+	font-size: 16px;
+	color: #757575;
+	font-weight: 300;
+	margin-left:20px;
+}
+#expressMsg h4{
+	color: #424242;
+	font-size: 18px;
+	text-shadow: rgba(0, 0, 0, 0.15) 0 0 1px;
+	margin-left:20px;
+	margin-top:10px;
+}
+.upload_area{
+    border:1px dashed #d9d9d9;
+    padding:0;
+    position:relative;
+    cursor:pointer;
+}
+.upload_area:hover{
+    border:1px dashed #589ef8 !important;
+    cursor:pointer;
+}
+.upload_area input{
+    width:100%;
+    height:200px;
+    opacity:0;
+    cursor:pointer;
+}
+.upload{
+    text-align:center;
+    width:400px;height:200px;
+    position:absolute;
+    left:calc(50% - 200px) !important;
+}
+.upload i{
+    color:#c1c4cb;margin-top:50px;
+}
+.upload span{color:#409eff;}
+

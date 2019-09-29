@@ -1,0 +1,20 @@
+package com.yonyou.iuap.system.service;
+
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import com.yonyou.iuap.system.entity.InterfaceLog;
+import com.yonyou.iuap.system.repository.InterfaceLogDao;
+
+@Service
+public class InterfaceLogService {
+	@Autowired
+	private InterfaceLogDao logDao;
+	public String getStartDate(String type,String sender,String receiver){
+		return logDao.getStartDate(type, sender, receiver);
+	}
+	public void save(InterfaceLog log){
+		logDao.save(log);
+	}
+}

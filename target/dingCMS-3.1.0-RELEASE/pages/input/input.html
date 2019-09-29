@@ -1,0 +1,134 @@
+<!-- 列表区域  -->
+<div id="role">
+    <div class="u-container-fluid padding-0">
+
+        <div class="u-row margin-0 padding-0 content-title">
+            <div class="u-col-md-12 u-col-sm-12 u-media-middle margin-0 padding-0">
+                <h3 class="c-title pull-left padding-15 padding-left-20 c_size_28">字典管理</h3>
+                <div class="pull-right padding-15 padding-left-0 padding-right-0">
+                    <div class="pull-right">
+                        <!--<input type="button" class="margin-right-10 u-button u-button-primary bg_blue "
+                               id="" value="查询" data-bind="click: event.searchClick">-->
+                        <!--<input type="button" class="margin-right-10 u-button u-button-primary bg_blue "
+                               id="add_power" value="权限分配" data-bind="click: event.powerClick">-->
+                        <input type="button" class="margin-right-15 u-button u-button-primary bg_blue "
+                               id="add_man" value="添加" data-bind="click: event.addroleClick">
+                        <input type="button" class="margin-right-15 u-button u-button-primary bg_blue "
+                               id="edit_man" value="编辑" data-bind="click: event.editroleClick">
+                        <input type="button" class="margin-right-15 u-button u-button-primary bg_blue "
+                               id="del_man" value="删除" data-bind="click: event.delroleClick">
+                    </div>
+                    <div id="searchdiv" class="margin-right-10 pull-right  u-has-feedback  input_enter" style="display: none;">
+                        <input type="text" class="u-form-control c-sm " id="search"
+                               placeholder="姓名/手机号">
+                        <span class="u-form-control-feedback uf uf-search-light-2" id="searchBtn"
+                              data-bind="click: event.searchClick"></span>
+                        <span class="u-form-control-feedback-1  uf-search-light-0 " id="returnBtn"
+                              data-bind="click: event.returnClick">×</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--role 展示 用户列表 -->
+        <div class="main-container padding-top-0 contacts-container">
+            <div class="hr-table ">
+                <div class="u-table b-table width-full"
+                     u-meta='{"id":"roleDa","type":"grid","data":"roleData","columnWidth":"150px"}'>
+                    <div options='{"field":"type","title":"字典名称","dataType":"String","editType":"string"}'></div>
+                    <div options='{"field":"id","title":"字典编号","dataType":"String","editType":"string"}'></div>
+                    <div options='{"field":"createorname","title":"创建人","dataType":"String","editType":"string"}'></div>
+                    <div options='{"field":"createtime","title":"创建时间","dataType":"String","editType":"string","renderType":"event.renderTypeCreateTime"}'></div>
+                    <div options='{"field":"ts","title":"更新时间","dataType":"String","editType":"string","renderType":"event.renderTypeCreateTime"}'></div>
+                </div>
+            </div>
+            <div id='pagination' class='pagination u-pagination pagination-sm'></div>
+        </div>
+    </div>
+
+
+    <!--user  添加/编辑 选择器 -->
+    <div id="dialog_content_man" class="modal-dialog" style="display:none;">
+        <div class="u-msg-title">
+            <h4>新增</h4>
+        </div>
+        <HR width="100%" color=#F8F9FB SIZE=3 align="center"/>
+        <div class="u-msg-content add-man">
+            <div class="u-form" id="add-form">
+                <div class="u-col-md-12 form-group margin-bottom-20">
+                    <div class="u-col-md-3 control-label">
+                        <label style="color: red;">*</label>
+                        <label>名称</label>
+                    </div>
+                    <input class="u-col-md-9 u-form-control " type="text" id="type"
+                           u-meta='{"type":"string","data":"roleDatanew","field":"rolename"}'
+                           placeholder="请输入名称"
+                    />
+                </div>
+                <div class="u-col-md-12 form-group margin-bottom-20" style="display: none;">
+                    <div class="u-col-md-3 control-label">
+                        <label style="color: red;">*</label>
+                        <label>类型</label>
+                    </div>
+                    <div class="u-col-md-9 u-form-control "  style="padding:0;"
+                         u-meta='{"type":"u-combobox","datasource":"typeList","data":"roleDatanew","field":"inputtype","onlySelect":true}'>
+                        <div class="">
+                            <span class="u-form-control-feedback fa fa-angle-down"
+                                  data-role="combo-button" ></span>
+                            <input placeholder="请选择类型" class="u-form-control" id="inputtype" style="border:0;width:100%;height:100%;background:#fff;" readonly/>
+                        </div>
+                    </div>
+                </div>
+                <div id="values">
+                    <div class="u-col-md-12 form-group margin-bottom-20 value">
+                        <div class="u-col-md-3 control-label">
+                            <label style="color: red;">*</label>
+                            <label>选项</label>
+                        </div>
+                        <div class="u-col-md-8"></div>
+                        <input class="u-col-md-8 u-form-control " type="text" u-meta='{"type":"string","data":"roleDatanew","field":"rolecode"}' placeholder=""/>
+                        <span class="u-col-md-1 uf uf-reduce-c-o font-size-24 cursor-point delValue"></span>
+                    </div>
+                </div>
+                <div class="u-col-md-12 form-group margin-bottom-20">
+                    <div class="u-col-md-3 control-label">
+                        <label class="c_blue" data-bind="click:event.addValueClick" style="cursor:pointer;padding-right:5px;">添加选项</label>
+                        <label><span style="cursor:pointer;" class="uf uf-add-c-o font-size-18 cursor-point c_blue cursor-point" data-bind="click:event.addValueClick"></span>
+                        </label>
+                    </div>
+                    <div class="u-col-md-8"></div>
+                </div>
+            </div>
+        </div>
+        <div class="u-msg-footer">
+            <button id="saveman" class="u-msg-ok u-button u-button-primary bg_blue"
+                    data-bind="click: event.saveFieldClick">保存
+                <span class="u-button-container"></span>
+            </button>
+            <button id="cancelman" class="u-msg-cancel u-button u-button-white"
+                    data-bind="click: event.cancelroleClick">取消
+                <span class="u-button-container"></span>
+            </button>
+
+        </div>
+    </div>
+
+    <!-- 树展示的弹出层  -->
+    <!--<div id="tree-modal" tabindex="-1" role="dialog" style="display:none">
+        <div class="u-msg-title">
+            <h4 class="treetitle" id="tree-title"></h4>
+        </div>
+        <div class="u-msg-content">
+            &lt;!&ndash; <div class="ztree" id="commonTree"></div> &ndash;&gt;
+            <div id="treecom_role" class="ztree"
+                 u-meta='{"id":"commonTree","data":"powerDa","type":"tree","idField":"id","pidField":"parentid","nameField":"funname","setting":"treeSetting"}'></div>
+        </div>
+        <div class="u-msg-footer">
+            <button type="button" id="confirm_select" class="u-button u-button-primary pull-right bg_blue">确定</button>
+            <button type="button" class="u-button button-cancel pull-right margin-right-15" data-bind="click:event.mdClose">
+                取消
+            </button>
+        </div>
+    </div>-->
+</div>
+

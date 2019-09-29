@@ -1,0 +1,693 @@
+package com.ding.cms.repository;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Repository;
+
+import com.alibaba.druid.util.StringUtils;
+import com.ding.cms.entity.BillDeal;
+import com.ding.cms.entity.BillMaterialAllot;
+import com.ding.cms.entity.BillOrderMaterialBody;
+import com.ding.cms.entity.BillService;
+import com.ding.cms.entity.BillServiceProcedure;
+import com.ding.cms.entity.Construction;
+import com.ding.cms.entity.Customer;
+import com.ding.cms.entity.CustomerListEntity;
+import com.ding.cms.entity.House;
+import com.ding.cms.entity.LogService;
+import com.ding.cms.entity.ServiceListEntity;
+import com.ding.cms.service.BillDealService;
+import com.ding.cms.util.Constants;
+import com.ding.cms.util.DateUtils;
+import com.ding.cms.util.SMSYuHongUtil;
+import com.yonyou.iuap.context.InvocationInfoProxy;
+import com.yonyou.iuap.persistence.bs.dao.DAOException;
+import com.yonyou.iuap.persistence.bs.dao.MetadataDAO;
+import com.yonyou.iuap.persistence.jdbc.framework.SQLParameter;
+import com.yonyou.iuap.persistence.jdbc.framework.processor.ArrayListProcessor;
+import com.yonyou.iuap.persistence.jdbc.framework.processor.ColumnListProcessor;
+import com.yonyou.iuap.persistence.jdbc.framework.processor.ColumnProcessor;
+import com.yonyou.iuap.persistence.jdbc.framework.processor.MapProcessor;
+import com.yonyou.iuap.persistence.jdbc.framework.util.FastBeanHelper;
+import com.yonyou.iuap.system.entity.Form;
+import com.yonyou.iuap.system.entity.SysUser;
+import com.yonyou.iuap.system.service.MessageService;
+import com.yonyou.iuap.system.service.OrgService;
+
+@Repository
+public class ServiceDao {
+
+    static final String[] custLAttributes = {"customerid", "name", "phone"};
+
+    static final String[] houseLAttributes = {"houseid", "province", "city", "district", "address"};
+
+    static String tempid = null;
+
+    @Autowired
+    private MetadataDAO metaDao;
+
+    @Autowired
+    private OrgService orgService;
+
+    @Autowired
+    private MessageService messageService;
+    
+    @Autowired
+	private BillDealService dealService;
+
+    @Autowired
+    private com.yonyou.iuap.system.service.LogService logService;
+
+
+    public Page<ServiceListEntity> selectAllByPage(Map<String, Object> searchParams, PageRequest pageRequest) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT bsp.evaluatetime evaluatetime,bd.createtime dealcreatetime,bo.createtime ordercreatetime,bs.*"
+                + " FROM bill_service bs"
+                + " LEFT JOIN bd_customer bc ON bs.customerid = bc.customerid"
+                + " LEFT JOIN bill_deal bd ON bs.dealid = bd.billid"
+                + " LEFT JOIN (SELECT min(createtime) createtime,serviceid FROM bill_order"
+                + " WHERE dr = 0 GROUP BY serviceid ) bo ON bs.billid = bo.serviceid"
+                + " LEFT JOIN (SELECT max(ts) evaluatetime ,billid FROM bill_service_procedure"
+                + " WHERE dr = 0 AND itemname = '客户评价' and state = 2 GROUP BY billid ) bsp ON bsp.billid = bs.billid"
+                + " WHERE bs.dr = 0 ");
+        SQLParameter parameter = new SQLParameter();
+        if (searchParams != null && !searchParams.isEmpty()) {
+            sql.append(" and ");
+            for (Map.Entry<String, Object> entry : searchParams.entrySet()) {
+                String key = entry.getKey();
+                String value = (String) entry.getValue();
+
+                if (value.equals("-1")) {
+                    continue;
+                }
+                if (StringUtils.isEmpty(value)) {
+                    continue;
+                }
+                if ("orgname".equals(key)) {
+                    sql.append(orgService.getTrueDataName(ServiceListEntity.class,value,"bs."));
+                } else if ("agentname".equals(key)) {
+                    sql.append("bs.agentid" + " =? and ");
+                    parameter.addParam(value);
+                } else if ("userstate".equals(key)) {
+                    if (value.equals("0")) {
+                        sql.append(" bs.serverid is null and ");
+                    } else {
+                        sql.append(" bs.serverid is not null and ");
+                    }
+                } else if ("surveystate".equals(key)) {
+                    sql.append("bs." + key + " =? and ");
+                    parameter.addParam(value);
+                } else if ("constructionstate".equals(key)) {
+                    sql.append("bs." + key + " =? and ");
+                    parameter.addParam(value);
+                } else if ("supervisorstate".equals(key)) {
+                    sql.append("bs." + key + " =? and ");
+                    parameter.addParam(value);
+                } else if ("paystate".equals(key)) {
+                    sql.append("bs." + key + " =? and ");
+                    parameter.addParam(Integer.parseInt(value));
+                } else if ("servicestate".equals(key)) {
+                    if (value.equals("0")) {
+                        sql.append("bs." + key + " <= ? and ");
+                        parameter.addParam(Integer.parseInt(value));
+                    }else if (value.equals("9")){
+                    	sql.append("bs." + key + " <> 2 and ");
+                    }else {
+                        sql.append("bs." + key + " = ? and ");
+                        parameter.addParam(Integer.parseInt(value));
+                    }
+                } else if ("searchParam".equals(key)) {
+                    sql.append(" ( bs.vbillcode like ? or bc.NAME like ? or bc.phone like ? ) and ");
+                    parameter.addParam("%" + entry.getValue() + "%");
+                    parameter.addParam("%" + entry.getValue() + "%");
+                    parameter.addParam("%" + entry.getValue() + "%");
+                } else if ("starttime1".equals(key)) {
+                    sql.append("bd.createtime >=? and ");
+                    parameter.addParam(value + " 00:00:00");
+                } else if ("endtime1".equals(key)) {
+                    sql.append("bd.createtime <=? and ");
+                    parameter.addParam(value + " 23:59:59");
+                } else if ("starttime2".equals(key)) {
+                    sql.append("bo.createtime >=? and ");
+                    parameter.addParam(value + " 00:00:00");
+                } else if ("endtime2".equals(key)) {
+                    sql.append("bo.createtime <=? and ");
+                    parameter.addParam(value + " 23:59:59");
+                } else if ("starttime3".equals(key)) {
+                    sql.append("bs.createtime >=? and ");
+                    parameter.addParam(value + " 00:00:00");
+                } else if ("endtime3".equals(key)) {
+                    sql.append("bs.createtime <=? and ");
+                    parameter.addParam(value + " 23:59:59");
+                } else if ("financial".equals(key)) {
+                    sql.append("bs.totalamount>0 and ");
+                } else if (key.equals("orgstate")) { //运营中心结算状态
+                    if (value.equals("1")) {
+                        sql.append("bs." + key + " =? and ");
+                        parameter.addParam(value);
+                    } else {
+                        sql.append("bs." + key + " is null and ");
+                    }
+                } else if (key.equals("agentstate")) {  //运营商结算状态
+                    if (value.equals("1")) {
+                        sql.append("bs." + key + " =? and ");
+                        parameter.addParam(value);
+                    } else {
+                        sql.append("bs." + key + " is null and ");
+                    }
+
+                } else if ("starttime4".equals(key)) { //评价开始时间
+					sql.append("bsp.evaluatetime >=? and ");
+					parameter.addParam(value + " 00:00:00");
+				} else if ("endtime4".equals(key)) { //评价结束时间
+					sql.append("bsp.evaluatetime <=? and ");
+					parameter.addParam(value + " 23:59:59");
+				} else if ("note".equals(key)) { //等待进场项目，在施工项目
+					sql.append("bs.note =? and ");
+					parameter.addParam(value);
+				} 
+            }
+            sql.delete(sql.length() - 4, sql.length());
+            sql.append(orgService.getTrueData(ServiceListEntity.class, "bs."));
+
+        }
+        sql.append(" order by bs.createtime desc ");
+        Page<ServiceListEntity> tempData = metaDao.queryPage(sql.toString(), parameter, pageRequest, ServiceListEntity.class);
+        List<ServiceListEntity> services = tempData.getContent();
+        for (int i = 0; i < services.size(); i++) {
+            String customerid = services.get(i).getCustomerid();
+            String houseid = services.get(i).getHouseid();
+            //补全客户信息
+            if (!StringUtils.isEmpty(customerid)) {
+                Customer cust = metaDao.queryByPK(Customer.class, customerid);
+                if(cust!=null)
+                for (int j = 0; j < custLAttributes.length; j++) {
+                    services.get(i).setAttribute(custLAttributes[j], cust.getAttribute(custLAttributes[j]));
+                }
+            }
+            //补全房屋信息
+            if (!StringUtils.isEmpty(houseid)) {
+                House house = metaDao.queryByPK(House.class, houseid);
+                for (int j = 0; j < houseLAttributes.length; j++) {
+                    services.get(i).setAttribute(houseLAttributes[j], house.getAttribute(houseLAttributes[j]));
+                }
+            }
+            //补全当前进行工序名称 start
+            String sqlForOeder = "select orderid from bill_service_procedure where dr = 0 and billid = '" + services.get(i).getBillid() + "' and orderid is not null group by orderid";
+            List orderList = metaDao.queryForList(sqlForOeder, new ColumnListProcessor());
+            Set<String> set=new HashSet<String>();
+            Set<Date> setts=new HashSet<Date>();
+            if(orderList!=null&&orderList.size()>0){
+            	StringBuilder currentName = new StringBuilder();
+            	StringBuilder currentValue = new StringBuilder();
+            	for(int l = 0 ; l < orderList.size() ; l++){
+            		String orderid = (String)orderList.get(l);
+            		String sq = "select * from bill_service_procedure where dr = 0 and billid = '" + services.get(i).getBillid() + "' and orderid = '"+orderid+"' order by type,ABS(itemorder)";
+            		List<BillServiceProcedure> lists = metaDao.queryByClause(BillServiceProcedure.class, sq);
+            		Pattern pattern = Pattern.compile(".*施工前准备.*");
+            		for (int a = 0; a < lists.size(); a++) {
+            			int state = lists.get(a).getState();
+            			String name = lists.get(a).getItemname();
+            	        Matcher matcher = pattern.matcher(name);
+            			if(matcher.matches()){
+            				String sid=lists.get(a).getBillbid();
+            				String formid=lists.get(a).getFormid();
+            				String sql1="select createtime from sys_form_value where sid='"+sid+"' and formid='"+formid+"' order by createtime asc limit 0,1";
+            				String createtime=metaDao.queryForObject(sql1, new ColumnProcessor());
+            				set.add(createtime);
+            				try {
+								services.get(i).setStartdate(DateUtils.minDateStr(set));
+							} catch (ParseException e) {
+								// TODO 自动生成的 catch 块
+								e.printStackTrace();
+							}
+            				setts.add(lists.get(a).getTs());
+            			}
+            			if(name.equals("客户评价")){
+            				String sql2="SELECT v.value FROM sys_form_value v  LEFT JOIN sys_form_b fb ON v.formbid=fb.formbid WHERE fb.`type`='rate' AND sid='"+lists.get(a).getBillbid()+"'";
+                			List<String> value=metaDao.queryForList(sql2, new ColumnListProcessor());
+                			for (int j = 0; j < value.size(); j++) {
+                				currentValue.append(value.get(j)+"/");
+    						}
+            			}
+            			if (state == 0) {
+            				currentName.append(lists.get(a).getItemname()+"/");
+//            				services.get(i).setCurrentProcedure(name);
+            				break;
+            			} else if (state == 1) {
+            				currentName.append(lists.get(a).getItemname()+"/");
+//            				services.get(i).setCurrentProcedure(name);
+            				break;
+            			} else {
+            				if (a == lists.size() - 1) {
+            					currentName.append("工程已竣工/");
+//            					services.get(i).setCurrentProcedure("工程已竣工");
+            				} else {
+            					continue;
+            				}
+            			}
+            		}
+            	}
+            	services.get(i).setValues(currentValue.toString());
+            	services.get(i).setCurrentProcedure(currentName.toString());
+            }
+            if(services.get(i).getStartdate()==null){
+            	SimpleDateFormat spf=new SimpleDateFormat(DateUtils.YMDHMS_PATTERN);
+            	Date startDate=DateUtils.minDate(setts);
+            	services.get(i).setStartdate(startDate!=null?spf.format(startDate):null);
+            }
+          //补全当前进行工序名称 end
+        }
+        return tempData;
+    }
+
+    public BillService setAllot(String userid, String type, String id, String reason) {
+        BillService service = metaDao.queryByPK(BillService.class, id);
+        String message = null;
+        String phone = null;
+        boolean isNotFinished= isNotFinished(service);
+        SysUser currentUser = (SysUser) InvocationInfoProxy.getExtendAttribute("currentUser");
+        if ("user".equals(type)) {
+            SysUser user = metaDao.queryByPK(SysUser.class, userid);
+            service.setServerid(user.getId());
+            service.setServername(user.getUsername());
+            service.setServerstate(BillService.ALLOTUSER_State_02);
+            createLogService(id, "分配客服", user.getUsername(), currentUser.getId(), currentUser.getUsername());
+            try {
+                phone = user.getUsermobile();
+                message = Constants.MESSAGE_ALLOT_USER;
+                message = message.replace("Vbillcode", service.getVbillcode());
+                SMSYuHongUtil.sendSMS(message, phone);
+                //发送消息
+                messageService.sendMessageWithName("分配客服", user.getId(), user.getUsername(), "您被分配给工程编号为" + service.getVbillcode() + "的客服", "");
+                //记录日志
+                logService.insertlog("工程", "分配客服", user.getUsername() + "被分配给编号：" + service.getVbillcode() + "的客服");
+            } catch (Exception e) {
+                // TODO 自动生成的 catch 块
+                e.printStackTrace();
+            }
+        } else if ("survey".equals(type)) {
+            SysUser user = metaDao.queryByPK(SysUser.class, userid);
+            service.setSurveyid(user.getId());
+            service.setSurveyname(user.getUsername());
+            service.setSurveystate(BillService.ALLOTUSER_State_02);
+            String action = "分配勘察";
+            String result = user.getUsername();
+            if(!StringUtils.isEmpty(reason)){
+            	action = "重新"+action;
+            	result+=",原因："+reason;
+            	if(!isNotFinished)throw new RuntimeException("存在完工订单，无法重新分配");
+            }
+            createLogService(id, action, result, currentUser.getId(), currentUser.getUsername());
+            try {
+                phone = user.getUsermobile();
+                message = Constants.MESSAGE_ALLOT_SURVEY;
+                message = message.replace("Vbillcode", service.getVbillcode());
+                SMSYuHongUtil.sendSMS(message, phone);
+                //发送消息
+                messageService.sendMessageWithName("分配勘察", user.getId(), user.getUsername(), "您被分配给工程编号为" + service.getVbillcode() + "的勘察", "");
+                //记录日志
+                logService.insertlog("工程", action, user.getUsername() + "被分配给编号：" + service.getVbillcode() + "的勘察");
+            } catch (Exception e) {
+                // TODO 自动生成的 catch 块
+                e.printStackTrace();
+            }
+
+        } else if ("construction".equals(type)) {
+            tempid = id;
+            Construction construction = metaDao.queryByPK(Construction.class, userid);
+            service.setConstructionid(construction.getId());
+            service.setConstructionname(construction.getTeamname());
+            service.setConstructionstate(BillService.ALLOTUSER_State_02);
+            String action = "分配工队";
+            String result = construction.getTeamname();
+            if(!StringUtils.isEmpty(reason)){
+            	action = "重新"+action;
+            	result+=",原因："+reason;
+            	if(!isNotFinished)throw new RuntimeException("存在完工订单，无法重新分配");
+            }
+            createLogService(id, action, result, currentUser.getId(), currentUser.getUsername());
+            try {
+                phone = construction.getPhone();
+                message = Constants.MESSAGE_ALLOT_CONSTRUCTION;
+                message = message.replace("Vbillcode", service.getVbillcode());
+                SMSYuHongUtil.sendSMS(message, phone);
+                //发送消息
+                messageService.sendMessageWithName("分配工队", construction.getId(), construction.getTeamname(), "您的工队被分配给工程编号为" + service.getVbillcode() + "的工队", "");
+                //记录日志
+                logService.insertlog("工程", action, construction.getTeamname() + "被分配给编号：" + service.getVbillcode() + "的工队");
+            } catch (Exception e) {
+                // TODO 自动生成的 catch 块
+                e.printStackTrace();
+            }
+            //定时任务
+            (new Thread(new Runnable() {
+                String myid = tempid;
+
+                @Override
+                public void run() {
+                    // TODO 自动生成的方法存根
+                    try {
+                        Thread.sleep(1000 * 60 * 60 * 2);
+                    } catch (InterruptedException e) {
+                        // TODO 自动生成的 catch 块
+                        e.printStackTrace();
+                    }
+                    BillService service = metaDao.queryByPK(BillService.class, myid);
+                    if (service.getConstructionstate().equals(BillService.ALLOTUSER_State_02)) {
+                        changeState(myid, "constructionstate", BillService.ALLOTUSER_State_04);
+                    }
+                }
+            })).start();
+        } else if ("supervisor".equals(type)) {
+            SysUser user = metaDao.queryByPK(SysUser.class, userid);
+            service.setSupervisorid(user.getId());
+            service.setSupervisor(user.getUsername());
+            service.setSupervisorstate(BillService.ALLOTUSER_State_02);
+            service.setServicestate(BillService.SERVICE_STATE_01);
+            BillDeal deal = metaDao.queryByPK(BillDeal.class, service.getDealid());
+            //更改交易状态为已分配
+			deal.setState(BillDeal.DEAL_STATE_03);
+			metaDao.update(deal);
+            String action1 = "分配管家";
+            String action2 = "分配勘察";
+            String result = user.getUsername();
+            if(!StringUtils.isEmpty(reason)){
+            	action1 = "重新"+action1;
+            	action2 = "重新"+action2;
+            	result+=",原因："+reason;
+            	if(!isNotFinished)throw new RuntimeException("存在完工订单，无法重新分配");
+            }
+            createLogService(id, action1, result, currentUser.getId(), currentUser.getUsername());
+            {//分配勘察用于实际操作
+                service.setSurveyid(user.getId());
+                service.setSurveyname(user.getUsername());
+                service.setSurveystate(BillService.ALLOTUSER_State_02);
+                createLogService(id, action2, result, currentUser.getId(), currentUser.getUsername());
+            }
+            try {
+                phone = user.getUsermobile();
+                message = Constants.MESSAGE_ALLOT_SUPERVISOR;
+                message = message.replace("Vbillcode", service.getVbillcode());
+                SMSYuHongUtil.sendSMS(message, phone);
+                //发送消息
+                messageService.sendMessageWithName("分配管家", user.getId(), user.getUsername(), "您被分配给工程编号为" + service.getVbillcode() + "的管家", "");
+                //记录日志
+                logService.insertlog("工程", action1, user.getUsername() + "被分配给工程编号为" + service.getVbillcode() + "的管家");
+            } catch (Exception e) {
+                // TODO 自动生成的 catch 块
+                e.printStackTrace();
+            }
+        }
+        metaDao.update(service);
+        return service;
+    }
+
+    /**
+     * 计划拟定，开工日期，计划工期
+     */
+    public BillService setPlannedDate(String serviceid, String startDate, String plannedDate) {
+        BillService service = metaDao.queryByPK(BillService.class, serviceid);
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = format.parse(startDate);
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(date);
+            cal.add(cal.DATE, Integer.parseInt(plannedDate));
+            String endDate = format.format(cal.getTime());
+            service.setStartdate(startDate);
+            service.setPlanneddate(endDate);
+            metaDao.update(service);
+            serviceChangeToFinish(service);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return service;
+    }
+
+    /**
+     * 根据工程id查询客户、房屋
+     *
+     * @param billid 工程id
+     * @return
+     */
+    public CustomerListEntity selectByBillId(String billid) {
+        String sql = "select bi.*,bd.*,bh.* from bill_service b " 
+        			+" left join  bill_deal  bi on  b.dealid=bi.billid "
+        			+" left  join bd_customer  bd  on  bi.customerid=bd.customerid "
+        			+" left join bd_house bh on bi.houseid=bh.houseid  "
+                + "where b.billid=?";
+        SQLParameter sqlParameter = new SQLParameter();
+        sqlParameter.addParam(billid);
+        List<CustomerListEntity> customers = metaDao.queryByClause(CustomerListEntity.class, sql, sqlParameter);
+        if (customers.size() > 0) {
+            for (int i = 0; i < customers.size(); i++) {
+                String customerid = customers.get(i).getCustomerid();
+                String houseid = customers.get(i).getHouseid();
+                //补全客户信息
+                if (!StringUtils.isEmpty(customerid)) {
+                    Customer cust = metaDao.queryByPK(Customer.class, customerid);
+                    if (cust != null) {
+                        for (int j = 0; j < custLAttributes.length; j++) {
+                            customers.get(i).setAttribute(custLAttributes[j], cust.getAttribute(custLAttributes[j]));
+                        }
+                    }
+                }
+                //补全房屋信息
+                if (!StringUtils.isEmpty(houseid)) {
+                    House house = metaDao.queryByPK(House.class, houseid);
+                    if (house != null) {
+                        for (int j = 0; j < houseLAttributes.length; j++) {
+                            customers.get(i).setAttribute(houseLAttributes[j], house.getAttribute(houseLAttributes[j]));
+                        }
+                    }
+                }
+            }
+            return customers.get(0);
+        }
+        return null;
+    }
+
+    /**
+     * 生成工程服务日志
+     */
+    public void createLogService(String serviceid, String action, String result, String creatorid, String creator) {
+        LogService log = new LogService();
+        log.setServiceid(serviceid);
+        log.setAction(action);
+        log.setResult(result);
+        log.setCreatorid(creatorid);
+        log.setCreator(creator);
+        log.setCreatetime(DateUtils.currentTimestampToString());//创建时间
+        metaDao.insert(log);
+    }
+
+    /**
+     * 工程服务日志列表
+     */
+    public Page<LogService> selectLogByPage(PageRequest pageRequest, Map<String, Object> searchParams) throws DAOException {
+        String sql = " select * from log_service ";
+        StringBuilder sb = new StringBuilder();
+        sb.append(sql);
+        SQLParameter sqlparam = new SQLParameter();
+        if (searchParams.entrySet() != null) {
+            sb.append(" where ");
+            for (Entry<String, Object> key : searchParams.entrySet()) {
+                String column = FastBeanHelper.getColumn(LogService.class, key.getKey());
+                sb.append(column + " = ?  and ");
+                sqlparam.addParam(key.getValue());
+            }
+            sb.delete(sb.length() - 4, sb.length());
+            sb.append(" order by ts desc ");
+        }
+        Page<LogService> page = metaDao.queryPage(sb.toString(), sqlparam, pageRequest, LogService.class);
+        return page;
+    }
+
+
+    /**
+     * 工程物料明细
+     *
+     * @param pageRequest
+     * @param searchParams
+     * @return
+     * @throws DAOException
+     */
+    public Page<BillOrderMaterialBody> selectServiceMaterial(PageRequest pageRequest, Map<String, Object> searchParams) throws DAOException {
+        String sql = "select b.*,bb.vbillcode,bb.product,ma.unit from  bill_order_b2  b left join  bill_order  bb on b.billid=bb.billid left join bd_material ma on b.materialid=ma.id ";
+        StringBuilder sb = new StringBuilder();
+        sb.append(sql);
+        SQLParameter sqlparam = new SQLParameter();
+        if (searchParams.entrySet() != null) {
+            sb.append(" where ");
+            for (Entry<String, Object> key : searchParams.entrySet()) {
+               if("serviceid".equals(key.getKey())){
+                   String column = FastBeanHelper.getColumn(LogService.class, key.getKey());
+                   sb.append(column + " = ?  and ");
+                   sqlparam.addParam(key.getValue());
+               }
+            }
+            sb.delete(sb.length() - 4, sb.length());
+        }
+        Page<BillOrderMaterialBody> page = metaDao.queryPage(sb.toString(), sqlparam, pageRequest, BillOrderMaterialBody.class);
+        if (searchParams.containsKey("type") && !page.hasContent()) {
+            String serviceid = String.valueOf(searchParams.get("serviceid"));
+            changeValue(serviceid, "materialstate", "1");
+        }
+        return page;
+    }
+
+
+    public BillService queryByPK(String Billid) {
+        return metaDao.queryByPK(BillService.class, Billid);
+    }
+
+    /**
+     * 改变值
+     *
+     * @param Billid
+     * @param key
+     * @param value
+     */
+    public void changeValue(String Billid, String key, String value) {
+        BillService service = metaDao.queryByPK(BillService.class, Billid);
+        if (service != null) {
+            String sql = "UPDATE bill_service SET " + key + "='" + value + "' where billid = '" + Billid + "'";
+            metaDao.update(sql);
+        }
+    }
+
+    /**
+     * 改变状态
+     *
+     * @param Billid
+     * @param key
+     * @param value
+     */
+    public void changeState(String Billid, String key, int value) {
+        BillService service = metaDao.queryByPK(BillService.class, Billid);
+        if (service != null) {
+            String sql = "UPDATE bill_service SET " + key + "='" + value + "' where billid = '" + Billid + "'";
+            metaDao.update(sql);
+        }
+    }
+
+    /**
+     * 统计数量
+     * 工队被分配未完工数量(单个)
+     */
+    public Map sum(String constructionid) throws DAOException {
+        String sql = "SELECT COUNT(*) sum FROM bill_service where dr=0 and (servicestate <> 2) and constructionid = ? ";
+        StringBuilder sb = new StringBuilder();
+        sb.append(sql);
+        SQLParameter sqlparam = new SQLParameter();
+        sqlparam.addParam(constructionid);
+        return metaDao.queryForObject(sql, sqlparam, new MapProcessor());
+    }
+
+    /**
+     * 统计数量
+     * 工队被分配未完工数量（全部）
+     */
+    public Map sum() throws DAOException {
+        String sql = "SELECT COUNT(*) sum , constructionid FROM bill_service where dr=0 and (servicestate <> 2)   GROUP BY constructionid";
+        return metaDao.queryForObject(sql, new MapProcessor());
+    }
+
+    /**
+     * 判断工程的分配提示元权限
+     */
+    public Map selectStates(String billid) throws DAOException {
+        String sql = "SELECT * FROM bill_service where dr=0 and  billid = ?";
+        SQLParameter sqlparam = new SQLParameter();
+        sqlparam.addParam(billid);
+        return metaDao.queryForObject(sql, sqlparam, new MapProcessor());
+    }
+
+    /**
+     * 按serviceID查询工序流程
+     */
+    public List<BillServiceProcedure> queryBodyByFK(String billid) {
+        StringBuffer bsql = new StringBuffer();
+        String sql = "select * from bill_service_procedure where dr = 0 and billid = '" + billid + "'";
+        bsql.append(sql);
+        bsql.append(" order by type,ABS(itemorder) ");
+        List<BillServiceProcedure> lists = metaDao.queryByClause(BillServiceProcedure.class, bsql.toString());
+        if (lists != null && lists.size() > 0) {
+            //补全表单编码与表单名称
+            for (BillServiceProcedure procedure : lists) {
+                Form form = metaDao.queryByPK(Form.class, procedure.getFormid());
+                procedure.setAttribute("formcode", form.getFormcode());
+                procedure.setAttribute("formname", form.getFormname());
+            }
+            return lists;
+        }
+        return null;
+    }
+    
+    public BillService queryByDealid(String dealid){
+    	String sql = " select * from bill_service where dr = 0 and dealid = '"+dealid+"' ";
+    	List<BillService> lists = metaDao.queryByClause(BillService.class, sql);
+    	if(lists!=null&&lists.size()>0){
+    		return lists.get(0);
+    	}else{    		
+    		return dealService.createServiceIfNotExist(dealid);
+    	}
+    }
+    
+    /**
+     * 判断工程是否修改为完工状态
+     * 计划拟定，物料调配，施工完成
+     * @param service
+     */
+    public void serviceChangeToFinish(BillService service){
+    	if(service!=null){
+    		String sql1 = "select count(1)  as count from bill_service_procedure where dr=0 and itemid in ( select procedurebid from sys_procedure_b where type='竣工验收' ) and billid='"+service.getBillid()+"' and state=2";
+    		String sql2 = "select count(1)  as count from bill_order where dr=0 and serviceid = '"+service.getBillid()+"'";
+    		Object obj1 = metaDao.queryForObject(sql1, new MapProcessor());
+    		Object obj2 = metaDao.queryForObject(sql2, new MapProcessor());
+    		if(obj1!=null&&obj2!=null){
+    			if(obj1.equals(obj2)){				
+    				if(StringUtils.isEmpty(service.getEnddate())){
+    					service.setEnddate(DateUtils.currentTimestampToString());
+    					metaDao.update(service);			
+    				}			
+    				if(service.getMaterialstate()!=null&&service.getMaterialstate()==1&&!StringUtils.isEmpty(service.getPlanneddate())){
+    					service.setServicestate(BillService.SERVICE_STATE_03);
+    					metaDao.update(service);
+    					dealService.changeFollowUp(service.getBillid());
+    				}
+    			}
+    		}
+    	}
+    }
+    //判断当前是否全部为完工
+    public boolean isNotFinished(BillService billService){
+    	boolean isNotFinished = true;
+    	 String sqlForOeder = "select orderid from bill_service_procedure where dr = 0 and billid = '" + billService.getBillid() + "' and orderid is not null group by orderid";
+         List orderList = metaDao.queryForList(sqlForOeder, new ColumnListProcessor());
+         if(orderList!=null&&orderList.size()>0){
+         	for(int l = 0 ; l < orderList.size() ; l++){
+         		String orderid = (String)orderList.get(l);
+         		String sq = "select * from bill_service_procedure where dr = 0 and billid = '" + billService.getBillid() + "' and orderid = '"+orderid+"' order by type,ABS(itemorder)";
+         		List<BillServiceProcedure> lists = metaDao.queryByClause(BillServiceProcedure.class, sq);
+         		if(lists.get(lists.size()-2).getStatus()==2)
+         			return false;
+         	}
+         }
+         return isNotFinished;
+    }
+}

@@ -1,0 +1,147 @@
+<!-- 页面内容区(HTML片段，不能放置HTML 及 BODY 标签 )-->
+<!-- 若要正常使用实时预览功能，请在首页index.html中添加路由#audit/audit -->
+<div id="financialAudit">
+	<div class="u-row margin-0 padding-20 padding-top-0 padding-left-0">
+		<div class="ec-search u-col-md-12 u-col-sm-12 u-media-middle margin-0 padding-0">
+			<h3 class="c-title pull-left padding-24 padding-left-20 c_size_32">销售业绩记录</h3>
+			<div class="pull-right padding-24 padding-left-0 padding-right-0">
+				<div id="searchdiv" class="margin-right-10 pull-right  u-has-feedback  input_enter">
+					<input type="text" class="u-form-control c-sm " id="search" placeholder="销售姓名">
+					<span class="u-form-control-feedback uf uf-search-light-2" id="searchBtn" data-bind="click: event.searchClick"></span>
+					<span class="u-form-control-feedback-1  uf-search-light-0 " id="returnBtn" data-bind="click: event.returnClick">×</span>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="u-row  padding-20  padding-top-0">
+		<div class="u-col-md-11 u-row pull-left">
+			<div class="u-col-md-2">
+				<div class="u-combo"
+				u-meta='{"type":"u-combobox","datasource":"performancetypeList","data":"searchdatanew","field":"performancetype","onlySelect":true}'>
+					<div class="u-input-group u-has-feedback">
+						<span class="u-form-control-feedback fa fa-angle-down" data-role="combo-button"></span>
+						<input id="searchType" placeholder="业绩类型" class="u-form-control" readonly/>
+					</div>
+				</div>
+			</div>
+			<div class="u-col-md-2">
+				<div class="u-combo"
+				u-meta='{"type":"u-combobox","datasource":"statusList","data":"searchdatanew","field":"performancestatus","onlySelect":true}'>
+					<div class="u-input-group u-has-feedback">
+						<span class="u-form-control-feedback fa fa-angle-down" data-role="combo-button"></span>
+						<input id="searchStatus" placeholder="审核状态"  class="u-form-control" readonly/>
+					</div>
+				</div>
+			</div>
+			<div class="u-col-md-2" id="time">
+				<div class="u-combo"
+				u-meta='{"type":"u-combobox","datasource":"timeList","data":"searchdatanew","field":"timeslot","onlySelect":true}'>
+					<div class="u-input-group u-has-feedback">
+						<span class="u-form-control-feedback fa fa-angle-down"
+						data-role="combo-button"></span>
+						<input id="searchTime" placeholder="业绩时间"  class="u-form-control" readonly/>
+					</div>
+				</div>
+			</div>
+			<div class="u-col-md-2" id="starttime">
+			    <div class="">
+                    <div class="u-input-group u-has-feedback"
+                         u-meta='{"type":"u-date","data":"searchdatanew","field":"startTime"}'>
+                        <input type="text" class="u-form-control" placeholder="筛选开始日期" style="background:#fff;padding-right:0;"  >
+                    </div>
+                </div>
+			</div>
+			<div class="u-col-md-2" id="endtime">
+                <div class="">
+                    <div class="u-input-group u-has-feedback"
+                         u-meta='{"type":"u-date","data":"searchdatanew","field":"endTime"}'>
+                        <input type="text" class="u-form-control" placeholder="筛选结束日期" style="background:#fff;padding-right:0;"  >
+                    </div>
+                </div>
+            </div>
+			<div class="u-col-md-2">
+				<div class="u-combo">
+					<input type="button" class="margin-right-10 u-button u-button-primary u-buttom-sm bg_blue"
+					  value="过滤" data-bind="click: event.searchClick">
+				</div>
+			</div>
+		</div>
+		<div class="u-col-md-1 margin-right-20 pull-right">
+			<input type="button" class="margin-right-10 u-button u-button-primary u-buttom-sm bg_blue"
+			  value="业绩审核" data-bind="click: event.addClick">
+		</div>
+	</div>
+
+	<!--列表展示-->
+	<div class="main-container padding-20 padding-top-0 contacts-container">
+		<div class="hr-table ">
+			<div class="u-table b-table width-full"
+			u-meta='{"id":"auditdata","type":"grid","data":"objdata","columnWidth":"150px","onDblClickFun":"event.selectClick"}'>
+				<div options='{"field":"referrer","title":"销售姓名","dataType":"String","editType":"string"}'></div>
+				<div options='{"field":"performancetype","title":"业绩类型","dataType":"String","editType":"string","renderType":"event.renderPerformancetype"}'></div>
+				<div options='{"field":"rewardName","title":"业绩明细","dataType":"String","editType":"string"}'></div>
+				<div options='{"field":"customerName","title":"客户姓名","dataType":"String","editType":"string"}'></div>
+				<div options='{"field":"phone","title":"客户手机号","dataType":"String","editType":"string"}'></div>
+				<div options='{"field":"performancestatus","title":"业绩审核状态","dataType":"String","editype":"string","renderType":"event.renderStatus"}'></div>
+				<div options='{"field":"performancetime","title":"业绩记录时间","dataType":"String","editType":"string","renderType":"event.renderDatetime"}'></div>
+				<div options='{"field":"performanceremark","title":"审批批语","dataType":"String","editType":"string"}'></div>
+			</div>
+		</div>
+		<div id='pagination' class='pagination u-pagination pagination-sm'></div>
+	</div>
+</div>
+
+<!--审核-->
+<div id="dialog_content_audit" class="modal-dialog" style="display:none;">
+	<div class="u-msg-title">
+		<h4>业绩审核</h4>
+	</div>
+	<HR width="100%" color=#F8F9FB SIZE=3 align="center"/>
+	<div class="u-msg-content  audit ">
+		<div class="u-form" id="add-form">
+			<div class="u-col-md-12 form-group" style="line-height: 36px;margin-bottom: 15px;">
+				<div class="u-col-md-3 control-label">
+					<label style="color: red;">*</label>
+					<label>业绩明细</label>
+				</div>
+				<input class="u-col-md-6 u-form-control " type="text" id="paymoney" style="border: 0"
+				u-meta='{"type":"string","data":"objdatanew","field":"rewardName"}'
+				placeholder="请输入金额"/>
+			</div>
+			<div class="u-col-md-12 form-group"  style="line-height: 36px;margin-bottom: 15px;">
+				<div class="u-col-md-3 control-label">
+					<label style="color: red;">*</label>
+					<label>审核</label>
+				</div>
+				<div class="u-col-md-3 control-label">
+					<label class="u-radio" for="option-2">
+						<input type="radio"  checked="checked" id="option-2" class="u-radio-button"  name="auditstate" value="1">
+						<span class="u-radio-label">通过</span> </label>
+				</div>
+				<div class="u-col-md-3 control-label">
+					<label class="u-radio" for="option-3">
+						<input type="radio" id="option-3" class="u-radio-button"  name="auditstate" value="2">
+						<span class="u-radio-label">未通过</span> </label>
+				</div>
+			</div>
+			<div class="u-col-md-12 form-group"  style="line-height: 36px;margin-bottom: 15px;">
+				<div class="u-col-md-3 control-label">
+					<label>审核批语</label>
+				</div>
+				<input class="u-col-md-6 u-form-control " type="text" id="auditnote"
+				u-meta='{"type":"string","data":"objdatanew","field":"performanceremark"}'/>
+			</div>
+		</div>
+	</div>
+	<div class="u-msg-footer">
+		<button id="saveaudit" class="u-msg-ok u-button u-button-primary bg_blue"
+		data-bind="click: event.saveClick">
+			提交 <span class="u-button-container"></span>
+		</button>
+		<button id="cancelaudit" class="u-msg-cancel u-button u-button-white"
+		data-bind="click: event.cancelClick">
+			取消 <span class="u-button-container"></span>
+		</button>
+	</div>
+
+</div>

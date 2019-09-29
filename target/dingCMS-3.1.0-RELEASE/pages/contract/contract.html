@@ -1,0 +1,687 @@
+<!-- 若要正常使用实时预览功能，请在首页index.html中添加路由#message/message -->
+<!--<link rel="stylesheet" type="text/css" href="vendor/dropzone/dropzone.css">-->
+<!--<script type="text/javascript" src="vendor/dropzone/dropzone.js"></script>-->
+<div class="u-container-fluid  padding-0" id="contract">
+    <div class="u-row margin-0 padding-0 content-title">
+        <div class="ec-search u-col-md-12 u-col-sm-12 u-media-middle margin-0 padding-0">
+            <h3 class="c-title pull-left padding-15 padding-left-20 c_size_28">合同列表</h3>
+            <div class="pull-right padding-15 padding-left-0 padding-right-0">
+                <div id="searchdiv" class="margin-right-10 pull-right u-has-feedback input_enter">
+                    <input type="text" class="u-form-control c-sm" style="width:190px;" id="search" placeholder="编号/姓名/手机号/工队">
+                    <span class="uf zoom uf-search-light-2" id="searchBtn" data-bind="click: event.searchClick"></span>
+                    <span class="u-form-control-feedback-1  uf-search-light-0 uf uf-close" id="returnBtn"
+                          data-bind="click: event.returnClick"></span>
+                </div>
+                <!-- 修改合同按钮事件 -->
+                <div class="pull-right padding-0">
+                    <input type="button" class="margin-right-15 u-button u-button-primary bg_blue" value=" 修改 " data-bind="click: event.modifyClick">
+                    <input type="button" class="margin-right-15 u-button u-button-primary bg_blue" value="批量上传" data-bind="click: event.BatchUploadClick">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 筛选 -->
+    <div style="display: none;" class="u-row  margin-0 padding-10 prefilter">
+        <!-- 运营中心 -->
+        <div class="u-col-md-2">
+            <div class="combobox" id="combobox_orgname"
+                 u-meta='{"type":"u-combobox","datasource":"orgnameList","data":"searchdatanew","field":"orgname","onlySelect":true}'>
+                <div class="u-input-group u-has-feedback">
+					<span class="u-form-control-feedback fa fa-angle-down"
+                          data-role="combo-button"></span>
+                    <input id="searchType" placeholder="运营中心" class="u-form-control" readonly/>
+                </div>
+            </div>
+        </div>
+        <!-- 区域运营商 -->
+        <div class="u-col-md-2 u-col-xs-3 " style="">
+            <div class=" u-form-control " id="combobox_agentname" style="padding:0;"
+                 u-meta='{"type":"u-combobox","datasource":"agentnameList","data":"searchdatanew","field":"agentname","onlySelect":true}'>
+                <div class="c_rela">
+					<span class="u-form-control-feedback fa fa-angle-down"
+                          data-role="combo-button" data-bind=""></span>
+                    <input placeholder="运营商" class="u-form-control"
+                           style="border:0;width:100%;height:32px;background:#fff;" readonly/>
+                </div>
+            </div>
+        </div>
+        <!--时间刷选-->
+        <div class="u-col-md-2">
+            <div id="startTime"
+                 u-meta='{"type":"u-date","data":"searchdatanew","field":"startTime"}'>
+                <input type="text" class="u-form-control" placeholder="开始日期" style="background:#fff;padding-right:0;">
+            </div>
+        </div>
+        <div class="u-col-md-2 ">
+            <div id="endTime"
+                 u-meta='{"type":"u-date","data":"searchdatanew","field":"endTime"}'>
+                <input type="text" class="u-form-control" placeholder="截止日期" style="background:#fff;padding-right:0;">
+            </div>
+        </div>
+        <!--工程状态-->
+        <div class="u-col-md-2  u-col-xs-3 " style="">
+            <div class=" u-form-control " style="padding:0;"
+                 u-meta='{"type":"u-combobox","datasource":"projectList","data":"searchdatanew","field":"servicestate","onlySelect":true}'>
+                <div class="c_rela">
+					<span class="u-form-control-feedback fa fa-angle-down"
+                          data-role="combo-button"></span>
+                    <input placeholder="工程状态" class="u-form-control"
+                           style="border:0;width:100%;height:32px;background:#fff;" readonly/>
+                </div>
+            </div>
+        </div>
+        <!-- 按钮事件 -->
+        <div class="u-col-md-1 padding-0" style="line-height: 34px;">
+            <input type="button" class="margin-left-15 u-button u-button-primary bg_blue"
+                   value="过滤" data-bind="click: event.filterClick">
+        </div>
+        <div class="u-col-md-1 padding-0" style="line-height: 34px;">
+            <input type="button" class="margin-right-15 u-button u-button-primary bg_blue"
+                   value="重置" data-bind="click: event.resetClick">
+        </div>
+        <div class="u-col-md-12 margin-top-15 padding-0">
+            <!--合同状态-->
+            <div class="u-col-md-2  u-col-xs-3 " style="">
+                <div class=" u-form-control " style="padding:0;"
+                     u-meta='{"type":"u-combobox","datasource":"contractstateList","data":"searchdatanew","field":"contractstate","onlySelect":true}'>
+                    <div class="c_rela">
+					<span class="u-form-control-feedback fa fa-angle-down"
+                          data-role="combo-button"></span>
+                        <input placeholder="合同状态" class="u-form-control"
+                               style="border:0;width:100%;height:32px;background:#fff;" readonly/>
+                    </div>
+                </div>
+            </div>
+            <!-- 发票状态 -->
+            <div class="u-col-md-2  u-col-xs-3 " style="">
+                <div class=" u-form-control " style="padding:0;"
+                     u-meta='{"type":"u-combobox","datasource":"invoicestateList","data":"searchdatanew","field":"invoicestate","onlySelect":true}'>
+                    <div class="c_rela">
+					<span class="u-form-control-feedback fa fa-angle-down"
+                          data-role="combo-button"></span>
+                        <input placeholder="发票状态" class="u-form-control"
+                               style="border:0;width:100%;height:32px;background:#fff;" readonly/>
+                    </div>
+                </div>
+            </div>
+            <!-- 保单状态 -->
+            <div class="u-col-md-2  u-col-xs-3 " style="">
+                <div class=" u-form-control " style="padding:0;"
+                     u-meta='{"type":"u-combobox","datasource":"policystateList","data":"searchdatanew","field":"policystate","onlySelect":true}'>
+                    <div class="c_rela">
+					<span class="u-form-control-feedback fa fa-angle-down"
+                          data-role="combo-button"></span>
+                        <input placeholder="保单状态" class="u-form-control"
+                               style="border:0;width:100%;height:32px;background:#fff;" readonly/>
+                    </div>
+                </div>
+            </div>
+            <!-- 竣工单状态 -->
+            <div class="u-col-md-2  u-col-xs-3 " style="">
+                <div class=" u-form-control " style="padding:0;"
+                     u-meta='{"type":"u-combobox","datasource":"completionformstateList","data":"searchdatanew","field":"completionformstate","onlySelect":true}'>
+                    <div class="c_rela">
+					<span class="u-form-control-feedback fa fa-angle-down"
+                          data-role="combo-button"></span>
+                        <input placeholder="竣工单状态" class="u-form-control"
+                               style="border:0;width:100%;height:32px;background:#fff;" readonly/>
+                    </div>
+                </div>
+            </div>
+            <!-- 付款状态 -->
+            <div class="u-col-md-2  u-col-xs-3 " style="">
+                <div class=" u-form-control " style="padding:0;"
+                     u-meta='{"type":"u-combobox","datasource":"payList","data":"searchdatanew","field":"paystate","onlySelect":true}'>
+                    <div class="c_rela">
+					<span class="u-form-control-feedback fa fa-angle-down"
+                          data-role="combo-button"></span>
+                        <input placeholder="付款状态" class="u-form-control"
+                               style="border:0;width:100%;height:32px;background:#fff;" readonly/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!--高级筛选器-->
+    <div id="appFilter" class="filter-container padding-20 bg_white">
+        <div class="filter-container bg_white c_flex">
+            <div class="filter-scene">
+                场景：
+                <el-select size="small" v-model="scene" @visible-change="sceneChange" placeholder="请选择">
+                    <el-option
+                            v-for="item in scenelist"
+                            :key="item.id"
+                            :label="item.filtername"
+                            :value="item.id">
+                        <block v-if="item.id">
+                            <span style="float: left">{{ item.filtername}}</span>
+                            <span class="c_blue c_pointer" style="float: right; font-size: 13px" @click.stop="editSceneClick(item)">
+								<i class="el-icon-edit"></i>
+							</span>
+                            <span class="c_blue c_pointer" style="float: right; font-size: 13px;margin-right: 15px;" @click.stop="delSceneClick(item)">
+								<i class="el-icon-delete"></i>
+							</span>
+                        </block>
+                        <block v-else>
+                            <div class="">{{ item.filtername}}</div>
+                        </block>
+                    </el-option>
+                </el-select>
+            </div>
+            <div class="filter-f c_flex c_item_center margin-left-25 c_blue c_pointer" @click="onFilterClick">
+                <i class="fa fa-filter"></i>高级筛选
+            </div>
+        </div>
+        <div class="bg_white">
+            <div class="c_flex c_item_center">
+                <div class="show-filter c_flex c_item_center c_between" v-for="(item,i) in filters.id_filterfactor" :key="i" v-if="item.field">
+                    <div>
+                        {{item.showname}}
+                        <span v-if="item.formtype=='date'">
+							 {{item.start}} -- {{item.end}}
+						</span>
+                        <span v-else>
+							 {{item.conditionName }} {{item.valueName||item.value}}
+						</span>
+                    </div>
+                    <div class="show-filter-close c_pointer" @click="delFilterClick(item,i)">
+                        <i class="el-icon-close"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--场景设置-->
+        <el-dialog
+                title="高级筛选"
+                :visible.sync="filters_temp.visible"
+                width="50%"
+                :before-close="closeFilterClick">
+            <div v-show="filters_temp.isEdit" class="margin-bottom-10">
+                <span>场景名称</span>
+                <el-input size="small" class="margin-top-10" v-model="filters_temp.filtername" placeholder="请完善场景名称"></el-input>
+            </div>
+            <span class="">筛选条件</span>
+            <div class="filter-list margin-top-10">
+                <div class="filter-group c_flex c_item_center margin-top-10" v-for="(item,i) in filters_temp.id_filterfactor" :key="i">
+                    <el-select size="small" v-model="item.field" @change="fieldChange(item,i)" placeholder="请选择要筛选的字段名">
+                        <el-option
+                                v-for="listItem in list"
+                                :key="listItem.field"
+                                :label="listItem.showname"
+                                :value="listItem.field">
+                        </el-option>
+                    </el-select>
+                    <el-select size="small" v-show="item.formtype!='date'" class="margin-left-10" v-model="item.conditions" @change="conditionsChange(item)" placeholder="请选择条件">
+                        <el-option
+                                v-for="conditionItem in item.conditionlist"
+                                :key="conditionItem.id"
+                                :label="conditionItem.name"
+                                :value="conditionItem.id">
+                        </el-option>
+                    </el-select>
+                    <div class="margin-left-10">
+                        <!--<div v-if="(item.formtype=='selects'||item.formtype=='org'||item.formtype=='agent')&&(item.conditions=='contain'||item.conditions=='no_contain')">-->
+                        <div v-if="item.conditions=='contain'||item.conditions=='no_contain'">
+                            <el-select size="small" @change="dateChange(item)" v-model="item.value" multiple placeholder="请选择筛选条件">
+                                <el-option
+                                        v-for="setItem in item.setting"
+                                        :key="setItem.value"
+                                        :label="setItem.name"
+                                        :value="setItem.value">
+                                </el-option>
+                            </el-select>
+                        </div>
+                        <div v-else-if="item.formtype=='select'||item.formtype=='selects'||item.formtype=='org'||item.formtype=='agent'">
+                            <el-select size="small" v-model="item.value" @change="dateChange(item)"  placeholder="请选择筛选条件">
+                                <el-option
+                                        v-for="setItem in item.setting"
+                                        :key="setItem.value"
+                                        :label="setItem.name"
+                                        :value="setItem.value">
+                                </el-option>
+                            </el-select>
+                        </div>
+                        <div v-else-if="item.formtype=='date'">
+                            <el-date-picker
+                                    size="small"
+                                    v-model="item.value"
+                                    type="daterange"
+                                    value-format="yyyy-MM-dd"
+                                    @change="dateChange(item)"
+                                    range-separator="至"
+                                    start-placeholder="开始日期"
+                                    end-placeholder="结束日期">
+                            </el-date-picker>
+                        </div>
+                        <div class="" v-else>
+                            <el-input size="small" v-model="item.value" placeholder="请选择筛选条件"></el-input>
+                        </div>
+                    </div>
+                    <div class="margin-left-10 c_pointer" @click="delFilterClick(item,i)">
+                        <i class="el-icon-error"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="filter-opera">
+                <div v-show="filters_temp.isError" class="c_red c_pointer margin-top-10">
+                    <i class="el-icon-warning c_red"></i> 筛选条件中有重复项
+                </div>
+                <div class="c_blue c_pointer margin-top-10" style="display: inline-block;" @click="addFilterClick">
+                    <i class="el-icon-plus"></i> 添加筛选条件
+                </div>
+                <div v-show="!filters_temp.isEdit" class="margin-top-10 c_flex c_item_center">
+                    <el-checkbox v-model="filters_temp.checked">保存为场景</el-checkbox>
+                    <el-input size="small" class="margin-left-15" v-show="filters_temp.checked" v-model="filters_temp.filtername" placeholder="请输入场景名称，最多10个字符"  maxlength="10" style="max-width: 250px;"></el-input>
+                </div>
+            </div>
+            <span slot="footer" class="dialog-footer">
+				<el-button size="small" @click="closeFilterClick">取 消</el-button>
+				<el-button size="small" type="primary" @click="saveFilterClick">确 定</el-button>
+			</span>
+        </el-dialog>
+
+        <!--管理-->
+        <!--<el-dialog title="高级筛选"-->
+        <!--:visible.sync="filters_temp.visible"-->
+        <!--width="50%"-->
+        <!--:before-close="closeFilterClick">-->
+        <!--<el-transfer v-model="value" :data="data"></el-transfer>-->
+        <!--<span slot="footer" class="dialog-footer">-->
+        <!--<el-button size="small" @click="closeFilterClick">取 消</el-button>-->
+        <!--<el-button size="small" type="primary" @click="saveFilterClick">确 定</el-button>-->
+        <!--</span>-->
+        <!--</el-dialog>-->
+    </div>
+
+
+    <!--<form action="/upload-target" class="dropzone"></form>-->
+    <!-- contract 合同管理 展示列表 -->
+    <div class="expressDiv main-container padding-top-0 contacts-container" style="margin-top:0 !important;">
+        <div class="hr-table ">
+            <div class="u-table b-table width-full" id="table_contract"
+                 u-meta='{"id":"contractdata","type":"grid","data":"contractDa","columnWidth":"150px",
+                 "onRowFocus":"event.funClick",
+                 "canSaveSet":true,
+			     "onSaveSetFun":"event.onSaveSetFun"
+                 }'>
+                <!--<div options='{"field":"name","title":"客户姓名","dataType":"String","editType":"string","renderType":"event.toContractDetail"}'></div>-->
+                <!--<div options='{"field":"phone","title":"客户手机号","dataType":"String","editType":"string"}'></div>-->
+                <!--<div options='{"field":"servicecode","title":"工程编号","dataType":"String","editType":"string"}'></div>-->
+                <!--<div options='{"field":"contractcode","title":"合同编号","dataType":"String","editType":"string"}'></div>-->
+                <!--&lt;!&ndash;<div options='{"field":"paymoney","title":"合同总金额","dataType":"String","editType":"string"}'></div>&ndash;&gt;-->
+                <!--<div options='{"field":"invoicestate","title":"发票","dataType":"String","editType":"string"}'></div>-->
+                <!--<div options='{"field":"picc","title":"保单号","dataType":"String","editType":"string"}'></div>-->
+                <!--<div options='{"field":"totalamount","title":"合同总金额","dataType":"String","editType":"string"}'></div>-->
+                <!--<div options='{"field":"paidamount","title":"已支付金额","dataType":"String","editType":"string"}'></div>-->
+                <!--<div options='{"field":"constructionname","title":"施工工队","dataType":"String","editType":"string"}'></div>-->
+                <!--<div options='{"field":"agentname","title":"所属区域运营商","dataType":"String","editType":"string"}'></div>-->
+                <!--<div options='{"field":"contractdocunum","title":"合同邮寄单据号","dataType":"String","editType":"string","renderType":"event.toWaybill"}'></div>-->
+                <!--<div options='{"field":"invoicedocunum","title":"发票邮寄单据号","dataType":"String","editType":"string","renderType":"event.toWaybill"}'></div>-->
+                <!--<div options='{"field":"policydocunum","title":"保单邮寄单据号","dataType":"String","editType":"string","renderType":"event.toWaybill"}'></div>-->
+                <!--<div options='{"field":"contractphoto","title":"合同文件","dataType":"String","editType":"string","renderType":"event.UPType"}'></div>-->
+                <!--<div options='{"field":"contractmailstate","title":"合同邮寄","dataType":"String","editType":"string"}'></div>-->
+                <!--<div options='{"field":"invoicephoto","title":"发票文件","dataType":"String","editType":"string","renderType":"event.UPType"}'></div>-->
+                <!--<div options='{"field":"invoicemailstate","title":"发票邮寄","dataType":"String","editType":"string"}'></div>-->
+                <!--<div options='{"field":"policyphoto","title":"保单文件","dataType":"String","editType":"string","renderType":"event.UPType"}'></div>-->
+                <!--<div options='{"field":"policymailstate","title":"保单邮寄","dataType":"String","editType":"string"}'></div>-->
+                <!--<div options='{"field":"contractelecvers","title":"竣工单文件","dataType":"String","editType":"string","renderType":"event.UPType"}'></div>-->
+                <!--<div options='{"field":"createtime","title":"创建时间","dataType":"date","editType":"date"}'></div>-->
+            </div>
+        </div>
+        <div id='pagination' class='pagination u-pagination pagination-sm'></div>
+    </div>
+    <!-- footer 按钮	-->
+    <div class="u-row" style="line-height:34px;margin-left:15px;">
+        <!--
+        <div class="u-button-group">
+                    <button class="u-button u-button-primary u-button-round bg_gray">
+                        打印法务审核表格
+                    </button>
+        </div>-->
+
+        <div class="u-button-group margin-bottom-0">
+            <button class="u-button u-button-primary u-button-pill-left u-button-round bg_blue "
+                    data-bind="click: event.SendContractClick">
+                合同文件
+            </button>
+            <button class="u-button u-button-primary u-button-pill-right u-button-squared bg_blue "
+                    data-bind="click: event.contracteditClick">
+                邮寄合同
+            </button>
+        </div>
+        <div class="u-button-group margin-bottom-0">
+            <button class="u-button u-button-primary u-button-pill-left u-button-round bg_blue "
+                    data-bind="click: event.SendInvoiceClick">
+                发票文件
+            </button>
+            <button class="u-button u-button-primary u-button-pill-right u-button-squared bg_blue "
+                    data-bind="click: event.invoiceeditClick">
+                邮寄发票
+            </button>
+        </div>
+        <div class="u-button-group margin-bottom-0">
+            <button class="u-button u-button-primary u-button-pill-left u-button-round bg_blue "
+                    data-bind="click: event.SendPolicyClick">
+                保单文件
+            </button>
+            <button class="u-button u-button-primary u-button-pill u-button-round bg_blue "
+                    data-bind="click: event.policyAddClick">
+                录入保单号
+            </button>
+            <button class="u-button u-button-primary u-button-pill-right u-button-squared bg_blue "
+                    data-bind="click: event.policyeditClick">
+                邮寄保单
+            </button>
+        </div>
+        <div class="u-button-group margin-bottom-0">
+            <button class="u-button u-button-primary u-button-round bg_blue "
+                    data-bind="click: event.contractelecverseditClick">
+                竣工单文件
+            </button>
+        </div>
+    </div>
+
+
+    <!-- 邮寄合同 -->
+    <div id="dialog_content_contract" class="modal-dialog" style="display:none;">
+        <div class="u-msg-title">
+            <h4>邮寄合同</h4>
+        </div>
+        <HR width="100%" color=#F8F9FB SIZE=3 align="center"/>
+        <div class="u-msg-content add-man" id="add-form">
+            <div class="u-form material">
+                <!-- <div class="u-col-md-12 form-group">
+                    <div class="u-col-md-3 control-label">
+                        <label style="color: red;">*</label>
+                        <label>是否已邮寄</label>
+                    </div>
+                    <input type="checkbox" class="u-checkbox-input" id="send_contract"
+                    class="u-checkbox" u-meta='{"data":"contractDaNew","field":"contractmailstate","type":"checkbox"}'>
+                    <input class="u-col-md-6 u-form-control" type="checkbox"   ,"checkedValue":"Y","unCheckedValue":"N"
+                    u-meta='{"type":"string","data":"contractDaNew","field":"contractmailstate"}'/>
+                </div> -->
+                <div class="u-col-md-12 form-group">
+                    <div class="u-col-md-3 control-label">
+                        <label style="color: red;">*</label>
+                        <label>邮寄单据号</label>
+                    </div>
+                    <input class="u-col-md-6 u-form-control " type="text"
+                           u-meta='{"type":"string","data":"contractDaNew","field":"contractdocunum"}'
+                           placeholder="请输入单据号"/>
+                </div>
+            </div>
+        </div>
+        <div class="u-msg-footer">
+            <button id="savematerial" class="u-msg-ok u-button u-button-primary bg_blue"
+                    data-bind="click: event.saveContractClick">
+                保存 <span class="u-button-container"></span>
+            </button>
+            <button id="cancelmaterial" class="u-msg-cancel u-button u-button-white"
+                    data-bind="click: event.cancelManClick">
+                取消 <span class="u-button-container"></span>
+            </button>
+
+        </div>
+    </div>
+
+    <!-- 邮寄发票 -->
+    <div id="dialog_content_invoice" class="modal-dialog" style="display:none;">
+        <div class="u-msg-title">
+            <h4>邮寄发票</h4>
+        </div>
+        <HR width="100%" color=#F8F9FB SIZE=3 align="center"/>
+        <div class="u-msg-content add-man" id="add-form_invoice">
+            <div class="u-form material">
+                <!-- <div class="u-col-md-12 form-group">
+                    <div class="u-col-md-3 control-label">
+                        <label style="color: red;">*</label>
+                        <label>是否已邮寄</label>
+                    </div>
+                    <input type="checkbox" class="u-checkbox-input" id="send_invoice"
+                    class="u-checkbox" u-meta='{"data":"invoiceDaNew","field":"invoicemailstate","type":"checkbox"}'>
+
+                    <input class="u-col-md-6 u-form-control" type="checkbox" id="check"
+                    u-meta='{"type":"string","data":"invoiceDaNew","field":"invoicemailstate"}'/>
+
+                </div> -->
+                <div class="u-col-md-12 form-group">
+                    <div class="u-col-md-3 control-label">
+                        <label style="color: red;">*</label>
+                        <label>邮寄单据号</label>
+                    </div>
+                    <input class="u-col-md-6 u-form-control " type="text"
+                           u-meta='{"type":"string","data":"invoiceDaNew","field":"invoicedocunum"}'
+                           placeholder="请输入单据号"/>
+                </div>
+            </div>
+        </div>
+        <div class="u-msg-footer">
+            <button id="saveinvoice" class="u-msg-ok u-button u-button-primary bg_blue"
+                    data-bind="click: event.saveContractClick">
+                保存 <span class="u-button-container"></span>
+            </button>
+            <button id="cancelinvoice" class="u-msg-cancel u-button u-button-white"
+                    data-bind="click: event.cancelManClick">
+                取消 <span class="u-button-container"></span>
+            </button>
+
+        </div>
+    </div>
+
+    <!-- 邮寄保单 -->
+    <div id="dialog_content_policy" class="modal-dialog" style="display:none;">
+        <div class="u-msg-title">
+            <h4>邮寄保单</h4>
+        </div>
+        <HR width="100%" color=#F8F9FB SIZE=3 align="center"/>
+        <div class="u-msg-content add-man" id="add-form_policy">
+            <div class="u-form material">
+                <!-- <div class="u-col-md-12 form-group">
+                    <div class="u-col-md-3 control-label">
+                        <label style="color: red;">*</label>
+                        <label>是否已邮寄</label>
+                    </div>
+                    <input type="checkbox" class="u-checkbox-input" id="send_policy"
+                    class="u-checkbox" u-meta='{"data":"policyDaNew","field":"policymailstate","type":"checkbox"}'>
+                    <!--
+                    <input class="u-col-md-6 u-form-control" type="checkbox"
+                    u-meta='{"type":"string","data":"policyDaNew","field":"policymailstate"}'/>
+                </div> -->
+                <div class="u-col-md-12 form-group">
+                    <div class="u-col-md-3 control-label">
+                        <label style="color: red;">*</label>
+                        <label>邮寄单据号</label>
+                    </div>
+                    <input class="u-col-md-6 u-form-control " type="text"
+                           u-meta='{"type":"string","data":"policyDaNew","field":"policydocunum"}'
+                           placeholder="请输入单据号"/>
+                </div>
+            </div>
+        </div>
+        <div class="u-msg-footer">
+            <button id="save_policy" class="u-msg-ok u-button u-button-primary bg_blue"
+                    data-bind="click: event.saveContractClick">
+                保存 <span class="u-button-container"></span>
+            </button>
+            <button id="cancel_policy" class="u-msg-cancel u-button u-button-white"
+                    data-bind="click: event.cancelManClick">
+                取消 <span class="u-button-container"></span>
+            </button>
+        </div>
+    </div>
+
+    <!--   上传合同      -->
+    <div id="dialog_content_photo" class="modal-dialog model_contract" style="display:none;">
+        <div class="u-msg-title">
+            <h4>上传合同</h4>
+        </div>
+        <HR width="100%" color=#F8F9FB SIZE=3 align="center"/>
+        <div class="u-msg-content add-man" id="add_photo">
+            <div class="u-form ">
+                <div class="u-col-md-12 form-group">
+                    <div class="u-col-md-3 control-label">
+                        <label style="font-size: 16px">选择文件</label>
+                    </div>
+                    <div style="height: 45px"></div>
+                    <!-- <input class="u-col-md-6 u-form-control " type="file" multiple id="contract-file"/> -->
+                </div>
+                <div id="putphoto" class="u-col-md-12 form-group">
+                    <!-- 图片回显区 -->
+                    <div id="item_">
+                        <div style="background-color: #F4F4F4;width: 60px; height: 60px ;"><img src="static/addphoto.png" style="position: relative; top: 15px;left: 15px; width: 30px; height: 30px;"></div>
+                        <input class="u-col-md-6 u-form-control " type="file" multiple id="contract-file"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="u-msg-footer">
+            <button id="save_photo" class="u-msg-ok u-button u-button-primary bg_blue"
+                    data-bind="click: event.savePhotoClick">
+                保存 <span class="u-button-container"></span>
+            </button>
+            <button id="cancel_photo" class="u-msg-cancel u-button u-button-white"
+                    data-bind="click: event.cancelManClick">
+                取消 <span class="u-button-container"></span>
+            </button>
+        </div>
+    </div>
+
+    <!--   批量上传合同      -->
+    <div id="dialog_content_photo_batch" class="modal-dialog model_contract" style="display:none;">
+        <div class="u-msg-title">
+            <h4>批量上传文件</h4>
+        </div>
+        <HR width="100%" color=#F8F9FB SIZE=3 align="center"/>
+            <p class="padding-left-20 c_gray_drak padding-top-0 padding-bottom-0 margin-bottom-0">
+                <span class="font-size-16"><i class="fas fa-info-circle c_blue_light"></i> 格式说明: 类型缩写-合同编号.pdf</span>
+                <br>
+                <span class="margin-r-5 padding-left-5">1.合同 HT-HTDZM201907080001M.pdf</span>
+                <span>2.发票 FP-HTDZM201907080001M.pdf</span>
+                <br>
+                <span class="margin-r-5 padding-left-5">3.保单 BD-HTDZM201907080001M.pdf</span>
+                <span>4.竣工单 JG-HTDZM201907080001M.pdf</span>
+            </p>
+        <div class="u-msg-content add-man" id="add_photo_batch">
+            <div class="u-form ">
+                <div class="u-col-md-12 form-group padding-left-0">
+                    <div class="u-col-md-3 control-label padding-left-0">
+                        <label style="font-size: 16px"><i class="fas fa-file-pdf c_blue_light"></i> 文件列表</label>
+                    </div>
+                    <div style="height:10px"></div>
+                    <!-- <input class="u-col-md-6 u-form-control " type="file" multiple id="contract-file"/> -->
+                </div>
+                <div id="putphoto-batch" class="u-col-md-12 form-group">
+                    <!-- 图片回显区 -->
+                    <div id="item_batch">
+                        <!--<div style="background-color: #F4F4F4;width: 60px; height: 60px ;"><img src="static/addphoto.png" style="position: relative; top: 15px;left: 15px; width: 30px; height: 30px;"></div>-->
+                    </div>
+                </div>
+                <div class="u-col-md-12 form-group upload_area">
+                    <div class="upload">
+                        <i class="fas fa-cloud-upload-alt fa-5x"></i>
+                        <p>将文件拖到此处，或<span>点击上传</span></p>
+                    </div>
+                    <input class="u-col-md-6 u-form-control" type="file" multiple id="contract-file-batch"/>
+                </div>
+            </div>
+        </div>
+        <div class="u-msg-footer">
+            <button id="save_photo_batch" class="u-msg-ok u-button u-button-primary bg_blue"
+                    data-bind="click: event.saveBatchClick">
+                保存 <span class="u-button-container"></span>
+            </button>
+            <button id="cancel_photo_batch" class="u-msg-cancel u-button u-button-white"
+                    data-bind="click: event.cancelManClick">
+                取消 <span class="u-button-container"></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- 录入保单号 -->
+    <div id="dialog_content_picc" class="modal-dialog" style="display:none;">
+        <div class="u-msg-title">
+            <h4>录入保单号</h4>
+        </div>
+        <HR width="100%" color=#F8F9FB SIZE=3 align="center"/>
+        <div class="u-msg-content add-man" id="add-form_picc">
+            <div class="u-form material">
+                <div class="u-col-md-12 form-group">
+                    <div class="u-col-md-3 control-label">
+                        <label style="color: red;">*</label>
+                        <label>保单号</label>
+                    </div>
+                    <input class="u-col-md-6 u-form-control " type="text"
+                           u-meta='{"type":"string","data":"policyDaNew","field":"picc"}' placeholder="请输入单据号"/>
+                </div>
+            </div>
+        </div>
+        <div class="u-msg-footer">
+            <button id="save_picc" class="u-msg-ok u-button u-button-primary bg_blue"
+                    data-bind="click: event.saveContractClick">
+                保存 <span class="u-button-container"></span>
+            </button>
+            <button id="cancel_picc" class="u-msg-cancel u-button u-button-white"
+                    data-bind="click: event.cancelManClick">
+                取消 <span class="u-button-container"></span>
+            </button>
+        </div>
+    </div>
+
+
+    <!-- 修改合同号 -->
+    <div id="dialog_content_contract_m" class="modal-dialog" style="display:none;">
+        <div class="u-msg-title">
+            <h4>修改合同</h4>
+        </div>
+        <HR width="100%" color=#F8F9FB SIZE=3 align="center"/>
+        <div class="u-msg-content add-man" id="add-form-contract">
+            <div class="u-form material">
+                <div class="u-col-md-12 form-group">
+                    <div class="u-col-md-3 control-label">
+                        <label style="color: red;">*</label>
+                        <label>委托方</label>
+                    </div>
+                    <input class="u-col-md-6 u-form-control " type="text"
+                           u-meta='{"type":"string","data":"contractDaNew","field":"clientname"}' placeholder="请输入委托方"/>
+                </div>
+
+                <div class="u-col-md-12 form-group">
+                    <div class="u-col-md-3 control-label">
+                        <label style="color: red;">*</label>
+                        <label>身份证</label>
+                    </div>
+                    <input class="u-col-md-6 u-form-control " type="text"
+                           u-meta='{"type":"string","data":"contractDaNew","field":"idnumber"}' placeholder="请输入身份证号"/>
+                </div>
+
+                <div class="u-col-md-12 form-group">
+                    <div class="u-col-md-3 control-label">
+                        <label style="color: red;">*</label>
+                        <label>通讯地址</label>
+                    </div>
+                    <input class="u-col-md-6 u-form-control " type="text"
+                           u-meta='{"type":"string","data":"contractDaNew","field":"postaladdress"}' placeholder="请输入通讯地址"/>
+                </div>
+
+            </div>
+        </div>
+        <div class="u-msg-footer">
+            <button id="save_picc" class="u-msg-ok u-button u-button-primary bg_blue"
+                    data-bind="click: event.saveClick">
+                	保存 <span class="u-button-container"></span>
+            </button>
+            <button id="cancel_picc" class="u-msg-cancel u-button u-button-white"
+                    data-bind="click: event.cancelManClick">
+              		 取消 <span class="u-button-container"></span>
+            </button>
+        </div>
+    </div>
+
+    <!--跳转快递页面-->
+    <div id="expressMsg">
+        <h4>操作提示</h4>
+        <p>快递单号已复制成功! 请粘贴到跳转的页面!</p>
+    </div>
+</div>

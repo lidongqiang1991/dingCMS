@@ -1,0 +1,412 @@
+<!-- 页面内容区(HTML片段，不能放置HTML 及 BODY 标签 )-->
+<!-- 若要正常使用实时预览功能，请在首页index.html中添加路由#project/project -->
+<div id="project">
+
+	<div class="u-container-fluid padding-0">
+		<div class="u-row margin-0 padding-0 content-title">
+			<div class="ec-search u-col-md-12 u-col-sm-12 u-media-middle margin-0 padding-0">
+				<h3 class="c-title pull-left padding-15 padding-left-20 c_size_28">工程列表</h3>
+				<div class="pull-right padding-15 padding-left-0 padding-right-0">
+					<!--<div class="margin-right-10 pull-right">-->
+					<!--<input type="button" class="margin-right-10 u-button u-button-primary bg_blue "-->
+					<!--  value="新建" data-bind="click: event.addClick">-->
+					<!--<input type="button" class=" pull-right u-button u-button-primary u-buttom-sm"-->
+					<!--id="import_file" value="批量导入" data-bind="click: event.importClick">-->
+					<!--</div>-->
+					<div id="searchdiv" class="margin-right-10 pull-right u-has-feedback input_enter">
+						<input type="text" class="u-form-control c-sm" id="search" placeholder="工程编号/姓名/手机号">
+						<span class="uf zoom uf-search-light-2" id="searchBtn" data-bind="click: event.searchClick"></span>
+						<span class="u-form-control-feedback-1  uf-search-light-0 uf uf-close" id="returnBtn"
+							  data-bind="click: event.returnClick"></span>
+					</div>
+					<div class="pull-right" id="reAllot_construction" style="display: none">
+						<input type="button" class="margin-right-15 u-button u-button-primary bg_blue padding-left-5 padding-right-5"
+							   value="重新分配施工" data-bind="click: event.constructionClick">
+					</div>
+					<div class="pull-right" id="reAllot_supervisor" style="display: none">
+						<input type="button" class="margin-right-15 u-button u-button-primary bg_blue padding-left-5 padding-right-5"
+							   value="重新分配管家" data-bind="click: event.supervisorClick">
+					</div>
+					<div class="pull-right">
+						<input type="button" class="margin-right-15 u-button bg_blue c_white" id="allow_construction" value="分配施工" data-bind="click: event.constructionClick">
+						<div id="allow_construction_state" class="c_center"></div>
+					</div>
+					<div class="pull-right">
+						<input type="button" class="margin-right-15 u-button bg_blue c_white" id="allow_supervisor" value="分配管家" data-bind="click: event.supervisorClick">
+						<div id="allow_supervisor_state" class="c_center"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!--筛选-->
+		<div class="u-container-fluid padding-10 prefilter">
+			<div class="u-row" id="condition-row-user">
+				<div class="u-col-md-11 padding-0 margin-0">
+					<div class="u-row padding-0 margin-0">
+						<!-- 运营中心 -->
+						<div class="u-col-md-2 u-col-xs-3 " style="">
+							<div class=" u-form-control " id="combobox_orgname"  style="padding:0;"
+							u-meta='{"type":"u-combobox","datasource":"orgnameList","data":"searchdatanew","field":"orgname","onlySelect":true}'>
+								<div class="c_rela">
+									<span class="u-form-control-feedback fa fa-angle-down"
+									data-role="combo-button" data-bind=""></span>
+									<input placeholder="运营中心" class="u-form-control" style="border:0;width:100%;height:32px;background:#fff;" readonly/>
+								</div>
+							</div>
+						</div>
+						<!-- 运营商 -->
+						<div class="u-col-md-2  u-col-xs-3 " style="">
+							<div class=" u-form-control " id="combobox_agentname" style="padding:0;"
+							u-meta='{"type":"u-combobox","datasource":"agentnameList","data":"searchdatanew","field":"agentname","onlySelect":true}'>
+								<div class="c_rela">
+									<span class="u-form-control-feedback fa fa-angle-down"
+									data-role="combo-button" ></span>
+									<input placeholder="运营商" class="u-form-control" style="border:0;width:100%;height:32px;background:#fff;" readonly/>
+								</div>
+							</div>
+						</div>
+						<!-- 工程状态 -->
+						<div class="u-col-md-2  u-col-xs-3 " style="">
+							<div class=" u-form-control "   style="padding:0;"
+								 u-meta='{"type":"u-combobox","datasource":"projectList","data":"searchdatanew","field":"servicestate","onlySelect":true}'>
+								<div class="c_rela">
+									<span class="u-form-control-feedback fa fa-angle-down"
+										  data-role="combo-button" ></span>
+									<input placeholder="工程状态" class="u-form-control" style="border:0;width:100%;height:32px;background:#fff;" readonly/>
+								</div>
+							</div>
+						</div>
+						<!-- 客服状态 -->
+						<div class="u-col-md-2  u-col-xs-3 " style="">
+							<div class=" u-form-control "   style="padding:0;"
+							u-meta='{"type":"u-combobox","datasource":"userstateList","data":"searchdatanew","field":"userstate","onlySelect":true}'>
+								<div class="c_rela">
+									<span class="u-form-control-feedback fa fa-angle-down"
+									data-role="combo-button" ></span>
+									<input placeholder="客服状态" class="u-form-control" style="border:0;width:100%;height:32px;background:#fff;" readonly/>
+								</div>
+							</div>
+						</div>
+						<!-- 勘察状态 -->
+						<div class="u-col-md-2  u-col-xs-3 " style="display:none;">
+							<div class=" u-form-control "   style="padding:0;"
+							u-meta='{"type":"u-combobox","datasource":"surveystateList","data":"searchdatanew","field":"surveystate","onlySelect":true}'>
+								<div class="c_rela">
+									<span class="u-form-control-feedback fa fa-angle-down"
+									data-role="combo-button" ></span>
+									<input placeholder="勘察状态" class="u-form-control" style="border:0;width:100%;height:32px;background:#fff;" readonly/>
+								</div>
+							</div>
+						</div>
+						<!-- 工长状态 -->
+						<div class="u-col-md-2  u-col-xs-3 " style="">
+							<div class=" u-form-control "   style="padding:0;"
+							u-meta='{"type":"u-combobox","datasource":"constructionstateList","data":"searchdatanew","field":"constructionstate","onlySelect":true}'>
+								<div class="c_rela">
+									<span class="u-form-control-feedback fa fa-angle-down"
+									data-role="combo-button" ></span>
+									<input placeholder="工长状态" class="u-form-control" style="border:0;width:100%;height:32px;background:#fff;" readonly/>
+								</div>
+							</div>
+						</div>
+						<!-- 管家状态 -->
+						<div class="u-col-md-2  u-col-xs-3 " style="">
+							<div class=" u-form-control "   style="padding:0;"
+							u-meta='{"type":"u-combobox","datasource":"supervisorstateList","data":"searchdatanew","field":"supervisorstate","onlySelect":true}'>
+								<div class="c_rela">
+									<span class="u-form-control-feedback fa fa-angle-down"
+									data-role="combo-button" ></span>
+									<input placeholder="管家状态" class="u-form-control" style="border:0;width:100%;height:32px;background:#fff;" readonly/>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="u-col-md-11 margin-top-15">
+					<!-- 报备日期 -->
+					<div class="u-row ">
+						<div class="u-col-md-2 u-col-xs-3 ">
+							<div u-meta='{"type":"u-date","data":"searchdatanew","field":"startTime1"}'>
+								<input type="text" class="u-form-control" placeholder="客户创建开始日期" style="background:#fff;padding-right:0;"  >
+							</div>
+						</div>
+						<div class="u-col-md-2 u-col-xs-3 ">
+							<div u-meta='{"type":"u-date","data":"searchdatanew","field":"endTime1"}'>
+								<input type="text" class="u-form-control" placeholder="客户创建结束日期" style="background:#fff;padding-right:0;"  >
+							</div>
+						</div>
+						<div class="u-col-md-2 u-col-xs-3 ">
+							<div
+							u-meta='{"type":"u-date","data":"searchdatanew","field":"startTime2"}'>
+								<input type="text" class="u-form-control" placeholder="下单开始日期" style="background:#fff;padding-right:0;"  >
+							</div>
+						</div>
+						<div class="u-col-md-2 u-col-xs-3 ">
+							<div
+							u-meta='{"type":"u-date","data":"searchdatanew","field":"endTime2"}'>
+								<input type="text" class="u-form-control" placeholder="下单结束日期" style="background:#fff;padding-right:0;"  >
+							</div>
+						</div>
+
+						<div class="u-col-md-2 u-col-xs-3 ">
+							<div
+							u-meta='{"type":"u-date","data":"searchdatanew","field":"startTime3"}'>
+								<input type="text" class="u-form-control" placeholder="建单开始日期" style="background:#fff;padding-right:0;"  >
+							</div>
+						</div>
+						<div class="u-col-md-2 u-col-xs-3 ">
+							<div
+							u-meta='{"type":"u-date","data":"searchdatanew","field":"endTime3"}'>
+								<input type="text" class="u-form-control" placeholder="建单结束日期" style="background:#fff;padding-right:0;"  >
+							</div>
+						</div>
+
+						<!--<div class="u-col-md-4">-->
+							<!--<input style="width: 110px;height: 36px" type="button" class="margin-left-15 margin-right-30 u-button u-button-primary bg_blue"-->
+							  <!--value="筛选" data-bind="click: event.filterClick">-->
+							<!--<input style="width: 110px;height: 36px" type="button" class="margin-left-15 u-button u-button-primary bg_blue"-->
+							<!--id="allot_man" value="清空筛选条件" data-bind="click: event.resetClick">-->
+						<!--</div>-->
+					</div>
+				</div>
+
+				<div class="u-col-md-11 margin-top-15">
+					<!-- 报备日期 -->
+					<!--<div class="u-row ">-->
+						<!--<div class="u-col-md-4">-->
+							<input style="width: 110px;height: 36px" type="button" class=" margin-right-30 u-button u-button-primary bg_blue"
+								   value="筛选" data-bind="click: event.filterClick">
+							<input style="width: 110px;height: 36px" type="button" class="margin-left-15 u-button u-button-primary bg_blue"
+								   id="allot_man" value="清空筛选条件" data-bind="click: event.resetClick">
+						<!--</div>-->
+					<!--</div>-->
+				</div>
+
+			</div>
+		</div>
+
+		<!--列表展示-->
+		<div class="main-container contacts-container">
+			<div class="hr-table ">
+				<div class="u-table b-table width-full"
+				u-meta='
+				{"id":"objdata",
+				"type":"grid",
+				"data":"objdata",
+				"columnWidth":"150px",
+				"onRowSelected":"event.operaClick"}'>
+					<div options='{"field":"name","title":"客户姓名","dataType":"String","editType":"string","renderType":"event.renderTypeAjax"}'></div>
+					<div options='{"field":"phone","title":"客户手机号","dataType":"String","editType":"string"}'></div>
+					<div options='{"field":"vbillcode","title":"工程编号","dataType":"String","editType":"string"}'></div>
+					<div options='{"field":"servicestate","title":"工程状态","dataType":"String","editType":"string","renderType":"event.renderConstructionStatus"}'></div>
+					<div options='{"field":"paystate","title":"支付状态","dataType":"String","editType":"string","renderType":"event.renderPayState"}'></div>
+					<div options='{"field":"servername","title":"客服","dataType":"String","editType":"string","renderType":"event.renderServerstate"}'></div>
+					<!--<div options='{"field":"surveyname","title":"勘察","dataType":"String","editType":"string","renderType":"event.renderSurveystate"}'></div>-->
+					<div options='{"field":"constructionname","title":"工长","dataType":"String","editType":"string","renderType":"event.renderConstructionstate"}'></div>
+					<div options='{"field":"supervisor","title":"管家","dataType":"String","editType":"string","renderType":"event.renderSupervisorstate"}'></div>
+					<div options='{"field":"materialstate","title":"物料调配","dataType":"String","editType":"string","renderType":"event.renderMaterialstate"}'></div>
+					<div options='{"field":"address","title":"详细地址","dataType":"String","editType":"string"}'></div>
+					<div options='{"field":"dealcreatetime","title":"客户创建时间","dataType":"String","editType":"string"}'></div>
+					<div options='{"field":"ordercreatetime","title":"下单时间","dataType":"String","editType":"string"}'></div>
+					<div options='{"field":"createtime","title":"工程创建时间","dataType":"String","editType":"string"}'></div>
+					<!--<div options='{"field":"opera","title":"操作","dataType":"String","editType":"string"}'></div>-->
+				</div>
+			</div>
+			<div id='pagination' class='pagination u-pagination pagination-sm'></div>
+		</div>
+
+		<!--功能操作-->
+		<!--<div class="u-row padding-20 padding-top-0">
+			<div class="u-col-md-1 ">
+				<input type="button"  class="margin-right-10 u-button bg_blue c_white"
+				id="allow_user" value="分配客服" data-bind="click: event.userClick">
+				<div id="allow_user_state" class="c_center">
+
+				</div>
+			</div>
+			<div class="u-col-md-1 c_center">
+				<img class="opera_arrow" src="./static/right-arrow.png" />
+			</div>
+			&lt;!&ndash;<div class="u-col-md-1 ">&ndash;&gt;
+				&lt;!&ndash;<input type="button" class="margin-right-10 u-button  bg_blue c_white"
+				id="allow_survey" value="分配勘察" data-bind="click: event.surveyClick">
+				<div id="allow_survey_state" class="c_center">
+				</div>&ndash;&gt;
+			&lt;!&ndash;</div>&ndash;&gt;
+			<div class="u-col-md-1 ">
+				<input type="button" class="margin-right-10 u-button bg_blue c_white"
+					   id="allow_supervisor" value="分配管家" data-bind="click: event.supervisorClick">
+				<div id="allow_supervisor_state" class="c_center">
+				</div>
+			</div>
+			<div class="u-col-md-1 c_center">
+				<img class="opera_arrow" src="./static/right-arrow.png" />
+			</div>
+			<div class="u-col-md-1 ">
+				<input type="button" class="margin-right-10 u-button bg_blue c_white"
+				id="allow_construction" value="分配施工" data-bind="click: event.constructionClick">
+				<div id="allow_construction_state" class="c_center">
+
+				</div>
+			</div>
+			&lt;!&ndash;<div class="u-col-md-1 c_center">
+				<img class="opera_arrow" src="./static/right-arrow.png" />
+			</div>
+			<div class="u-col-md-1 ">
+				<input type="button" class="margin-right-10 u-button bg_blue c_white"
+				id="allow_supervisor" value="分配管家" data-bind="click: event.supervisorClick">
+				<div id="allow_supervisor_state" class="c_center">
+
+				</div>
+			</div>&ndash;&gt;
+			&lt;!&ndash;<div class="u-col-md-1 c_center">
+				<img class="opera_arrow" src="./static/right-arrow.png" />
+			</div>
+			<div class="u-col-md-1 ">
+				<input type="button" class="margin-right-10 u-button bg_blue c_white"
+				id="allow_goods" value="调配物料" data-bind="click: event.materialClick">
+				<div id="allow_goods_state" class="c_center">
+
+				</div>
+			</div>&ndash;&gt;
+		</div>-->
+
+		<!--分配客服-->
+		<div id="dialog_custserver" tabindex="-1" role="dialog" style="display:none;">
+			<div class="u-msg-title">
+				<h4 class="treetitle" id="allow-title">分配客服</h4>
+			</div>
+			<div class="u-msg-content">
+				<div class="hr-table">
+					<!--input_allot_enter-->
+					<div class="c_clear padding-bottom-15">
+						<div   class="pull-right u-has-feedback input_allot_enter">
+							<input type="text" class="u-form-control c-sm " id="search_allot"
+							placeholder="姓名">
+							<span class="u-form-control-feedback uf uf-search-light-2"
+							data-bind="click: event.allotsearchClick"></span>
+						</div>
+					</div>
+
+					<div class="u-table b-table width-full"
+					u-meta='{"id":"allotdata","type":"grid","data":"allotdata","columnWidth":"150px","canDrag":false,"sortable":false,"columnMenu":false}'>
+						<div options='{"field":"username","title":"姓名","dataType":"String","editType":"string"}'></div>
+						<div options='{"field":"sexid","title":"性别","dataType":"String","editType":"string","renderType":"event.renderSex"}'></div>
+						<div options='{"field":"orgname","title":"组织","dataType":"String","editType":"string"}'></div>
+						<!-- <div options='{"field":"cmemo","title":"组","dataType":"String","editType":"string"}'></div> -->
+						<div options='{"field":"usermobile","title":"手机号","dataType":"String","editType":"string"}'></div>
+					</div>
+					<div id='pagination_allot' class='pagination u-pagination pagination-sm'></div>
+				</div>
+			</div>
+			<div class="u-msg-footer">
+				<button type="button" id="confirm_select" class="u-button u-button-primary pull-right" data-bind="click: event.confirm_allot">
+					确定
+				</button>
+				<button type="button" class="u-button button-cancel pull-right margin-right-15" data-bind="click:event.cancel_allot">
+					取消
+				</button>
+			</div>
+		</div>
+
+		<!--分配施工-->
+		<div id="dialog_custserver_" tabindex="-1" role="dialog" style="display:none;">
+			<div class="u-msg-title">
+				<h4 class="treetitle" id="allow-title_">分配客服</h4>
+			</div>
+			<div class="u-msg-content">
+				<div class="hr-table">
+					<!--input_allot_enter-->
+					<div class="c_clear padding-bottom-15">
+						<div   class="pull-right u-has-feedback input_allot_enter">
+							<input type="text" class="u-form-control c-sm " id="search_allot_"
+							placeholder="姓名">
+							<span class="u-form-control-feedback uf uf-search-light-2"
+							data-bind="click: event.allotsearchClick"></span>
+						</div>
+					</div>
+					<div class="u-table b-table width-full"
+					u-meta='{"id":"allotdata_","type":"grid","data":"allotdata_","columnWidth":"150px"}'>
+						<div options='{"field":"teamname","title":"工队姓名","dataType":"String","editType":"string"}'></div>
+						<!--<div options='{"field":"usercode","title":"性别","dataType":"String","editType":"string"}'></div>-->
+						<div options='{"field":"phone","title":"手机号","dataType":"String","editType":"string"}'></div>
+						<div options='{"field":"jobscope","title":"正在施工的数量","dataType":"String","editType":"string"}'></div>
+						<div options='{"field":"rate","title":"评分","dataType":"String","editType":"string"}'></div>
+						<div options='{"field":"teammemo","title":"备注","dataType":"String","editType":"string"}'></div>
+					</div>
+					<div id='pagination_allot_' class='pagination u-pagination pagination-sm'></div>
+				</div>
+			</div>
+			<div class="u-msg-footer">
+				<button type="button" id="confirm_select_" class="u-button u-button-primary pull-right" data-bind="click: event.confirm_allot">
+					确定
+				</button>
+				<button type="button" class="u-button button-cancel pull-right margin-right-15" data-bind="click:event.cancel_allot">
+					取消
+				</button>
+			</div>
+		</div>
+
+        <!--调配物料-->
+        <div id="dialog_material" tabindex="-1" role="dialog" style="display:none;">
+            <div class="u-msg-title">
+                <h4 class="treetitle" id="material-title">调配物料</h4>
+            </div>
+            <div class="u-msg-content">
+                <div class="hr-table">
+                    <div class="u-table b-table width-full"
+                         u-meta='{"id":"gridaddress1","type":"grid","data":"allotdata_material","columnWidth":"150px","editType":"default",
+                         "type":"grid","showNumCol":true,"columnMenu":true,"editable":true}'>
+                        <!--<div options='{"field":"billid","title":"订单","editable":false,"dataType":"String"}'></div>-->
+                        <div options='{"field":"vbillcode","title":"订单编号","editable":false,"dataType":"string"}'></div>
+                        <div options='{"field":"product","title":"套餐名称","editable":false,"dataType":"string"}'></div>
+                        <div options='{"field":"material","title":"物料名称","editable":false,"dataType":"string"}'></div>
+                        <div options='{"field":"num","title":"计算物料数量","editable":false,"dataType":"float"}'></div>
+                        <div options='{"field":"allocatednum","title":"已调配数量","editable":false,"dataType":"float"}'></div>
+                        <!--<div options='{"field":"price","title":"价格","editable":false,"dataType":"String"}'></div>-->
+                        <div options='{"field":"allotnum","title":"输入调配数量","dataType":"float","editType":"float"}'></div>
+                        <div options='{"field":"memo","title":"备注","dataType":"String","editType":"string"}'></div>
+                    </div>
+                    <div id='pagination_material' class='pagination u-pagination pagination-sm'></div>
+                </div>
+            </div>
+            <div class="u-msg-footer">
+                <button type="button" id="confirm_select_material" class="u-button u-button-primary pull-right" data-bind="click: event.confirm_allot">
+                    确定
+                </button>
+                <button type="button" class="u-button button-cancel pull-right margin-right-15" data-bind="click:event.cancel_allot">
+                    取消
+                </button>
+            </div>
+        </div>
+
+		<!--重新分配原因-->
+		<div id="dialog_reason" tabindex="-1" role="dialog" style="display:none;">
+			<div class="u-msg-title">
+				<h4 class="treetitle" id="reason-title">重新分配</h4>
+			</div>
+			<div class="u-msg-content">
+				<div class="u-form">
+					<div class="u-row form-group">
+						<div class="u-col-md-3 c_center">
+							<label style="color: red;">*</label>
+							<label>原因：</label>
+						</div>
+						<div class="u-col-md-9">
+							<textarea class="u-col-md-9 u-form-control " id="allot_reason"  placeholder="请输入重新分配原因"/>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="u-msg-footer">
+				<button type="button" id="confirm_reason" class="u-button u-button-primary pull-right" data-bind="click: event.confirm_reason">确定</button>
+				<button type="button" class="u-button button-cancel pull-right margin-right-15" data-bind="click:event.cancel_reason">
+					取消
+				</button>
+			</div>
+		</div>
+
+	</div>
+</div>

@@ -1,0 +1,214 @@
+<div class="u-container-fluid padding-0" id="productitemDetail">
+	<div class="alert">
+		<span>
+			<img class='icon' src="./static/right.png">
+			保存成功
+		</span>
+		<img id="close" src="./static/error.png">
+	</div>
+	<script>
+		$('#close').click(function(){
+			$('.alert').css({'display':'none'});
+		});
+	</script>
+	<div class="js_href padding-15 padding-left-20 margin-0 content-title">
+		<a href="#/productitem/productitem" class="c_green c_size_24"> &lt; 产品明细列表</a>
+	</div>
+
+	<!--tabs控件 切换active状态包括线性跟随和背景跟随 tabs控件依赖 u-tabs 类，状态类是共用的。 改变修饰类可以改变active样式。 默认是active状态为线性跟随 添加修饰类.u-tabs-pill 为背景跟随-->
+	<div class="u-tabs  padding-15 c_border_box">
+
+		<!--基本信息-->
+		<div class="u-tabs__panel is-active u-form" id="tab-panel-1">
+
+			<div class="u-form" id="add-form">
+				<!--产品明细信息-->
+				<div class="padding-15">
+					<div class="u-row padding-bottom-10">
+						<div class="u-col-md-2 tab-1-name">
+							细项编号：
+						</div>
+						<div class="u-col-md-3 ">
+							<div class=" u-has-feedback"
+							u-meta='{"type":"u-text","data":"objdatanew","field":"itemcode"}'>
+								<div class="u-input-group-before" style="color: red;">
+									*
+								</div>
+								<input type="text" class="u-form-control" placeholder="" id="itemcode">
+							</div>
+						</div>
+					<!--</div>-->
+					<!--<div class="u-row padding-bottom-10">-->
+						<div class="u-col-md-2 tab-1-name">
+							细项名称：
+						</div>
+						<div class="u-col-md-3 ">
+							<div class=" u-has-feedback"
+							u-meta='{"type":"u-text","data":"objdatanew","field":"itemname"}'>
+								<div class="u-input-group-before" style="color: red;">
+									*
+								</div>
+								<input type="text" class="u-form-control" placeholder="" id="itemname">
+							</div>
+						</div>
+					</div>
+
+					<div class="u-row padding-bottom-10">
+						<div class="u-col-md-2 tab-1-name">
+							类型：
+						</div>
+						<div class="u-col-md-3">
+							<div class="u-combo"
+							u-meta='{"type":"u-combobox","datasource":"typeList","data":"objdatanew","field":"type","onlySelect":true}'>
+								<div class="u-input-group u-has-feedback">
+									<div class="u-input-group-before" style="color: red;">
+										*
+									</div>
+									<span class="u-form-control-feedback fa fa-angle-down"
+									data-role="combo-button"></span>
+									<input class="u-form-control" readonly/>
+								</div>
+							</div>
+
+						</div>
+					<!--</div>-->
+					<!--<div class="u-row padding-bottom-10">-->
+						<div class="u-col-md-2 tab-1-name">
+							单价（元）：
+						</div>
+						<div class="u-col-md-3 ">
+							<div class=" u-has-feedback"
+							u-meta='{"type":"u-text","data":"objdatanew","field":"price"}'>
+								<div class="u-input-group-before" style="color: red;">
+									*
+								</div>
+								<input type="text" class="u-form-control" placeholder="" id="price"
+								onkeyup="value=value.replace(/[^\d{1,}\.\d{1,}|\d{1,}]/g,'')"
+								/>
+							</div>
+						</div>
+					</div>
+					<!--<div class="u-row padding-bottom-10">-->
+						<!--<div class="u-col-md-2 tab-1-name">-->
+							<!--材料名称：-->
+						<!--</div>-->
+						<!--<div class="u-col-md-3">-->
+							<!--<div class="u-combo"-->
+							<!--u-meta='{"type":"u-combobox","datasource":"materialList","data":"objdatanew","field":"materialid","onlySelect":true}'>-->
+								<!--<div class="u-input-group u-has-feedback">-->
+									<!--<span class="u-form-control-feedback fa fa-angle-down"-->
+									<!--data-role="combo-button"></span>-->
+									<!--<input placeholder="请选择材料" class="u-form-control" readonly/>-->
+								<!--</div>-->
+							<!--</div>-->
+						<!--</div>-->
+					<!--</div>-->
+					<!--<div class="u-row padding-bottom-10">-->
+						<!--<div class="u-col-md-2 tab-1-name">-->
+							<!--材料消耗量：-->
+						<!--</div>-->
+						<!--<div class="u-col-md-3 ">-->
+							<!--<div class=" u-has-feedback"-->
+							<!--u-meta='{"type":"u-text","data":"objdatanew","field":"materialamount"}'>-->
+								<!--<div class="u-input-group-before" style="color: red;">-->
+
+								<!--</div>-->
+								<!--<input type="text" class="u-form-control" placeholder="" id="materialamount"-->
+								  <!--placeholder="请填写消耗量" />-->
+							<!--</div>-->
+						<!--</div>-->
+					<!--</div>-->
+					<div class="u-row">
+						<div class="u-col-md-2 tab-1-name">
+							备注：
+						</div>
+						<div class="u-col-md-3 ">
+							<div class=" u-has-feedback" >
+								<!--<textarea  class="u-form-control" placeholder="请输入备注" id="memo" cols="10" rows="3"></textarea>-->
+								<textarea class="u-form-control " type="text"
+										  u-meta='{"type":"textarea","data":"objdatanew","field":"memo"}' placeholder="请输入备注"
+								></textarea>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="u-row margin-top-15">
+					<div class="padding-left-15 margin-0 ">
+						<button id="add_item" class="u-msg-ok u-button u-button-primary bg_blue"
+								data-bind="click: event.add_item">添加<span class="u-button-container"></span>
+						</button>
+						<button id="del_item" class="u-msg-ok u-button u-button-primary bg_blue"
+								data-bind="click: event.del_item">删除<span class="u-button-container"></span>
+						</button>
+					</div>
+					<div class="main-container padding-15 contacts-container">
+						<div class="hr-table ">
+							<div class="u-table b-table width-full" u-meta='{"id":"materialdatanew","type":"grid","data":"materialdatanew","columnWidth":"150px","editable":true}'>
+								<!--<div options='{"field":"itemcode","title":"细项编码","dataType":"String","editType":"string"}'></div>-->
+								<div options='{"field":"materialname","title":"材料名称","dataType":"String","editType":"string","editable":false}'></div>
+								<div options='{"field":"materialamount","title":"材料消耗量","dataType":"float","editType":"float","editable":true}'></div>
+							</div>
+						</div>
+						<!--<div id='pagination' class='pagination u-pagination pagination-sm'></div>-->
+					</div>
+				</div>
+
+				<div class="padding-20">
+					<div class="edit">
+						<div class="padding-top-15">
+							<button id="saveman" class="u-msg-ok u-button u-button-primary bg_blue"
+							data-bind="click: event.saveClick">
+								保存 <span class="u-button-container"></span>
+							</button>
+							<!--<button id="cancelman" class="u-msg-cancel u-button u-button-white"-->
+							<!--data-bind="click: event.cancelClick">取消-->
+							<!--<span class="u-button-container"></span>-->
+							<!--</button>-->
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+	</div>
+
+	<!--选择细项-->
+	<div id="dialog_item" tabindex="-1" role="dialog" style="display:none;">
+		<div style="display: flex;justify-content: space-between;padding-left:20px;padding-right:30px;">
+			<div class="u-msg-title">
+				<h4 class="treetitle" id="tree-title">选择细项</h4>
+			</div>
+			<!--<div id="searchdiv" class="margin-right-10 pull-right  u-has-feedback  input_enter" style="margin-top:20px;">-->
+				<!--<input type="text" class="u-form-control c-sm " id="search"-->
+					   <!--placeholder="细项名称">-->
+				<!--<span class="u-form-control-feedback uf uf-search-light-2" id="searchBtn"-->
+					  <!--data-bind="click: event.searchClick"></span>-->
+				<!--<span class="u-form-control-feedback-1  uf-search-light-0 " style="margin-top:-3px;" id="returnBtn"-->
+					  <!--data-bind="click: event.returnClick">×</span>-->
+			<!--</div>-->
+		</div>
+		<div class="u-msg-content">
+			<div class="main-container padding-20 padding-top-0 contacts-container">
+				<div class="hr-table ">
+					<div class="u-table b-table width-full"
+						 u-meta='{"id":"materialdata","type":"grid","data":"materialdata","multiSelect":"true","editType":"default","showNumCol":true,"columnMenu":false,"canDrag":true,"sortable":true,"canSwap":true}'>
+						<!--<div options='{"field":"itemcode","title":"细项编码","dataType":"String","editType":"string"}'></div>-->
+						<div options='{"field":"name","title":"材料名称","dataType":"String","editType":"string"}'></div>
+						<div options='{"field":"price","title":"单价/元","dataType":"float","editType":"float"}'></div>
+					</div>
+				</div>
+				<div id='pagination' class='pagination u-pagination pagination-sm'></div>
+			</div>
+		</div>
+		<div class="u-msg-footer">
+			<button type="button" id="confirm_select" class="u-button u-button-primary pull-right" data-bind="click: event.confirm_item">确定</button>
+			<button type="button" class="u-button button-cancel pull-right margin-right-15" data-bind="click:event.cancel_item">
+				取消
+			</button>
+		</div>
+	</div>
+
+
+</div>

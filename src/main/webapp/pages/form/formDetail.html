@@ -1,0 +1,156 @@
+<div class="u-container-fluid padding-0" id="formDetail">
+	<div class="js_href padding-15 padding-left-20 content-title margin-0">
+		<a href="#/form/form" class="c_green c_size_24"> &lt; 表单列表</a>
+	</div>
+
+	<div class="u-form" id="add-form">
+		<!--信息-->
+		<div class="padding-20">
+			<div class="u-row">
+				<div class="u-col-md-1 tab-1-name">
+					表单名称：
+				</div>
+				<div class="u-col-md-2">
+					<div class=" u-has-feedback" u-meta='{"type":"u-text","data":"objdatanew","field":"formname"}'>
+						<div class="u-input-group-before" style="color: red;">
+							*
+						</div>
+						<input type="text" class="u-form-control" placeholder=""  >
+					</div>
+				</div>
+				<div class="u-col-md-1 tab-1-name">
+					表单编码：
+				</div>
+				<div class="u-col-md-2">
+					<div class=" u-has-feedback" u-meta='{"type":"u-text","data":"objdatanew","field":"formcode"}'>
+						<div class="u-input-group-before" style="color: red;">
+							*
+						</div>
+						<input type="text" class="u-form-control" placeholder=""  >
+					</div>
+				</div>
+				<div class="u-col-md-1 tab-1-name">
+					表单版本：
+				</div>
+				<div class="u-col-md-2">
+					<div class=" u-has-feedback" u-meta='{"type":"u-text","data":"objdatanew","field":"version"}'>
+						<div class="u-input-group-before" style="color: red;">
+							*
+						</div>
+						<input type="text" class="u-form-control" placeholder=""  >
+					</div>
+				</div>
+				<div class="u-col-md-1 tab-1-name">
+					表单说明：
+				</div>
+				<div class="u-col-md-2 ">
+					<div class=" u-has-feedback" u-meta='{"type":"u-text","data":"objdatanew","field":"memo"}'>
+						<!--<div class="u-input-group-before" style="color: red;">*</div>-->
+						<input type="text" class="u-form-control" placeholder=""  >
+					</div>
+				</div>
+			</div>
+			<div class="u-row margin-top-15">
+				<div class="padding-left-15 margin-0 ">
+					<button id="addform_b" class="u-msg-ok u-button u-button-primary bg_blue"
+					data-bind="click: event.add_formb">
+						添加<span class="u-button-container"></span>
+					</button>
+					<button id="addform_b" class="u-msg-ok u-button u-button-primary bg_blue"
+					data-bind="click: event.edit_formb">
+						编辑<span class="u-button-container"></span>
+					</button>
+					<button id="delform_b" class="u-msg-ok u-button u-button-primary bg_blue"
+					data-bind="click: event.del_formb">
+						删除<span class="u-button-container"></span>
+					</button>
+				</div>
+				<div class="main-container padding-15 contacts-container">
+					<div class="hr-table ">
+						<div class="u-table b-table width-full"
+						u-meta='{"id":"objbdata","type":"grid","data":"objbdata","columnWidth":"150px"}'>
+							<div options='{"field":"displayname","title":"显示名称","dataType":"String","editType":"string"}'></div>
+							<div options='{"field":"attribute","title":"字段属性","dataType":"String","editType":"string"}'></div>
+							 <div options='{"field":"type","title":"类型","dataType":"String","editType":"string","renderType":"event.renderType_type"}'></div>
+							<div options='{"field":"memo","title":"备注","dataType":"String","editType":"string"}'></div>
+						</div>
+					</div>
+					<!--<div id='pagination' class='pagination u-pagination pagination-sm'></div>-->
+				</div>
+			</div>
+
+			<div class="edit">
+				<div class="padding-top-15">
+					<button id="saveman" class="u-msg-ok u-button u-button-primary bg_blue"
+					data-bind="click: event.saveClick">
+						保存 <span class="u-button-container"></span>
+					</button>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<!--添加字段-->
+	<div id="dialog_content_formb" class="modal-dialog" style="display:none;">
+		<div class="u-msg-title">
+			<h4>新增支付</h4>
+		</div>
+		<HR width="100%" color=#F8F9FB SIZE=3 align="center"/>
+		<div class="u-msg-content formb ">
+			<div class="u-form" id="add-formb">
+				<div class="u-col-md-12 form-group" style="line-height: 36px;margin-bottom: 15px;" >
+					<div class="u-col-md-3 control-label">
+						<label style="color: red;">*</label>
+						<label>显示名称</label>
+					</div>
+					<input class="u-col-md-6 u-form-control " type="text" id="displayname"
+					u-meta='{"type":"string","data":"objbdatanew","field":"displayname"}' placeholder=""/>
+				</div>
+				<div class="u-col-md-12 form-group" style="line-height: 36px;margin-bottom: 15px;" >
+					<div class="u-col-md-3 control-label">
+						<label style="color: red;">*</label>
+						<label>属性编码</label>
+					</div>
+					<input class="u-col-md-6 u-form-control " type="text" id="attribute"
+					u-meta='{"type":"string","data":"objbdatanew","field":"attribute"}' placeholder=""/>
+				</div>
+				<div class="u-col-md-12 form-group" style="line-height: 36px;margin-bottom: 15px;" >
+					<div class="u-col-md-3 control-label">
+						<label style="color: red;">*</label>
+						<label>类型</label>
+					</div>
+					<!--<input class="u-col-md-6 u-form-control " type="text" id="type"-->
+					<!--u-meta='{"type":"string","data":"objbdatanew","field":"type"}' placeholder=""/>-->
+
+					<div class="u-col-md-6 u-form-control "   style="padding:0;"
+						 u-meta='{"type":"u-combobox","datasource":"typeList","data":"objbdatanew","field":"type","onlySelect":true}'>
+						<div class="c_rela">
+						<span class="u-form-control-feedback fa fa-angle-down"
+							  data-role="combo-button" ></span>
+							<input placeholder="类型" class="u-form-control" style="border:0;width:100%;height:32px;background:#fff;" readonly/>
+						</div>
+					</div>
+
+				</div>
+				<div class="u-col-md-12 form-group" style="line-height: 36px;margin-bottom: 15px;" >
+					<div class="u-col-md-3 control-label">
+						<label>备注</label>
+					</div>
+					<textarea id="meno" class="u-col-md-6 u-form-control " rows="2" cols="40"></textarea>
+				</div>
+			</div>
+		</div>
+		<div class="u-msg-footer">
+			<button id="saveformb" class="u-msg-ok u-button u-button-primary bg_blue"
+			data-bind="click: event.saveFormbClick">
+				保存 <span class="u-button-container"></span>
+			</button>
+			<button id="cancelformb" class="u-msg-cancel u-button u-button-white"
+			data-bind="click: event.cancelClick">
+				取消 <span class="u-button-container"></span>
+			</button>
+		</div>
+	</div>
+
+</div>

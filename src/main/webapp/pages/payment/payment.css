@@ -1,0 +1,12 @@
+#dialog_content_payment .u-msg-content.payment{
+    overflow: visible !important;
+}
+#dialog_content_payment{
+    height:650px;
+}
+.u-tabs__panel.is-active{
+    height: calc(100% - 50px);
+    display:flex !important;
+    flex-direction: column;
+}
+

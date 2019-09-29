@@ -1,0 +1,626 @@
+package com.ding.cms.repository;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.Map.Entry;
+
+import org.postgresql.translation.messages_bg;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.alibaba.druid.util.StringUtils;
+import com.ding.cms.entity.Agent;
+import com.ding.cms.entity.BillDeal;
+import com.ding.cms.entity.BillService;
+import com.ding.cms.entity.BillServiceProcedure;
+import com.ding.cms.entity.Customer;
+import com.ding.cms.entity.House;
+import com.ding.cms.entity.LogOrderAllot;
+import com.ding.cms.entity.LogOrderNote;
+import com.ding.cms.util.DateUtils;
+import com.ding.cms.util.SMSYuHongUtil;
+import com.yonyou.iuap.context.InvocationInfoProxy;
+import com.yonyou.iuap.persistence.bs.dao.DAOException;
+import com.yonyou.iuap.persistence.bs.dao.MetadataDAO;
+import com.yonyou.iuap.system.entity.BillCodeManage;
+import com.yonyou.iuap.system.entity.Procedure;
+import com.yonyou.iuap.system.entity.Procedurebody;
+import com.yonyou.iuap.system.entity.SysUser;
+import com.yonyou.iuap.system.repository.BillCodeManageDao;
+import com.yonyou.iuap.system.service.LogService;
+import com.yonyou.iuap.system.service.MessageService;
+import com.yonyou.iuap.system.service.ProcedureService;
+import com.yonyou.iuap.persistence.jdbc.framework.SQLParameter;
+import com.yonyou.iuap.persistence.jdbc.framework.processor.ColumnListProcessor;
+import com.yonyou.iuap.persistence.jdbc.framework.util.FastBeanHelper;
+import com.yonyou.iuap.persistence.vo.pub.VOStatus;
+
+@Repository
+public class BillDealDao {
+
+	@Autowired
+	private MetadataDAO metadao;
+
+	@Autowired
+	private BillCodeManageDao codeDao;
+
+	@Autowired
+	private ProcedureService procedureService;
+
+	@Autowired
+	private MessageService messageService;
+
+	@Autowired
+	private LogService logService;
+
+	@Autowired
+	private ServiceDao serviceDao;
+
+	private static final String noteaction = "客户跟进";
+
+	private static final String visitaction = "客户回访";
+
+	private static final String allotaction = "客户分配";
+
+	private static final String allotobject = "客户";
+
+	private static final String messgae="信息通知";
+	public String save(BillDeal temp) {
+		SysUser user = (SysUser) InvocationInfoProxy
+				.getExtendAttribute("currentUser");
+		String dealid = "";
+		BillDeal deal = null;
+		// add
+		if (StringUtils.isEmpty(temp.getBillid())) {
+			deal = new BillDeal();
+			deal.setCustomerid(temp.getCustomerid());
+			deal.setHouseid(temp.getHouseid());
+			deal.setSourcetype(temp.getSourcetype());
+			deal.setSurveydate(temp.getSurveydate());
+			deal.setIssurvey(temp.getIssurvey());
+			deal.setCommunity(temp.getCommunity());
+
+			deal.setPaystate(BillService.SERVICE_PAYSTATE_01);// 未支付
+			deal.setState(temp.getState());
+			deal.setOrgid(user.getOrgid());
+			deal.setOrgname(user.getOrgname());
+			if(temp.getCreatetime()!=null){
+				deal.setCreatetime(temp.getCreatetime());
+				deal.setDbilldate(temp.getCreatetime().substring(0,10));
+			}else{
+				deal.setCreatetime(DateUtils.currentTimestampToString());
+				deal.setDbilldate(DateUtils.currentTimestampToString().substring(0,
+				10));
+			}
+			deal.setCreator(user.getUsername());
+			deal.setCreatorid(user.getId());
+			deal.setVbillcode(codeDao.getBillCode(user.getOrgid(),
+					BillCodeManage.BILLTYPE_DEAL, 4));
+			deal.setReferrer(temp.getReferrer());
+			deal.setReferrerid(temp.getReferrerid());
+			deal.setRootoid(temp.getRootoid());
+			deal.setReferrerphone(temp.getReferrerphone());
+			deal.setLifestages(temp.getLifestages());
+			deal.setAgentid(temp.getAgentid());
+			deal.setJobid(temp.getJobid());
+			deal.setTid(temp.getTid());
+			dealid = metadao.insert(deal);
+		}
+		// //edite
+		else {
+			deal = metadao.queryByPK(BillDeal.class, temp.getBillid());
+			deal.setCustomerid(temp.getCustomerid());
+			deal.setHouseid(temp.getHouseid());
+			deal.setSourcetype(temp.getSourcetype());
+			deal.setSurveydate(temp.getSurveydate());
+			deal.setIssurvey(temp.getIssurvey());
+			deal.setState(temp.getState());
+			deal.setCommunity(temp.getCommunity());
+			deal.setModifier(InvocationInfoProxy.getUsername());
+			deal.setModifierid(InvocationInfoProxy.getUserid());
+			deal.setModifytime(DateUtils.currentTimestampToString());
+			deal.setReferrer(temp.getReferrer());
+			deal.setReferrerid(temp.getReferrerid());
+			deal.setRootoid(temp.getRootoid());
+			deal.setReferrerphone(temp.getReferrerphone());
+			deal.setLifestages(temp.getLifestages());
+			deal.setAgentid(temp.getAgentid());
+			deal.setJobid(temp.getJobid());
+			deal.setTid(temp.getTid());
+			int i = metadao.update(deal);
+			dealid = deal.getBillid();
+			// WangHG 2018-11-19 end
+		}
+		// 自动分配交易
+		if (deal.getLifestages() == 1)
+			allot(dealid, deal.getAgentid(), null);
+		return dealid;
+	}
+
+	// set billcode
+	// private void setVbillCode(BillDeal deal){
+	// deal.setVbillcode("JY201809280001");
+	// }
+	// 设置组织信息包括自动分配
+	private void setOrgInfo(BillDeal deal) {
+
+	}
+
+	public Page<LogOrderNote> selectNoteByPage(PageRequest pageRequest,
+			Map<String, Object> searchParams) throws DAOException {
+		String sql = " select * from log_order_note ";
+		StringBuilder sb = new StringBuilder();
+		sb.append(sql);
+		SQLParameter sqlparam = new SQLParameter();
+		if (searchParams.entrySet() != null) {
+			sb.append(" where ");
+			for (Entry<String, Object> key : searchParams.entrySet()) {
+				String column = FastBeanHelper.getColumn(LogOrderNote.class,
+						key.getKey());
+				sb.append(column + " = ?  and ");
+				sqlparam.addParam(key.getValue());
+			}
+			sb.delete(sb.length() - 4, sb.length());
+			sb.append(" order by ts desc ");
+		}
+		Page<LogOrderNote> page = metadao.queryPage(sb.toString(), sqlparam,
+				pageRequest, LogOrderNote.class);
+		return page;
+	}
+
+	@Transactional
+	public LogOrderNote saveNote(LogOrderNote entity) {
+		entity.setLogid(UUID.randomUUID().toString());
+		entity.setStatus(VOStatus.NEW);
+		entity.setCreatorid(InvocationInfoProxy.getUserid());
+		entity.setCreator(InvocationInfoProxy.getUsername());
+		entity.setCreatetime(DateUtils.currentTimestampToString());
+		entity.setAction(noteaction);
+		entity.setDr(0);// 未删除标识
+		// 生成日志
+		logService.insertlog("客户", noteaction, entity.getNote());
+		metadao.save(entity);
+		return entity;
+	}
+
+	/**
+	 * 客户回访
+	 *
+	 * @param entity
+	 * @return
+	 */
+	@Transactional
+	public LogOrderNote saveNoteVisit(LogOrderNote entity) {
+		entity.setLogid(UUID.randomUUID().toString());
+		entity.setStatus(VOStatus.NEW);
+		entity.setCreatorid(InvocationInfoProxy.getUserid());
+		entity.setCreator(InvocationInfoProxy.getUsername());
+		entity.setCreatetime(DateUtils.currentTimestampToString());
+		entity.setAction(visitaction);
+		entity.setDr(0);// 未删除标识
+		// 生成日志
+		logService.insertlog("客户", visitaction, entity.getNote());
+		metadao.save(entity);
+		return entity;
+	}
+
+	public Page<LogOrderAllot> selectAllotByPage(PageRequest pageRequest,
+			Map<String, Object> searchParams) throws DAOException {
+		String sql = " select * from log_order_allot ";
+		StringBuilder sb = new StringBuilder();
+		sb.append(sql);
+		SQLParameter sqlparam = new SQLParameter();
+		if (searchParams.entrySet() != null) {
+			sb.append(" where ");
+			for (Entry<String, Object> key : searchParams.entrySet()) {
+				String column = FastBeanHelper.getColumn(LogOrderAllot.class,
+						key.getKey());
+				sb.append(column + " = ?  and ");
+				sqlparam.addParam(key.getValue());
+			}
+			sb.delete(sb.length() - 4, sb.length());
+			sb.append(" order by ts desc ");
+		}
+		Page<LogOrderAllot> page = metadao.queryPage(sb.toString(), sqlparam,
+				pageRequest, LogOrderAllot.class);
+		return page;
+	}
+
+	@Transactional
+	public void allot(String dealid, String agentid, String reason) {
+		Agent agent = null;
+		BillDeal billDeal = metadao.queryByPK(BillDeal.class, dealid);
+		if (billDeal.getState() < BillDeal.DEAL_STATE_03
+				|| !StringUtils.isEmpty(agentid)) {
+			// 判断是否是运营商录入
+			SysUser user = (SysUser) InvocationInfoProxy
+					.getExtendAttribute("currentUser");
+			Agent a =null;
+			if(user!=null){
+				a = metadao.queryByPK(Agent.class, user.getOrgid());
+			}
+			if (a != null) {
+				agent = a;
+			} else if (StringUtils.isEmpty(agentid)) {
+				// 查出来应该分配给哪个运营商（省市）
+				String sql = "select * from bd_house where houseid = '"
+						+ billDeal.getHouseid() + "'";
+				House house = metadao.queryByClause(House.class, sql).get(0);
+				if (house.getDistrict() == null)
+					house.setDistrict("null");
+				String sql1 = "SELECT * FROM bd_agent where province like '%"
+						+ house.getProvince()
+						+ "%' and city like '%"
+						+ house.getCity()
+						+ "%' and (district LIKE '%"
+						+ house.getDistrict()
+						+ "%' or district is null or district ='' ) order by district desc";
+				List<Agent> agents = metadao.queryByClause(Agent.class, sql1);
+				if (agents != null && agents.size() > 0) {
+					agent = agents.get(0);
+				} else {
+					return;
+				}
+
+			} else {
+				agent = metadao.queryByPK(Agent.class, agentid);
+			}
+
+			if (agent.getAgentid() != null&&!agent.getAgentid().equals(billDeal.getAgentid())) {
+				LogOrderAllot entity = new LogOrderAllot();
+				entity.setDealid(dealid);
+				entity.setOwnerid(agent.getAgentid());
+				entity.setStatus(VOStatus.NEW);
+				entity.setCreatorid(InvocationInfoProxy.getUserid());
+				entity.setCreator(InvocationInfoProxy.getUsername());
+				entity.setCreatetime(DateUtils.currentTimestampToString());
+				String content = "分配给" + agent.getAgentname();
+				String action = allotaction;
+				if (!StringUtils.isEmpty(reason)) {
+					content ="重新"+content+"。原因："+reason;
+					action = "重新"+action;
+				}
+				entity.setObject(allotobject);
+				entity.setAction(action);
+				// 操作日志明细
+				entity.setNote(content);
+				entity.setDr(0);// 未删除标识
+
+				// 客户分配系统日志
+				Customer customer = metadao.queryByPK(Customer.class,
+						billDeal.getCustomerid());
+				if (customer.getName() != null) {
+					String name = customer.getName();
+					// 系统日志
+					logService.insertlog("客户", action, allotobject + name + "被"
+							+ content);
+				}
+
+				metadao.save(entity);
+				// 分配信息
+				billDeal.setState(BillDeal.DEAL_STATE_03);
+				billDeal.setAgentid(agent.getAgentid());
+				billDeal.setAgentname(agent.getAgentname());
+				billDeal.setOwner(agent.getOwner());
+				billDeal.setOwnerid(agent.getOwnerid());
+
+				// 修改信息
+				billDeal.setModifier(InvocationInfoProxy.getUsername());
+				billDeal.setModifierid(InvocationInfoProxy.getUserid());
+				billDeal.setModifytime(DateUtils.currentTimestampToString());
+				metadao.update(billDeal);
+				// 给运营商的内勤发送消息
+				sentMessageToAgent(dealid,agent,agent.getAgentid(),customer);
+
+//				// 给运营商接口人发送短信
+//				try {
+//					if (!StringUtils.isEmpty(agent.getOwnerid())) {
+//						SysUser agentUser = metadao.queryByPK(SysUser.class,
+//								agent.getOwnerid());
+//						if (agentUser != null
+//								&& !StringUtils.isEmpty(agentUser
+//										.getUsermobile())) {
+//							if (customer != null
+//									&& (!StringUtils
+//											.isEmpty(customer.getName()) && (!StringUtils
+//											.isEmpty(customer.getPhone())))) {
+//								String message1 = "[雨虹防水] "
+//										+ customer.getName() + ","
+//										+ customer.getPhone()
+//										+ ",现已分配给您所在的服务区域，请及时登陆系统分配管家，谢谢";
+//								SMSYuHongUtil.sendSMS(message1,
+//										agentUser.getUsermobile());
+//								//加入消息通知日志
+//								saveAllot(dealid,agent,message1);
+//							} else {
+//								String message2 = "[雨虹防水] 新增客户,现已分配给您所在的服务区域，请及时登陆系统分配管家，谢谢";
+//								SMSYuHongUtil.sendSMS(message2,
+//										agentUser.getUsermobile());
+//								//加入消息通知日志
+//								saveAllot(dealid,agent,message2);
+//							}
+//						}
+//					}
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+			}
+		}
+		// 自动生成工程服务
+		if ("Y".equals(billDeal.getIssurvey())
+				&& billDeal.getState().equals(BillDeal.DEAL_STATE_03))
+			createServiceForDeal(billDeal);
+	}
+
+	private void createServiceForDeal(BillDeal billDeal) {
+		List list = metadao
+				.queryForObject(
+						"SELECT billid FROM bill_service where  dealid ='"
+								+ billDeal.getBillid() + "'",
+						new ColumnListProcessor());
+		if (list != null && list.size() > 0)
+			return;
+		BillService service = new BillService();
+		service.setStatus(VOStatus.NEW);
+		SimpleDateFormat time = new SimpleDateFormat("yyyyMMddHHmmss");
+		service.setVbillcode("BJ" + time.format(DateUtils.currentTimestamp()));// 设置工程编号
+		service.setDealid(billDeal.getBillid());
+		service.setOrgid(billDeal.getOrgid());
+		service.setOrgname(billDeal.getOrgname());
+		service.setAgentid(billDeal.getAgentid());
+		service.setAgentname(billDeal.getAgentname());
+		service.setCustomerid(billDeal.getCustomerid());
+		service.setHouseid(billDeal.getHouseid());
+		// 设置工程服务编号
+		service.setVbillcode(codeDao.getBillCode(billDeal.getOrgid(),
+				BillCodeManage.BILLTYPE_SERVICE, 4));
+		// 默认设置开始工期为创建时间
+		service.setStartdate(new SimpleDateFormat("yyyy-MM-dd")
+				.format(DateUtils.currentTimestamp()));
+		// 设置默认工程状态
+		service.setServicestate(BillService.SERVICE_STATE_01);
+		service.setNote(BillService.SERVICE_STATUS_01);
+		service.setPaystate(BillService.SERVICE_PAYSTATE_01);
+		// 设置默认总金额
+		service.setTotalamount(BillService.DEFAULTTOTALAMOUNT);
+		// 设置默认已支付金额
+		service.setPaidamount(BillService.DEFAULTPAIDAMOUNT);
+		service.setCreator(billDeal.getCreator());
+		// 设置创建人id
+		service.setCreatorid(InvocationInfoProxy.getUserid());
+		service.setCreatetime(DateUtils.currentTimestampToString());
+		// 设置客服，管家，工人，勘察状态
+		service.setServerstate(BillService.ALLOTUSER_State_01);
+		service.setSupervisorstate(BillService.ALLOTUSER_State_01);
+		service.setConstructionstate(BillService.ALLOTUSER_State_01);
+		service.setSurveystate(BillService.ALLOTUSER_State_01);
+		// 工序（需要查询出最新的工序流程）
+		String procedureid = "ffd67975-4838-46f0-ae00-fcf2decd5720";
+		Procedure procedure = procedureService.queryByPk(procedureid);
+
+		service.setProcedureid(procedureid);
+		service.setProcedurename(procedure.getProcedurename());
+
+		String billid = metadao.insert(service);
+		// 设置工程服务的默认工序流程
+		createProcedure(procedureid, billid);
+
+		//插入一条日志，勘察预计上门时间
+		serviceDao.createLogService(billid, "修改勘察时间", billDeal.getSurveydate(), InvocationInfoProxy.getUserid(), InvocationInfoProxy.getUsername());
+
+	}
+
+	/**
+	 * 创建工序
+	 */
+	private void createProcedure(String procedureid, String serviceid) {
+		List<Procedurebody> procedures = procedureService
+				.findChildById(procedureid);
+		List<BillServiceProcedure> bodys = new ArrayList<BillServiceProcedure>();
+		for (int i = 0; i < procedures.size(); i++) {
+			BillServiceProcedure procedure = new BillServiceProcedure();
+			procedure.setBillid(serviceid);
+			procedure.setFk_id_serviceprocedure(serviceid);
+			procedure.setFormid(procedures.get(i).getFormid());
+			procedure.setItemid(procedures.get(i).getProcedurebid());
+			procedure.setItemname(procedures.get(i).getItemname());
+			procedure.setItemorder(procedures.get(i).getItemorder());
+			procedure.setType(procedures.get(i).getType());
+			procedure.setState(BillServiceProcedure.PRO_STATE_01);
+			bodys.add(procedure);
+		}
+		metadao.insert(bodys);
+	}
+
+	/**
+	 * 取消分配
+	 */
+	public void cancelAllot(String dealid) {
+		BillDeal deal = metadao.queryByPK(BillDeal.class, dealid);
+		deal.setState(0);
+	}
+
+	// 将交易更改为待回访状态
+	public void changeFollowUp(String serviceid) {
+		BillService service = metadao.queryByPK(BillService.class, serviceid);
+		if (service != null) {
+			if ((service.getServicestate() != null)
+					&& (service.getPaystate() != null)
+					&& (service.getServicestate()
+							.equals(BillService.SERVICE_STATE_03))
+					&& (service.getPaystate()
+							.equals(BillService.SERVICE_PAYSTATE_03))) {
+				BillDeal deal = metadao.queryByPK(BillDeal.class,
+						service.getDealid());
+				if (deal != null) {
+					deal.setState(BillDeal.DEAL_STATE_05);
+					metadao.update(deal);
+				}
+			}
+		}
+
+	}
+
+	// 更改交易状态
+	public void changeState(String dealid, int dealstate) {
+		BillDeal deal = metadao.queryByPK(BillDeal.class, dealid);
+		if (deal != null) {
+			deal.setState(dealstate);
+			metadao.update(deal);
+		}
+	}
+
+	// 将交易更改为一回访状态
+	public void setNPS(String dealid, double nps) {
+		BillDeal deal = metadao.queryByPK(BillDeal.class, dealid);
+		if (deal != null) {
+			deal.setNps(nps);
+			metadao.update(deal);
+		}
+	}
+
+	private void sentMessageToAgent(String dealid,Agent agent,String agentid,Customer customer) {
+		String title = "分配客户";
+		String name = InvocationInfoProxy.getUsername();
+		String content = name + "分配了客户给您的所在运营商";
+		String sql = "SELECT * FROM sys_user where org_id = '" + agentid
+				+ "' and level_name like '%内勤%' and status_id = "+SysUser.STATUS_ID_01+"";
+		List<SysUser> users = metadao.queryByClause(SysUser.class, sql);
+		if (users != null && users.size() > 0) {
+			for (int i = 0; i < users.size(); i++) {
+				messageService.sendMessage(title, users.get(i).getId(),
+						content, "");
+				if (!StringUtils.isEmpty(users.get(i).getUsermobile())) {
+					try {
+//						String message2 = "[雨虹防水] 新增客户,现已分配给您所在的服务区域，请及时登陆系统分配管家，谢谢";
+//						SMSYuHongUtil.sendSMS(message2, users.get(i)
+//								.getUsermobile());
+//						saveAllot(dealid,agent,message2);
+						if (customer != null
+								&& (!StringUtils
+								.isEmpty(customer.getName()) && (!StringUtils
+								.isEmpty(customer.getPhone())))) {
+							String message1 = ""
+									+ customer.getName() + ","
+									+ customer.getPhone()
+									+ ",现已分配给您所在的服务区域，请及时登陆系统分配管家，谢谢";
+							SMSYuHongUtil.sendSMS(message1,
+									users.get(i).getUsermobile());
+							//加入消息通知日志
+							saveAllot(dealid,agent,message1);
+						} else {
+							String message2 = "新增客户,现已分配给您所在的服务区域，请及时登陆系统分配管家，谢谢";
+							SMSYuHongUtil.sendSMS(message2,
+									users.get(i).getUsermobile());
+							//加入消息通知日志
+							saveAllot(dealid,agent,message2);
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	}
+
+	public void reAllot(String dealid, String agentid, String reason) {
+		allot(dealid, agentid, reason);
+		// 更改工程的运营商
+		BillDeal deal = metadao.queryByPK(BillDeal.class, dealid);
+
+		String sql = "SELECT * FROM bill_service where dealid = '" + dealid
+				+ "'";
+		List<BillService> list = metadao.queryByClause(BillService.class, sql);
+
+		if (list != null && list.size() > 0) {
+			BillService service = list.get(0);
+			if (deal != null) {
+				service.setAgentid(deal.getAgentid());
+				service.setAgentname(deal.getAgentname());
+				service.setOrgid(deal.getOrgid());
+				service.setOrgname(deal.getOrgname());
+				metadao.update(service);
+			}
+		} else {
+			// 没有工程，需重新创建
+			createServiceForDeal(deal);
+		}
+
+	}
+
+	public BillService createServiceIfNotExist(String dealid) {
+		BillDeal deal = metadao.queryByPK(BillDeal.class, dealid);
+		createServiceForDeal(deal);
+		String sql = "SELECT * FROM bill_service where dealid = '" + dealid
+				+ "'";
+		List<BillService> list = metadao.queryByClause(BillService.class, sql);
+		if (list != null && list.size() > 0) {
+			return list.get(0);
+		} else {
+			return null;
+		}
+
+	}
+
+	/**
+	 * 将待回访交易变更为已分配，继续施工
+	 */
+	public void resumeDeal(String dealid) {
+		String sql1 = "update bill_deal set state = " + BillDeal.DEAL_STATE_03
+				+ " " + " where billid = '" + dealid + "'";
+		metadao.update(sql1);
+		String sql2 = "SELECT * FROM bill_service where dealid = '" + dealid
+				+ "'";
+		List<BillService> list = metadao.queryByClause(BillService.class, sql2);
+		if (list != null && list.size() > 0) {
+			BillService service = list.get(0);
+			if (2 == service.getConstructionstate()) {
+				service.setServicestate(BillService.SERVICE_STATE_02);
+			} else {
+				service.setServicestate(BillService.SERVICE_STATE_01);
+			}
+			metadao.update(service);
+			LogOrderNote entity = new LogOrderNote();
+			saveNoteVisit(entity);
+		}
+	}
+
+	public List<String> getBealIdByPhone(String phone) {
+		String sql="select `billid` from `bill_deal` where `customerid` in (SELECT `customerid` FROM bd_customer WHERE phone=?) and createtime BETWEEN (SELECT DATE_SUB(NOW(), INTERVAL 2 HOUR)) AND NOW()";
+		SQLParameter param=new SQLParameter();
+		param.addParam(phone);
+		List<String> dealIds=metadao.queryForList(sql, param, new ColumnListProcessor());
+		return dealIds;
+	}
+
+	public void addTidByBealId(String dealId, String tid) {
+		String sql="update bill_deal set tid=? where billid = ?";
+		SQLParameter param=new SQLParameter();
+		param.addParam(tid);
+		param.addParam(dealId);
+		metadao.update(sql,param);
+	}
+	private void saveAllot(String dealid,Agent agent,String message){
+		LogOrderAllot entity = new LogOrderAllot();
+		entity.setDealid(dealid);
+		entity.setOwnerid(agent.getAgentid());
+		entity.setStatus(VOStatus.NEW);
+		entity.setCreatorid(InvocationInfoProxy.getUserid());
+		entity.setCreator(InvocationInfoProxy.getUsername());
+		entity.setCreatetime(DateUtils.currentTimestampToString());
+		String content = message;
+		String action = messgae;
+		entity.setObject(messgae);
+		entity.setAction(action);
+		// 操作日志明细
+		entity.setNote(content);
+		entity.setDr(0);// 未删除标识
+		metadao.save(entity);
+	}
+}

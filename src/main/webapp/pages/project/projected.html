@@ -1,0 +1,125 @@
+<!-- 页面内容区(HTML片段，不能放置HTML 及 BODY 标签 )-->
+<!-- 若要正常使用实时预览功能，请在首页index.html中添加路由#project/project -->
+<div id="projected">
+
+    <div class="u-container-fluid padding-0">
+        <div class="u-row margin-0 padding-0 content-title">
+            <div class="u-col-md-12 u-col-sm-12 u-media-middle margin-0 padding-0">
+                <h3 class="c-title pull-left padding-15 padding-left-20 c_size_28">工程列表</h3>
+                <div class="pull-right padding-15 padding-left-0 padding-right-0">
+                    <div id="searchdiv" class="margin-right-10 pull-right u-has-feedback input_enter">
+                        <input type="text" class="u-form-control c-sm" id="search" placeholder="工程编号/姓名/手机号">
+                        <span class="uf zoom uf-search-light-2" id="searchBtn" data-bind="click: event.searchClick"></span>
+                        <span class="u-form-control-feedback-1  uf-search-light-0 uf uf-close" id="returnBtn"
+                              data-bind="click: event.returnClick"></span>
+                    </div>
+                    <div class="pull-right" id="reAllot_construction" style="display: none;">
+                        <input type="button" class="margin-right-15 u-button u-button-primary bg_blue padding-left-5 padding-right-5"
+                               value="数据导出" data-bind="click: event.exportClick">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--筛选-->
+        <div class="u-container-fluid padding-10 prefilter">
+            <div class="u-row" id="condition-row-user">
+                <div class="u-col-md-11 padding-0 margin-0">
+                    <div class="u-row padding-0 margin-0">
+                        <!-- 运营中心 -->
+                        <div class="u-col-md-2 u-col-xs-3 " style="">
+                            <div class=" u-form-control "  id="combobox_orgname" style="padding:0;"
+                                 u-meta='{"type":"u-combobox","datasource":"orgnameList","data":"searchdatanew","field":"orgname","onlySelect":true}'>
+                                <div class="c_rela">
+								<span class="u-form-control-feedback fa fa-angle-down"
+                                      data-role="combo-button" data-bind=""></span>
+                                    <input placeholder="运营中心" class="u-form-control" style="border:0;width:100%;height:32px;background:#fff;" readonly/>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 运营商 -->
+                        <div class="u-col-md-2  u-col-xs-3 " style="">
+                            <div class=" u-form-control " id="combobox_agentname" style="padding:0;"
+                                 u-meta='{"type":"u-combobox","datasource":"agentnameList","data":"searchdatanew","field":"agentname","onlySelect":true}'>
+                                <div class="c_rela">
+                                    <span class="u-form-control-feedback fa fa-angle-down"
+                                          data-role="combo-button" ></span>
+                                    <input placeholder="运营商" class="u-form-control" style="border:0;width:100%;height:32px;background:#fff;" readonly/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="u-col-md-2 u-col-xs-3 ">
+                            <div u-meta='{"type":"u-date","data":"searchdatanew","field":"startTime4"}'>
+                                <input type="text" class="u-form-control" placeholder="评价开始日期" style="background:#fff;padding-right:0;"  >
+                            </div>
+                        </div>
+                        <div class="u-col-md-2 u-col-xs-3 ">
+                            <div u-meta='{"type":"u-date","data":"searchdatanew","field":"endTime4"}'>
+                                <input type="text" class="u-form-control" placeholder="评价结束日期" style="background:#fff;padding-right:0;"  >
+                            </div>
+                        </div>
+                        <div class="u-col-md-2 u-col-xs-3 ">
+                            <div u-meta='{"type":"u-date","data":"searchdatanew","field":"startTime1"}'>
+                                <input type="text" class="u-form-control" placeholder="客户创建开始日期" style="background:#fff;padding-right:0;"  >
+                            </div>
+                        </div>
+                        <div class="u-col-md-2 u-col-xs-3 ">
+                            <div u-meta='{"type":"u-date","data":"searchdatanew","field":"endTime1"}'>
+                                <input type="text" class="u-form-control" placeholder="客户创建结束日期" style="background:#fff;padding-right:0;"  >
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="u-col-md-11 padding-0 margin-0 margin-top-15">
+                    <div class="u-row padding-0 margin-0">
+                        <div class="u-col-md-2 u-col-xs-3 ">
+                            <div u-meta='{"type":"u-date","data":"searchdatanew","field":"startTime2"}'>
+                                <input type="text" class="u-form-control" placeholder="下单开始日期" style="background:#fff;padding-right:0;"  >
+                            </div>
+                        </div>
+                        <div class="u-col-md-2 u-col-xs-3 ">
+                            <div u-meta='{"type":"u-date","data":"searchdatanew","field":"endTime2"}'>
+                                <input type="text" class="u-form-control" placeholder="下单结束日期" style="background:#fff;padding-right:0;"  >
+                            </div>
+                        </div>
+                        <div class="u-col-md-2 u-col-xs-3 ">
+                            <div u-meta='{"type":"u-date","data":"searchdatanew","field":"startTime3"}'>
+                                <input type="text" class="u-form-control" placeholder="建单开始日期" style="background:#fff;padding-right:0;"  >
+                            </div>
+                        </div>
+                        <div class="u-col-md-2 u-col-xs-3 ">
+                            <div u-meta='{"type":"u-date","data":"searchdatanew","field":"endTime3"}'>
+                                <input type="text" class="u-form-control" placeholder="建单结束日期" style="background:#fff;padding-right:0;"  >
+                            </div>
+                        </div>
+                        <div class="u-col-md-2 padding-0" style="line-height: 34px;">
+                            <input type="button" class="margin-left-15 u-button u-button-primary bg_blue"
+                                   value="过滤" data-bind="click: event.filterClick">
+                            <input type="button" class="margin-left-15 u-button u-button-primary bg_blue"
+                                   id="allot_man" value="重置" data-bind="click: event.resetClick">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--列表展示-->
+        <div class="main-container contacts-container">
+            <div class="hr-table ">
+                <div class="u-table b-table width-full" id="table-projected"
+                     u-meta='
+					 {"id":"objdata",
+					 "type":"grid",
+					 "data":"objdata",
+					 "columnWidth":"150px",
+					 "canSaveSet":true,
+			         "onSaveSetFun":"event.onSaveSetFun"
+					 }'>
+                </div>
+            </div>
+            <div id='pagination' class='pagination u-pagination pagination-sm'></div>
+        </div>
+        <!--分配执行 perform -->
+    </div>
+</div>

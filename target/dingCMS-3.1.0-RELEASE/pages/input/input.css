@@ -1,0 +1,16 @@
+
+#role .u-form-control{
+    font-size: 12px;
+}
+
+/***  _self  ***/
+#role #add-form .form-group{
+    margin-top: 15px;
+    line-height: 36px;
+}
+#role #add-form .control-label{
+    line-height:35px;
+}
+.control-label{
+    line-height:36px;
+}

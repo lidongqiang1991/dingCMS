@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?><component conRouterType="曼哈顿直角" createIndustry="0" createTime="2019-06-06 16:42:37" creator="" description="" displayName="bd_JobLock" fromSourceBmf="true" gencodestyle="标准样式" help="" id="6a5d90af-8b8f-4613-9e08-40f90d2d8b39" industry="0" industryChanged="false" industryIncrease="false" industryName="0" isSource="false" isbizmodel="false" mainEntity="d4fcf716-9112-423e-b5fd-305d9c1e7ec5" metaType=".bmf" modifier="" modifyIndustry="0" modifyTime="2019-06-06 16:42:42" name="bd_JobLock" namespace="dingCMS" ownModule="dingCMS" preLoad="false" programcode="0" resModuleName="bd_JobLock" resid="" version="1" versionType="0">
+    <celllist>
+        <entity accessorClassName="nc.md.model.access.javamap.POJOStyle" bizItfImpClassName="" componentID="6a5d90af-8b8f-4613-9e08-40f90d2d8b39" createIndustry="0" createTime="2019-06-06 16:42:40" creator="" czlist="" description="" displayName="job锁" fullClassName="com.ding.cms.entity.JobLock" height="343" help="" id="d4fcf716-9112-423e-b5fd-305d9c1e7ec5" industryChanged="false" isAuthen="true" isCreateSQL="true" isExtendBean="false" isPrimary="true" isSource="true" keyAttributeId="8c3fe0d3-d814-423b-9a1a-d71ae1b61b17" modInfoClassName="" modifier="" modifyIndustry="0" modifyTime="2019-06-06 16:47:53" name="JobLock" resid="" stereoType="" tableName="bd_joblock" userDefClassName="" versionType="0" visibility="public" width="197" x="166" y="39">
+            <attributelist>
+                <attribute accessStrategy="" accesspower="false" accesspowergroup="" calculation="false" classID="d4fcf716-9112-423e-b5fd-305d9c1e7ec5" createIndustry="0" dataType="BS000010000100001051" dataTypeStyle="SINGLE" dbtype="char" defaultValue="" description="" displayName="主键" dynamic="false" dynamicTable="" fieldName="id" fieldType="char" fixedLength="false" forLocale="false" help="" id="8c3fe0d3-d814-423b-9a1a-d71ae1b61b17" industryChanged="false" isActive="true" isAuthorization="true" isDefaultDimensionAttribute="false" isDefaultMeasureAttribute="false" isFeature="false" isGlobalization="false" isHide="false" isKey="true" isNullable="false" isReadOnly="false" isShare="false" isSource="true" length="36" maxValue="" minValue="" modifyIndustry="0" name="id" notSerialize="false" precise="" refModelName="" resid="" sequence="0" typeDisplayName="ID" typeName="ID" versionType="0" visibility="public"/>
+                <attribute accessStrategy="" accesspower="false" accesspowergroup="" calculation="false" classID="d4fcf716-9112-423e-b5fd-305d9c1e7ec5" createIndustry="0" dataType="BS000010000100001001" dataTypeStyle="SINGLE" dbtype="varchar" defaultValue="" description="" displayName="jobid" dynamic="false" dynamicTable="" fieldName="jobid" fieldType="varchar" fixedLength="false" forLocale="false" help="" id="6ed6da38-1a2c-43c0-982b-db2123db539d" industryChanged="false" isActive="true" isAuthorization="true" isDefaultDimensionAttribute="false" isDefaultMeasureAttribute="false" isFeature="false" isGlobalization="false" isHide="false" isKey="false" isNullable="true" isReadOnly="false" isShare="false" isSource="true" length="50" maxValue="" minValue="" modifyIndustry="0" name="jobid" notSerialize="false" precise="" refModelName="" resid="" sequence="1" typeDisplayName="String" typeName="String" versionType="0" visibility="public"/>
+                <attribute accessStrategy="" accesspower="false" accesspowergroup="" calculation="false" classID="d4fcf716-9112-423e-b5fd-305d9c1e7ec5" createIndustry="0" dataType="BS000010000100001033" dataTypeStyle="SINGLE" dbtype="datetime" defaultValue="" description="" displayName="开始时间" dynamic="false" dynamicTable="" fieldName="starttime" fieldType="datetime" fixedLength="false" forLocale="false" help="" id="b2daf494-8408-4572-b11a-f841aa4459c0" industryChanged="false" isActive="true" isAuthorization="true" isDefaultDimensionAttribute="false" isDefaultMeasureAttribute="false" isFeature="false" isGlobalization="false" isHide="false" isKey="false" isNullable="true" isReadOnly="false" isShare="false" isSource="true" length="" maxValue="" minValue="" modifyIndustry="0" name="starttime" notSerialize="false" precise="" refModelName="" resid="" sequence="2" typeDisplayName="Date" typeName="Date" versionType="0" visibility="public"/>
+                <attribute accessStrategy="" accesspower="false" accesspowergroup="" calculation="false" classID="d4fcf716-9112-423e-b5fd-305d9c1e7ec5" createIndustry="0" dataType="BS000010000100001001" dataTypeStyle="SINGLE" dbtype="varchar" defaultValue="" description="" displayName="IP地址" dynamic="false" dynamicTable="" fieldName="ip" fieldType="varchar" fixedLength="false" forLocale="false" help="" id="6b736a07-4a5b-400b-9096-1970f3c605c8" industryChanged="false" isActive="true" isAuthorization="true" isDefaultDimensionAttribute="false" isDefaultMeasureAttribute="false" isFeature="false" isGlobalization="false" isHide="false" isKey="false" isNullable="true" isReadOnly="false" isShare="false" isSource="true" length="50" maxValue="" minValue="" modifyIndustry="0" name="ip" notSerialize="false" precise="" refModelName="" resid="" sequence="3" typeDisplayName="String" typeName="String" versionType="0" visibility="public"/>
+            </attributelist>
+            <operationlist/>
+            <busiitfs/>
+            <busimaps/>
+            <canzhaolist/>
+            <accessor classFullname="nc.md.model.access.javamap.POJOStyle" displayName="POJO" name="pojo">
+                <properties/>
+            </accessor>
+        </entity>
+    </celllist>
+    <connectlist/>
+    <refdepends/>
+    <refdependLoseIDs/>
+    <cellRemoveLog/>
+    <rulers>
+        <ruler isHorizontal="true" unit="0">
+            <guideList/>
+        </ruler>
+        <ruler isHorizontal="false" unit="0">
+            <guideList/>
+        </ruler>
+    </rulers>
+</component>

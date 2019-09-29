@@ -1,0 +1,132 @@
+package com.ding.cms.repository;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.ding.cms.entity.Agent;
+import com.ding.cms.util.DateUtils;
+import com.yonyou.iuap.context.InvocationInfoProxy;
+import com.yonyou.iuap.iweb.exception.ValidException;
+import com.yonyou.iuap.persistence.bs.dao.DAOException;
+import com.yonyou.iuap.persistence.bs.dao.MetadataDAO;
+import com.yonyou.iuap.persistence.jdbc.framework.SQLParameter;
+import com.yonyou.iuap.persistence.vo.pub.VOStatus;
+import com.yonyou.iuap.system.entity.Org;
+import com.yonyou.iuap.system.entity.SysUser;
+import com.yonyou.iuap.system.service.OrgService;
+
+@Repository
+public class AgentDao {
+	
+	@Autowired
+    private MetadataDAO metadataDAO;
+	
+	@Autowired
+	private  OrgService orgService;
+	
+	public static String agentType = "区域运营商";
+	
+	public Page<Agent> selectByPage (PageRequest pageRequest, Map<String, Object> searchParams) throws DAOException{
+		StringBuilder sb=new StringBuilder();
+		sb.append("select * from bd_agent ");
+		SQLParameter sqlparam = new SQLParameter();
+		sb.append(" where dr=0 and ");
+        if (null != searchParams && !searchParams.isEmpty()) {
+            for (String key : searchParams.keySet()){
+            	if("searchParam".equals(key)){
+            		sb.append(" agentcode like ? or ");
+            		sqlparam.addParam("%"+(String)searchParams.get(key)+"%");
+            		sb.append(" agentname like ? and ");
+            		sqlparam.addParam("%"+(String)searchParams.get(key)+"%");
+            	}else if("agentid".equals(key)){
+            		sb.append(" agentid = ? and ");
+            		sqlparam.addParam((String)searchParams.get(key));
+            	}
+            }
+        }
+        sb.delete(sb.length()-4, sb.length());
+        sb.append(orgService.getTrueData(Agent.class));
+		return metadataDAO.queryPage(sb.toString(), sqlparam, pageRequest, Agent.class);
+	}
+	
+	@Transactional
+    public Agent save(Agent entity) {
+    SysUser user=(SysUser)InvocationInfoProxy.getExtendAttribute("currentUser");
+      if(entity.getAgentid() ==null ){
+        entity.setStatus(VOStatus.NEW);
+         entity.setAgentid(UUID.randomUUID().toString());
+             entity.setCreatedate(DateUtils.currentTimestampToString());
+             entity.setCreator(user.getUsername());
+             entity.setCreatorid(user.getId());
+             entity.setOrgname(orgService.getOrgByPK(entity.getOrgid()).getOrgname());
+             entity.setDr(0);// 未删除标识
+      }else{
+        entity.setStatus(VOStatus.UPDATED);
+      }
+      metadataDAO.save(entity);
+      saveOrgForAgent(entity);
+      String sql = "update bd_agent set productlist = '"+entity.getProductlist()+"' where agentid = '"+entity.getAgentid()+"'";
+      metadataDAO.update(sql);
+      return entity ;
+    }
+	
+	@Transactional
+	public void delete(List<Agent> list) {
+		delOrgForAgent(list.get(0));
+		metadataDAO.remove(list);
+	}
+	
+	private void saveOrgForAgent(Agent agent){
+		if (agent.getStatus() == VOStatus.NEW) {
+			Org org = new Org();
+			org.setStatus(VOStatus.NEW);
+			org.setOrgid(agent.getAgentid());
+			org.setOrgname(agent.getAgentname());
+			org.setOrgcode(agent.getAgentcode());
+			org.setOrgtype(agentType);
+			SysUser user=(SysUser)InvocationInfoProxy.getExtendAttribute("currentUser");
+			org.setParentid(agent.getOrgid());
+			org.setParentname(orgService.getOrgByPK(agent.getOrgid()).getOrgname());
+			org.setCreator(user.getUsername());
+			org.setCreationtime(DateUtils.currentDate());
+			metadataDAO.save(org);
+		}else{
+			Org org =orgService.getOrgByPK(agent.getAgentid());
+			org.setStatus(VOStatus.UPDATED);
+			org.setOrgcode(agent.getAgentcode());
+			org.setOrgname(agent.getAgentname());
+			metadataDAO.save(org);
+		}
+	}
+	
+	public List<SysUser> delValidator(List<Agent> list){
+		String sql = "select * from sys_user where org_id = '"+list.get(0).getAgentid()+"'";
+		return metadataDAO.queryByClause(SysUser.class, sql);
+		
+	}
+	
+	private void delOrgForAgent(Agent agent) {
+		String sql = "select * from sys_user where org_id = '"+agent.getAgentid()+"'";
+		List<SysUser> users = metadataDAO.queryByClause(SysUser.class, sql);
+		if(users!=null && users.size()>0){
+			throw new ValidException("存在成员，无法删除");
+		}
+		String sql1 = "select * from org where org_id = '"+agent.getAgentid()+"'";
+		List<Org> orgs = metadataDAO.queryByClause(Org.class, sql1);
+		if(orgs!=null&&orgs.size()>0){			
+			metadataDAO.remove(orgs);
+		}
+	}
+	
+	public Agent queryByPk(String agentid){
+		return metadataDAO.queryByPK(Agent.class, agentid);
+	}
+	
+}

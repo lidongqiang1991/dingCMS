@@ -1,0 +1,146 @@
+package com.ding.cms.service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import net.sf.json.JSONObject;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.ding.cms.entity.BillDeal;
+import com.ding.cms.entity.Customer;
+import com.ding.cms.entity.CustomerListEntity;
+import com.ding.cms.entity.House;
+import com.ding.cms.entity.LogOrderAllot;
+import com.ding.cms.repository.BillDealDao;
+import com.ding.cms.repository.CustomerListDao;
+import com.ding.cms.service.UdeskService.Fields;
+import com.ding.cms.util.DateUtils;
+import com.yonyou.iuap.context.InvocationInfoProxy;
+import com.yonyou.iuap.persistence.bs.dao.MetadataDAO;
+import com.yonyou.iuap.persistence.vo.pub.VOStatus;
+import com.yonyou.iuap.system.service.LogService;
+
+@Service
+public class CustomerListService {
+
+	@Autowired
+	private CustomerListDao custDao;
+	
+	@Autowired
+	private BillDealService dealService;
+	
+	@Autowired
+	private  LogService  logService;
+	@Autowired
+	private MetadataDAO dao;
+	@Autowired
+	private UdeskService udeskService;
+	@Autowired
+	private BillDealDao dealDao;
+    /**
+     * 根据传递的参数，进行分页查询
+     */
+    public Page<CustomerListEntity> selectAllByPage(Map<String, Object> searchParams, PageRequest pageRequest) {
+    	Page<CustomerListEntity> pageResult = custDao.selectAllByPage(searchParams, pageRequest) ;
+        return pageResult;
+    }
+    
+    @Transactional
+    public CustomerListEntity saveAllNotUDESK(CustomerListEntity custList){
+    	
+    	String[] custLAttributes={"customerid","name","sex","phone","sourcetype","sourcetype1","linkman","linkphone","createdate"};
+    	
+    	Customer cust=new Customer();
+    	for (int i = 0; i < custLAttributes.length; i++) {
+			cust.setAttribute(custLAttributes[i], custList.getAttribute(custLAttributes[i]));
+		}
+    	//保存客户信息
+    	String customerid=custDao.saveCustomer(cust);
+    	
+    	String[] houseLAttributes={"houseid","province","city","district","address","type","part","area","reason"};
+    	House house=new House();
+    	for (int i = 0; i < houseLAttributes.length; i++) {
+			house.setAttribute(houseLAttributes[i], custList.getAttribute(houseLAttributes[i]));
+		}
+    	house.setCustomerid(customerid);
+    	
+    	String houseid=custDao.saveHouse(house);
+    	custList.setCustomerid(customerid);
+    	custList.setHouseid(houseid);
+    	//生成交易插入系统日志
+    	if(custList.getBillid()==null){
+    		logService.insertlog("交易", "生成交易", "客户"+cust.getName()+"生成交易");
+    	}else{
+    		BillDeal deal=dao.queryByPK(BillDeal.class, custList.getBillid());
+    		if(deal.getLifestages()!=custList.getLifestages()&&custList.getLifestages()==1){
+    			LogOrderAllot entity = new LogOrderAllot();
+				entity.setDealid(custList.getBillid());
+				entity.setStatus(VOStatus.NEW);
+				entity.setCreatorid(InvocationInfoProxy.getUserid());
+				entity.setCreator(InvocationInfoProxy.getUsername());
+				entity.setCreatetime(DateUtils.currentTimestampToString());
+				entity.setObject("线索");
+				entity.setAction("转为客户");
+				// 操作日志明细
+				entity.setNote(custList.getName()+"已转为客户");
+				dao.save(entity);
+    		}
+    	}
+    	//保存完客户信息和房屋信息后，自动生成交易
+    	String billid=dealService.saveForCustomerList(custList);
+    	custList.setBillid(billid);
+    	
+    	return custList;
+    }
+    
+    @Transactional
+    public CustomerListEntity saveAll(final CustomerListEntity custList){
+    	final String id=custList.getBillid();
+    	final CustomerListEntity customerListEntity=saveAllNotUDESK(custList);
+    	new Thread(new Runnable() {
+			@Override
+			public void run() {
+				//如果id(即单据主键)为空
+				if(id==null){
+					//查询bill_deal,bd_customer,bd_house的各个字段
+					List<CustomerListEntity> custs = custDao.getCustomerListEntities(custList.getPhone(),false);
+					if(custs==null||custs.size()<=1)return;
+					//创建工单并打印日志
+		    		String result=udeskService.createTicket(customerListEntity);
+		    		if(result==null)return;
+//		    		if(result==null)throw new RuntimeException("新建工单失败");
+		    		String tid=JSONObject.fromObject(result).getString("ticket_id");
+		    		//根据customerListEntity.getBillid()去找相应的bill_deal将tid字段set进去
+		    		dealDao.addTidByBealId(customerListEntity.getBillid(), tid);
+		    	}else if(custList.getTid()!=null){
+		    		String ticket=udeskService.ticket(custList.getTid(), customerListEntity);
+		    		if(ticket!=null){
+		    			udeskService.updateTicket(null, custList.getTid(), ticket);
+		    		}
+		    	}
+			}
+		}).start();
+    	return customerListEntity;
+    }
+	public Page<CustomerListEntity> selectAllByPageForUdesk(Map<String, Object> searchParams,
+			PageRequest pageRequest) {
+		return custDao.selectAllByPageForUdesk(searchParams, pageRequest);
+	}
+	public List<CustomerListEntity> getCustomers(String starttime,String endtime){
+		return custDao.getCustomers(starttime, endtime);
+	}
+	public List<CustomerListEntity> getCustomerListEntities(String phone,boolean hasTid){
+		return custDao.getCustomerListEntities(phone,hasTid);
+	}
+	public CustomerListEntity getCustomerListEntity(String id){
+		return custDao.getCustomerListEntity(id);
+	}
+}

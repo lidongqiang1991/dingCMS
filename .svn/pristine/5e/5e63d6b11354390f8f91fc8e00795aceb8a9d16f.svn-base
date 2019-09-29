@@ -1,0 +1,19 @@
+
+div#content{
+    background:#fff !important;
+}
+.c_rela{
+    position:relative;
+}
+.c-title{
+    margin:0;
+    line-height: 30px;
+}
+.material .form-group{
+    margin-bottom:15px;
+    line-height: 36px;
+}
+.material .control-label{
+    text-align:center;
+}
+

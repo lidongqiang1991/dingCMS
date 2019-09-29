@@ -1,0 +1,437 @@
+
+<div class="u-container-fluid padding-0" id="customerDetail">
+		<div class="js_href padding-15 padding-left-20 padding-right-0 margin-0 content-title" style="">
+			<a href="#/customer/customer" class="c_green c_size_24" id="backUrl"> &lt; </a>
+		</div>
+
+		<div class="js_href padding-15" style="display: none;">
+			<div class="u-row">
+				<div class="u-col-3"> 2018-09-19  杨辰 </div>
+				<div class="u-col-6"></div>
+				<div class="u-col-3">
+					总价
+					<div class=""> ¥1000 </div>
+				</div>
+			</div>
+			<div class="u-row padding-top-15">
+				<div class="u-col-9">
+					<!--增加样式 .col-xs-4{width: 33.3%;float: left;}，可以在一条横线上显示-->
+					<div class="example">
+						<div class="pearls pearls-xs u-row">
+							<div class="pearl done ">
+								<div class="pearl-title">待确认</div>
+								<div class="pearl-number"><i class="icon uf uf-correct"></i></div>
+							</div>
+							<div class="pearl current ">
+								<div class="pearl-title">待分配</div>
+								<div class="pearl-number">
+									<i class="icon uf uf-correct"></i>
+								</div>
+							</div>
+							<div class="pearl ">
+								<div class="pearl-title">已分配</div>
+								<div class="pearl-number">
+									<i class="icon uf uf-correct"></i>
+								</div>
+							</div>
+							<div class="pearl ">
+								<div class="pearl-title">已结束</div>
+								<div class="pearl-number"></div>
+							</div>
+							<div class="pearl ">
+								<div class="pearl-title">待回访</div>
+								<div class="pearl-number">5</div>
+							</div>
+							<div class="pearl ">
+								<div class="pearl-title">已回访</div>
+								<div class="pearl-number">6</div>
+							</div>
+							<div class="pearl ">
+								<div class="pearl-title">已关闭</div>
+								<div class="pearl-number">7</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="u-col-3">
+					创建时间
+					<div> 2018年8月30日 </div>
+				</div>
+			</div>
+		</div>
+
+		<!--tabs控件 切换active状态包括线性跟随和背景跟随 tabs控件依赖 u-tabs 类，状态类是共用的。 改变修饰类可以改变active样式。 默认是active状态为线性跟随 添加修饰类.u-tabs-pill 为背景跟随-->
+		<div class="u-tabs  padding-20 padding-top-0 c_border_box">
+			<div class="u-tabs__tab-bar" style="justify-content:flex-start;">
+				<a href="#tab-panel-1" class="u-tabs__tab is-active" data-type="1">客户信息</a>
+				<a href="#tab-panel-2" class="u-tabs__tab" data-type="2">客户跟进</a>
+				<a href="#tab-panel-3" class="u-tabs__tab" data-type="3">分配日志</a>
+				<a href="#tab-panel-4" class="u-tabs__tab" data-type="4">客户回访</a>
+			</div>
+            <!--客户信息-->
+			<div class="u-tabs__panel is-active u-form" id="tab-panel-1">
+				<div id="add-form">
+					<!--客户信息-->
+					<div class="padding-15">
+						<div class="tab-1-title c_size_16 font-weight-600">客户基本信息</div>
+						<div class="tab-1-content">
+							<div class="u-row">
+								<div class="u-col-md-1 tab-1-name margin-bottom-10">客户姓名：</div>
+								<div class="u-col-md-2 margin-bottom-10">
+									<div class=" u-has-feedback"
+										 u-meta='{"type":"u-text","data":"customerdatanew","field":"name"}'>
+										<div class="u-input-group-before" style="color: red;">*</div>
+										<input type="text" class="u-form-control" placeholder=""  >
+									</div>
+								</div>
+								<div class="u-col-md-1 tab-1-name margin-bottom-10">客户性别：</div>
+								<div class="u-col-md-2  margin-bottom-10">
+									<div class="u-combo"
+										 u-meta='{"type":"u-combobox","datasource":"sexList","data":"customerdatanew","field":"sex","onlySelect":true}'>
+										<div class="u-input-group u-has-feedback">
+											<div class="u-input-group-before" style="color: red;"></div>
+											<span class="u-form-control-feedback fa fa-angle-down"
+												  data-role="combo-button"></span>
+											<input class="u-form-control" readonly/>
+										</div>
+									</div>
+								</div>
+								<div class="u-col-md-1 tab-1-name margin-bottom-10">客户电话：</div>
+								<div class="u-col-md-2  margin-bottom-10">
+									<div class=" u-has-feedback"
+										 u-meta='{"type":"u-text","data":"customerdatanew","field":"phone"}'>
+										<div class="u-input-group-before" style="color: red;">*</div>
+										<input type="text" class="u-form-control" placeholder=""  >
+									</div>
+								</div>
+							</div>
+							<div class="u-row">
+								<div class="u-col-md-1 tab-1-name margin-bottom-10">附加联系人：</div>
+								<div class="u-col-md-2 margin-bottom-10 ">
+									<div class=" u-has-feedback"
+										 u-meta='{"type":"u-text","data":"customerdatanew","field":"linkman"}'>
+										<!--<div class="u-input-group-before" style="color: red;">*</div>-->
+										<input type="text" class="u-form-control" placeholder=""  >
+									</div>
+								</div>
+								<div class="u-col-md-1 tab-1-name margin-bottom-10">联系人手机：</div>
+								<div class="u-col-md-2  margin-bottom-10">
+									<div class=" u-has-feedback"
+										 u-meta='{"type":"u-text","data":"customerdatanew","field":"linkphone"}'>
+										<!--<div class="u-input-group-before" style="color: red;">*</div>-->
+										<input type="text" class="u-form-control" placeholder=""  >
+									</div>
+								</div>
+							</div>
+							<div class="u-row">
+								<div class="u-col-md-1 tab-1-name margin-bottom-10">推广大使姓名：</div>
+								<div class="u-col-md-2  margin-bottom-10">
+									<div class=" u-has-feedback"
+										 u-meta='{"type":"u-text","data":"customerdatanew","field":"referrer"}'>
+										<!--<div class="u-input-group-before" style="color: red;">*</div>-->
+										<input type="text" class="u-form-control" placeholder="" style="pointer-events: none;">
+									</div>
+								</div>
+								<div class="u-col-md-1 tab-1-name margin-bottom-10">推广大使手机：</div>
+								<div class="u-col-md-2  margin-bottom-10">
+									<div class=" u-has-feedback"
+										 u-meta='{"type":"u-text","data":"customerdatanew","field":"referrerphone"}'>
+										<!--<div class="u-input-group-before" style="color: red;">*</div>-->
+										<input type="text" class="u-form-control" placeholder="" style="pointer-events: none;">
+									</div>
+								</div>
+								<div class="u-col-md-1 tab-1-name margin-bottom-10" style="visibility: hidden;">推广大使id：</div>
+								<div class="u-col-md-2  margin-bottom-10"  style="visibility: hidden;">
+									<div class=" u-has-feedback"
+										 u-meta='{"type":"u-text","data":"customerdatanew","field":"referrerid"}'>
+										<!--<div class="u-input-group-before" style="color: red;">*</div>-->
+										<input type="text" class="u-form-control" placeholder="" style="pointer-events: none;">
+									</div>
+								</div>
+							</div>
+							<div class="u-row">
+								<div class="u-col-md-1 tab-1-name margin-bottom-10">客户来源：</div>
+								<div class="u-col-md-2 margin-bottom-10 ">
+									<div class="u-combo"
+										 u-meta='{"type":"u-combobox","datasource":"sourceList","data":"customerdatanew","field":"sourcetype","onlySelect":false}'>
+										<div class="u-input-group u-has-feedback">
+											<div class="u-input-group-before" style="color: red;"></div>
+											<span class="u-form-control-feedback fa fa-angle-down"
+												  data-role="combo-button"></span>
+											<input class="u-form-control" readonly/>
+										</div>
+									</div>
+								</div>
+								<div class="u-col-md-2 margin-bottom-10 ">
+									<div class="u-combo" id="combobox_sourcetype1"
+										 u-meta='{"type":"u-combobox","datasource":"sourceList1","data":"customerdatanew","field":"sourcetype1","onlySelect":false}'>
+										<div class="u-input-group u-has-feedback">
+											<div class="u-input-group-before" style="color: red;"></div>
+											<span class="u-form-control-feedback fa fa-angle-down"
+												  data-role="combo-button"></span>
+											<input class="u-form-control" readonly/>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="padding-15 padding-top-0 padding-bottom-0">
+						<div class="tab-1-title c_size_16 font-weight-600">客户房屋信息</div>
+						<div class="tab-1-content">
+							<div class="u-row">
+								<div class="u-col-md-1 tab-1-name margin-bottom-10">
+									所在区域：
+								</div>
+								<div class="u-col-md-7 padding-left-0 margin-bottom-10">
+									<div class="u-row">
+										<div class="u-col-md-4">
+											<div class="u-combo"
+												 u-meta='{"type":"u-combobox","datasource":"provinceList","data":"customerdatanew","field":"province","onlySelect":false}'>
+												<div class="u-input-group u-has-feedback">
+													<div class="u-input-group-before" style="color: red;"></div>
+													<span class="u-form-control-feedback fa fa-angle-down"
+														  data-role="combo-button"></span>
+													<input class="u-form-control" readonly/>
+												</div>
+											</div>
+										</div>
+										<div class="u-col-md-4">
+											<div class="u-combo" id="combobox_city"
+												 u-meta='{"type":"u-combobox","datasource":"cityList","data":"customerdatanew","field":"city","onlySelect":false}'>
+												<div class="u-input-group u-has-feedback">
+													<div class="u-input-group-before" style="color: red;"></div>
+													<span class="u-form-control-feedback fa fa-angle-down"
+														  data-role="combo-button"></span>
+													<input class="u-form-control" readonly/>
+												</div>
+											</div>
+										</div>
+										<div class="u-col-md-4">
+											<div class="u-combo" id="combobox_district"
+												 u-meta='{"type":"u-combobox","datasource":"districtList","data":"customerdatanew","field":"district","onlySelect":false}'>
+												<div class="u-input-group u-has-feedback">
+													<div class="u-input-group-before" style="color: red;"></div>
+													<span class="u-form-control-feedback fa fa-angle-down"
+														  data-role="combo-button"></span>
+													<input class="u-form-control" readonly/>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="u-row">
+								<div class="u-col-md-1 tab-1-name margin-bottom-10">
+									所在小区：
+								</div>
+								<div class="u-col-md-2  margin-bottom-10">
+									<div class=" u-has-feedback"
+										 u-meta='{"type":"u-text","data":"customerdatanew","field":"community"}'>
+										<div class="u-input-group-before" style="color: red;"></div>
+										<input type="text" class="u-form-control" placeholder="请填写所在小区"  >
+									</div>
+								</div>
+								<div class="u-col-md-1 tab-1-name margin-bottom-10">
+									详细地址：
+								</div>
+								<div class="u-col-md-4 margin-bottom-10">
+									<div class=" u-has-feedback"
+										 u-meta='{"type":"u-text","data":"customerdatanew","field":"address"}'>
+										<input type="text" class="u-form-control" placeholder="请填写详细地址"  >
+									</div>
+								</div>
+							</div>
+							<div class="u-row">
+								<div class="u-col-md-1 tab-1-name margin-bottom-10">
+									维修面积：
+								</div>
+								<div class="u-col-md-2 margin-bottom-10 ">
+									<div class=" u-has-feedback"
+										 u-meta='{"type":"u-text","data":"customerdatanew","field":"area"}'>
+										<div class="u-input-group-before" style="color: red;"></div>
+										<input type="text" class="u-form-control" placeholder="平米" onkeyup="value=value.replace(/[^\d{1,}\.\d{1,}|\d{1,}]/g,'')"  >
+									</div>
+								</div>
+								<div class="u-col-md-1 tab-1-name margin-bottom-10">
+									维修类型(多选)：
+								</div>
+								<div class="u-col-md-4 margin-bottom-10">
+									<div class="u-combo mutil-select" u-meta='{"type":"u-combobox","datasource":"typeList","data":"customerdatanew","field":"type","onlySelect":false}'>
+										<div class="u-input-group u-has-feedback">
+											<span class="u-form-control-feedback fa fa-angle-down"
+												  data-role="combo-button"></span>
+											<input class="u-form-control" readonly/>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="u-row">
+								<div class="u-col-md-1 tab-1-name margin-bottom-10">
+									渗漏部位：
+								</div>
+								<div class="u-col-md-2 margin-bottom-10">
+									<div class="u-combo" u-meta='{"type":"u-combobox","datasource":"partList","data":"customerdatanew","field":"part","onlySelect":false}'>
+										<div class="u-input-group u-has-feedback">
+											<span class="u-form-control-feedback fa fa-angle-down"
+												  data-role="combo-button"></span>
+											<input class="u-form-control" readonly/>
+										</div>
+									</div>
+								</div>
+								<div class="u-col-md-1 tab-1-name margin-bottom-10">
+									备注信息：
+								</div>
+								<div class="u-col-md-4 margin-bottom-10">
+									<div class=" u-has-feedback"
+										 u-meta='{"type":"u-text","data":"customerdatanew","field":"reason"}'>
+										<!--<div class="u-input-group-before" style="color: red;">*</div>-->
+										<input type="text" class="u-form-control" placeholder="根据沟通进行漏水原因等其他信息备注"  >
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</div>
+					<div class="padding-15">
+						<div class="tab-1-title c_size_16 font-weight-600">工程信息</div>
+						<div class="tab-1-content">
+							<div class="u-row">
+								<div class="u-col-md-3 tab-1-name margin-bottom-10" style="">
+                                    <div class="u-row">
+                                        <div class="u-col-md-1">
+                                            <label  class="u-checkbox" u-meta='{"data":"customerdatanew","field":"issurvey","type":"u-checkbox","checkedValue":"Y","unCheckedValue":"N"}' style="margin-bottom: 10px;">
+                                                <input type="checkbox" class="u-checkbox-input">
+                                            </label>
+                                        </div>
+                                        <div class="u-col-md-5 tab-1-name">
+                                            	是否需要上门勘察
+                                        </div>
+                                    </div>
+								</div>
+								<div class="u-col-md-1 tab-1-name margin-bottom-10" style="width:120px;">
+									预计上门勘察时间：
+								</div>
+								<div class="u-col-md-4 margin-bottom-10">
+									<div class="u-input-group u-has-feedback" style="width: 184px;"
+										 u-meta='{"type":"u-datetime","format":"YYYY-MM-DD h:00:00 a","data":"customerdatanew","field":"surveydate"}'>
+										<input type="text" class="u-form-control" placeholder="选择勘察时间"  >
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="padding-15 padding-top-0 padding-bottom-0">
+						<div class="edit">
+							<div class="padding-top-0">
+								<button id="saveman" class="u-msg-ok u-button u-button-primary bg_blue"
+										data-bind="click: event.saveClick">保存
+									<span class="u-button-container"></span>
+								</button>
+								<!--<button id="cancelman" class="u-msg-cancel u-button u-button-white bg_blue"-->
+								<!--data-bind="click: event.cancelClick">取消-->
+								<!--<span class="u-button-container"></span>-->
+								<!--</button>-->
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+            <!--客户跟进-->
+			<div class="u-tabs__panel" id="tab-panel-2">
+                <div class="padding-15">
+					<div class="u-col-md-12 " style="padding:0 0 15px;">
+						<input class="u-col-md-9 u-form-control " type="text" id="add_follow"
+							   placeholder="输入备注"
+						/>
+					</div>
+					<div class="u-msg-footer margin-top-30">
+						<button id="addFollowClick" class="u-msg-ok u-button u-button-primary bg_blue"
+								data-bind="click: event.addFollowClick">保存
+							<span class="u-button-container"></span>
+						</button>
+					</div>
+                </div>
+				<div class="padding-15">
+					<!--客户跟进列表-->
+					<div class="main-container padding-0 contacts-container">
+						<div class="hr-table ">
+							<div class="u-table b-table width-full"
+								 u-meta='{"id":"gridaddress1","type":"grid","data":"followupdata","columnWidth":"150px"}'>
+								<div options='{"field":"creator","title":"操作者","dataType":"String","editType":"string"}'>
+								</div>
+								<div options='{"field":"action","title":"操作","dataType":"String","editType":"string"}'></div>
+								<div options='{"field":"createtime","title":"操作时间","dataType":"String","editType":"string"}'></div>
+								<div options='{"field":"note","title":"操作明细","dataType":"String","editType":"string"}'></div>
+							</div>
+						</div>
+						<div id='pagination_follow' class='pagination u-pagination pagination-sm'></div>
+					</div>
+				</div>
+			</div>
+            <!--分配日志-->
+			<div class="u-tabs__panel" id="tab-panel-3">
+				<div class="padding-15">
+					<div class="main-container padding-0 contacts-container">
+						<div class="hr-table ">
+							<div class="u-table b-table width-full"
+								 u-meta='{"id":"gridaddress","type":"grid","data":"allotdata","columnWidth":"150px"}'>
+								<div options='{"field":"creator","title":"操作者","dataType":"String","editType":"string"}'>
+								</div>
+								<div options='{"field":"action","title":"操作","dataType":"String","editType":"string"}'></div>
+								<div options='{"field":"createtime","title":"操作时间","dataType":"String","editType":"string"}'></div>
+								<div options='{"field":"object","title":"操作对象","dataType":"String","editType":"string"}'></div>
+								<div options='{"field":"note","title":"操作明细","dataType":"String","editType":"string"}'></div>
+							</div>
+						</div>
+						<div id='pagination_allot' class='pagination u-pagination pagination-sm'></div>
+					</div>
+				</div>
+			</div>
+			<!--客户回访-->
+			<div class="u-tabs__panel" id="tab-panel-4">
+                <div class="padding-15">
+					<div class="u-col-md-12 " style="padding:0 0 15px;">
+						<p style='float: left;line-height:13px;'>记录：</p><input class="u-col-md-9 u-form-control " type="text" id="add_visit"
+							   placeholder="请输入备注"
+						/>
+					</div>
+					<div class="u-col-md-12 " style="padding:0 0 15px;">
+						<p style='float: left;line-height:13px;'>NPS：</p>
+							<input class="u-col-md-2 u-form-control " max="10" oninput="this.value=this.value>10?10:this.value<0?0:parseInt(this.value)" type="number" id="add_nps" placeholder="请输入NPS值" />
+					</div>
+					<div class="u-col-md-12 " style="padding:0 0 15px;line-height:13px;">
+						<input type="checkbox" name='visitstate' style='float:left;zoom:120%;margin:10px 5px 10px 35px;' id='add_visitstate'><p style='float:left;line-height:13px;'>结束回访</p>
+					</div>
+					<div class="u-msg-footer margin-top-30">
+						<button id="addFollowClick" class="u-msg-ok u-button u-button-primary bg_blue"
+								data-bind="click: event.addVisitClick">保存
+							<span class="u-button-container"></span>
+						</button>
+						<button id="resumebtn" class="u-msg-ok u-button u-button-primary margin-left-15 c_white bg_gray c_nopointer"
+								data-bind="click: event.resumeClick">重新施工
+							<span class="u-button-container"></span>
+						</button>
+					</div>
+                </div>
+				<div class="padding-15">
+					<!--客户回访列表-->
+					<div class="main-container padding-0 contacts-container">
+						<div class="hr-table ">
+							<div class="u-table b-table width-full"
+								 u-meta='{"id":"gridaddress2","type":"grid","data":"followupdata","columnWidth":"150px"}'>
+								<div options='{"field":"creator","title":"操作者","dataType":"String","editType":"string"}'>
+								</div>
+								<div options='{"field":"action","title":"操作","dataType":"String","editType":"string"}'></div>
+								<div options='{"field":"createtime","title":"操作时间","dataType":"String","editType":"string"}'></div>
+								<div options='{"field":"note","title":"操作明细","dataType":"String","editType":"string"}'></div>
+							</div>
+						</div>
+						<div id='pagination_visit' class='pagination u-pagination pagination-sm'></div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+</div>

@@ -1,0 +1,206 @@
+package com.ding.cms.task;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
+
+import net.sf.json.JSONObject;
+import oracle.net.aso.s;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import com.ding.cms.entity.CustomerListEntity;
+import com.ding.cms.entity.JobLog;
+import com.ding.cms.service.CRMJobService;
+import com.ding.cms.service.CustomerListService;
+import com.ding.cms.service.JobLogService;
+import com.ding.cms.service.UdeskService;
+import com.ding.cms.util.Constants;
+import com.ding.cms.util.DateUtils;
+import com.yonyou.iuap.context.InvocationInfoProxy;
+import com.yonyou.iuap.system.entity.InterfaceLog;
+import com.yonyou.iuap.system.entity.SysUser;
+import com.yonyou.iuap.system.service.InterfaceLogService;
+
+@Component
+public class UdeskTask{
+	/*
+	 * dongl添加注解:从CRM拉数据
+	 */
+	@Value(value="${job.jobRun.pullCustomerFromCRM}")
+	private String pullCustomerFromCRM; 
+	/*
+	 * dongl添加注解:给Udesk推数据
+	 */
+	@Value(value="${job.jobRun.pushCustomerToUdesk}")
+	private String pushCustomerToUdesk; 
+	@Value(value="${job.jobRun.test}")
+	private String test; 
+	@Autowired
+	private CRMJobService CRMService;
+	@Autowired
+	private JobLogService jobLogService;
+	@Autowired
+	private UdeskService udeskService;
+	@Autowired
+	private CustomerListService cListService;
+	@Autowired
+	private InterfaceLogService interfaceLogService;
+	private final Logger logger = LoggerFactory.getLogger(UdeskTask.class);
+
+	/*
+	 * dongl添加注解:@Scheduled该注解是定时器的作用,表示秒 分 时 日 月 周 (年)
+	 * 如下表示从0点开始,每两小时执行一次
+	 */
+	@Scheduled(cron = "0 0 0/2 * * ?")
+	public void pullCustomerFromCRM() {
+		Date enddate = new Date();
+		if(!"Y".equals(pullCustomerFromCRM))return;
+		logger.info("今日头条job开始运行");
+		SysUser user = (SysUser) InvocationInfoProxy
+				.getExtendAttribute("currentUser");
+		if (user == null) {
+			user = new SysUser();
+			user.setOrgid("4958dae8-72a9-4136-9db0-b82099707ac7");
+			user.setOrgname("顶之美");
+			user.setId("00001");
+			user.setUsername("今日头条JOB定时器");
+			InvocationInfoProxy.setSysid("ding_J");
+			InvocationInfoProxy.setLocale("zh_CN");
+			InvocationInfoProxy.setUserid(user.getId());
+			InvocationInfoProxy.setUsername(user.getUsername());
+			InvocationInfoProxy.setExtendAttribute("currentUser", user);
+		}
+		JobLog log = new JobLog();
+		log.setStarttime(enddate);
+		log.setJobid("00001");
+		JSONObject result = null;
+		//可以得到bd_joblog里最大的starttime,即前面set进去的当前时间
+		Date startdate = jobLogService.getStartDate("00001");
+		startdate = startdate == null ? new Date(0) : startdate;
+		try {
+			logger.info("今日头条job开始拉取数据");
+			//传的参数是starttime(当前时间减1天),endtime(当前时间),jobid
+			//返回的是数据总量和分页情况
+			result = CRMService.pull(DateUtils.addDate(startdate,-1), enddate, "00001");
+			log.setEndtime(new Date());
+			log.setSuccess(true);
+			log.setResponse(result.toString());
+			logger.info("今日头条job拉取成功");
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.setEndtime(new Date());
+			log.setSuccess(false);
+			if (result != null)
+				log.setResponse(result.toString());
+			logger.info("今日头条job拉取失败");
+		}
+		jobLogService.save(log);
+	}
+	/*
+	 * 往Udsek推数据
+	 */
+	@Scheduled(cron="0 30 0/2 * * ?")
+	public void pushCustomerToUdesk() throws ParseException, InterruptedException {
+		Date enddate = new Date();
+		if(!"Y".equals(pushCustomerToUdesk))return;
+		logger.info("udesk job开始运行");
+		InterfaceLog log = new InterfaceLog();
+		log.setStarttime(DateUtils.format(enddate, DateUtils.YMDHMS_PATTERN));
+		logger.info("开始查询并推送数据");
+		log.setSender("DZM");
+		udeskService.push(log.getStarttime(), log);
+		logger.info("推送结束");
+	}
+	//@Scheduled(cron="0/10 * * * * ?")
+	public void test(){
+		Date enddate = new Date();
+		if(!"Y".equals(test))return;
+		logger.info("============定时任务测试  当前时间>>>>>>"+enddate.toString()+"=================");
+		System.out.println("pullCustomerFromCRM>>>>>"+pullCustomerFromCRM);
+		System.out.println("pushCustomerToUdesk>>>>>"+pushCustomerToUdesk);
+		System.out.println("test>>>>>"+test);
+	}
+//	@Scheduled(cron="0 30 0/2 * * ?")
+//	public void pushCustomerToUdesk() throws ParseException {
+//		Date enddate = new Date();
+//		if(hasProperties("job.pushCustomerToUdesk")==false)return;
+//		logger.info("udesk job开始运行");
+//		JobLog log = new JobLog();
+//		log.setStarttime(enddate);
+//		log.setJobid("00002");
+//		Date startdate = jobLogService.getStartDate("00002");
+//		startdate = startdate == null ? new Date(0) : startdate;
+//		Calendar startDate = Calendar.getInstance();
+//		startDate.setTime(startdate);
+//		startDate.add(Calendar.MINUTE, -30);
+//		if(udeskService.getToken(null, null, null)==null){
+//			logger.error("获取udesk token失败");
+//			log.setEndtime(new Date());
+//			log.setResponse("获取udesk token失败");
+//			log.setSuccess(false);
+//			jobLogService.save(log);
+//			throw new RuntimeException("获取udesk token失败");
+//		}
+//		logger.info("获取udesk token成功");
+//		Map<String, Object> searchParams = new HashMap<String, Object>();
+//		searchParams.put("starttime1",
+//				DateUtils.format(startDate.getTime(), DateUtils.YMDHMS_PATTERN));
+//		searchParams.put("endtime1", DateUtils.format(enddate, DateUtils.YMDHMS_PATTERN));
+//		searchParams.put("lifestages", "0");
+//		int page = 0;
+//		int size = 500;
+//		Sort sort=new Sort(Direction.DESC,"d.createtime");
+//		logger.info("开始查询并推送数据");
+//		do {
+//			PageRequest pageRequest = new PageRequest(page, size,sort);
+//			List<CustomerListEntity> list = cListService.selectAllByPageForUdesk(
+//					searchParams, pageRequest).getContent();
+//			if (list != null && !list.isEmpty()) {
+//				udeskService.push(null, list);
+//				page += 1;
+//			} else
+//				break;
+//		} while (true);
+//		logger.info("推送结束");
+//		log.setSuccess(true);
+//		log.setEndtime(new Date());
+//		jobLogService.save(log);
+//	}
+	public String getPullCustomerFromCRM() {
+		return pullCustomerFromCRM;
+	}
+	public void setPullCustomerFromCRM(String pullCustomerFromCRM) {
+		this.pullCustomerFromCRM = pullCustomerFromCRM;
+	}
+	public String getPushCustomerToUdesk() {
+		return pushCustomerToUdesk;
+	}
+	public void setPushCustomerToUdesk(String pushCustomerToUdesk) {
+		this.pushCustomerToUdesk = pushCustomerToUdesk;
+	}
+	public String getTest() {
+		return test;
+	}
+	public void setTest(String test) {
+		this.test = test;
+	}
+	
+}

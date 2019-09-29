@@ -1,0 +1,1 @@
+alter table bd_productitem add  column `materialamount`  decimal ( 28 , 8 )  null;

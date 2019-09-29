@@ -1,0 +1,161 @@
+package com.ding.cms.web.controller;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.servlet.http.HttpServletRequest;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
+import org.bouncycastle.asn1.icao.CscaMasterList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.ding.cms.entity.BillDeal;
+import com.ding.cms.entity.CustomerListEntity;
+import com.ding.cms.service.BillDealService;
+import com.ding.cms.service.CRMJobService;
+import com.ding.cms.service.CustomerListService;
+import com.ding.cms.service.ServiceService;
+import com.ding.cms.service.UdeskService;
+import com.ding.cms.service.UdeskService.Fields;
+import com.yonyou.iuap.context.InvocationInfoProxy;
+import com.yonyou.iuap.persistence.bs.dao.MetadataDAO;
+import com.yonyou.iuap.persistence.vo.pub.VOStatus;
+import com.yonyou.iuap.system.entity.SysUser;
+
+@RestController
+@RequestMapping("callback")
+public class CallBackController {
+	private final Logger logger = LoggerFactory
+			.getLogger(CallBackController.class);
+	@Autowired
+	private UdeskService udeskService;
+	@Autowired
+	private CustomerListService cusService;
+	@Autowired
+	private BillDealService dealService;
+	@Autowired
+	private ServiceService serviceService;
+	// 工单创建回调
+	@RequestMapping("createticket")
+	public void createTicket(@RequestBody Map<String, Object> map) {
+		logger.info("create>>>>"+JSONObject.fromObject(map).toString());
+		if (!map.containsKey("cid"))
+			return;
+		if("顶之美工单".equals(map.get("subject")))return;
+		// 获取工单id
+		String tid = map.get("tid").toString();
+		// 获取姓名
+		String name = map.get("name").toString();
+		// 获取电话信息
+		String phone = map.get("phone").toString();
+		// 获取工单对象
+		String result = udeskService.getTicket(null, Integer.parseInt(tid));
+		if (result == null)
+			return;
+		String id = null;
+		JSONObject ticket = JSONObject.fromObject(result).getJSONObject("ticket");
+		JSONObject customFields = ticket.getJSONObject("custom_fields");
+		List<CustomerListEntity> customerListEntities = cusService
+				.getCustomerListEntities(phone,true);
+		SysUser user = (SysUser) InvocationInfoProxy
+				.getExtendAttribute("currentUser");
+		if (user == null) {
+			user = new SysUser();
+			user.setOrgid("4958dae8-72a9-4136-9db0-b82099707ac7");
+			user.setOrgname("UDESK");
+			user.setId("UDESK");
+			user.setUsername("UDESK");
+			InvocationInfoProxy.setSysid("UDESK");
+			InvocationInfoProxy.setLocale("zh_CN");
+			InvocationInfoProxy.setUserid(user.getId());
+			InvocationInfoProxy.setUsername(user.getUsername());
+			InvocationInfoProxy.setExtendAttribute("currentUser", user);
+		}
+		if (customerListEntities == null || customerListEntities.isEmpty()) {
+			CustomerListEntity cus = new CustomerListEntity();
+			cus.setName(map.get("name").toString());
+			cus.setPhone(map.get("phone").toString());
+			cus=udeskService.ticketFieldsToCustomer(customFields, cus);
+			cus.setTid(tid);
+			cus = cusService.saveAllNotUDESK(cus);
+			id = cus.getBillid();
+		} else {
+			CustomerListEntity customerListEntity = customerListEntities.get(0);
+			id = customerListEntity.getBillid();
+			// customFields.put("", customerListEntity.getProvince());
+			customFields=udeskService.customerToTicketFields(customerListEntity, customFields);
+			customerListEntity.setTid(tid);
+			dealService.addTidByBealId(id, tid);
+		}
+		customFields.put("TextField_2370", id);
+		Map<String, Object> newTicket = new HashMap<String, Object>();
+		newTicket.put("subject", ticket.getString("subject"));
+		newTicket.put("custom_fields", customFields);
+		newTicket.put("agent_id", ticket.get("assignee_id"));
+		newTicket.put("agent_group_id", ticket.get("user_group_id"));
+		udeskService.updateTicket(null, tid, "{\"ticket\":"
+				+ JSONObject.fromObject(newTicket).toString() + "}");
+	}
+
+	// 工单创建回调
+	@RequestMapping("updateticket")
+	public void updateticket(@RequestBody Map<String, Object> map) {
+		logger.info("update>>>>"+JSONObject.fromObject(map).toString());
+		if (!map.containsKey("cid"))
+			return;
+		// 获得用户id
+		String uid = map.get("cid").toString();
+		// 获取工单id
+		String tid = map.get("tid").toString();
+		// 获取姓名
+		String name = map.get("name").toString();
+		// 获取电话信息
+		String phone = map.get("phone").toString();
+		// 获取工单对象
+		String result = udeskService.getTicket(null, Integer.parseInt(tid));
+		if (result == null)
+			return;
+		JSONObject ticket = JSONObject.fromObject(result).getJSONObject("ticket");
+		JSONObject customFields = ticket.getJSONObject("custom_fields");
+		String id = customFields.getString("TextField_2370");
+		if(id==null)return;
+		SysUser user = (SysUser) InvocationInfoProxy
+				.getExtendAttribute("currentUser");
+		if (user == null) {
+			user = new SysUser();
+			user.setOrgid("4958dae8-72a9-4136-9db0-b82099707ac7");
+			user.setOrgname("UDESK");
+			user.setId("UDESK");
+			user.setUsername("UDESK");
+			InvocationInfoProxy.setSysid("UDESK");
+			InvocationInfoProxy.setLocale("zh_CN");
+			InvocationInfoProxy.setUserid(user.getId());
+			InvocationInfoProxy.setUsername(user.getUsername());
+			InvocationInfoProxy.setExtendAttribute("currentUser", user);
+		}
+		CustomerListEntity customerListEntity=cusService.getCustomerListEntity(id);
+		if(customFields.containsKey("SelectField_756")){
+			String title=udeskService.getcustomerFieldTitle(Fields.TICKET,"SelectField_756", Integer.parseInt(customFields.getString("SelectField_756")));
+			//udesk的未上门原因
+			serviceService.notConcluded(id,"-2", title, title);
+		}
+		customerListEntity=udeskService.ticketFieldsToCustomer(customFields, customerListEntity);
+		customerListEntity.setBillid(id);
+		cusService.saveAllNotUDESK(customerListEntity);
+	}
+}

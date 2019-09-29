@@ -1,0 +1,116 @@
+
+<!-- 页面内容区(HTML片段，不能放置HTML 及 BODY 标签 )-->
+<!-- 若要正常使用实时预览功能，请在首页index.html中添加路由#dispayment/dispayment -->
+<div>
+    <div class="u-container-fluid padding-0" id="dispayment">
+        <div class="u-row margin-0 padding-0 content-title">
+            <div class="u-col-md-12 u-col-sm-12 u-media-middle margin-0 padding-0">
+                <h3 class="c-title pull-left padding-15 padding-left-20 c_size_28">订单列表</h3>
+                <div class="pull-right padding-15 padding-left-0 padding-right-0">
+                    <div id="searchdiv" class="margin-right-10 pull-right u-has-feedback input_enter">
+                        <input type="text" class="u-form-control c-sm" id="search" placeholder="订单号/姓名/手机号">
+                        <span class="uf zoom uf-search-light-2" id="searchBtn" data-bind="click: event.searchClick"></span>
+                        <span class="u-form-control-feedback-1  uf-search-light-0 uf uf-close" id="returnBtn"
+                              data-bind="click: event.returnClick"></span>
+                    </div>
+                    <div class="pull-right">
+                        <input type="button" class="margin-right-15 u-button u-button-primary u-buttom-sm bg_blue"
+                               value="新增优惠" data-bind="click: event.addClick">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="u-row  padding-10 prefilter">
+            <div class=" pull-left">
+                <div class="u-col-md-6 padding-left-0">
+                    <div class="u-combo"
+                         u-meta='{"type":"u-combobox","datasource":"statusList","data":"searchdatanew","field":"type","onlySelect":true}'>
+                        <div class="u-input-group u-has-feedback">
+                        <span class="u-form-control-feedback fa fa-angle-down"
+                              data-role="combo-button"></span>
+                            <input id="searchPayType" class="u-form-control" placeholder="订单状态" readonly/>
+                        </div>
+                    </div>
+                </div>
+                <input type="button" class="margin-right-10 u-button u-button-primary u-buttom-sm bg_blue"
+                       value="过滤" data-bind="click: event.searchClick">
+                <!-- <div class="u-col-md-4">
+                    <div class="u-combo"
+                    u-meta='{"type":"u-combobox","datasource":"typeList","data":"searchdatanew","field":"type","onlySelect":true}'>
+                        <div class="u-input-group u-has-feedback">
+                            <span class="u-form-control-feedback fa fa-angle-down"
+                            data-role="combo-button"></span>
+                            <input id="searchProductType" class="u-form-control" placeholder="类型" readonly/>
+                        </div>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+
+        <!--列表展示-->
+        <div class="main-container padding-top-0 contacts-container">
+            <div class="hr-table ">
+                <div class="u-table b-table width-full"
+                     u-meta='{"id":"paymentdata","type":"grid","data":"objdata","columnWidth":"150px","onDblClickFun":"event.selectClick"}'>
+                    <div options='{"field":"name","title":"客户姓名","dataType":"String","editType":"string","renderType":"event.renderTypeAjax"}'></div>
+                    <div options='{"field":"phone","title":"手机号","dataType":"String","editType":"string"}'></div>
+                    <div options='{"field":"vbillcode","title":"订单编码","dataType":"String","editType":"string"}'></div>
+                    <div options='{"field":"paystate","title":"收款状态","dataType":"String","editType":"string","renderType":"event.renderPayStatus"}'></div>
+                    <div options='{"field":"paidamount","title":"已收款金额","dataType":"float","editType":"float"}'></div>
+                    <div options='{"field":"totalamount","title":"合同总金额","dataType":"float","editType":"float"}'></div>
+                    <div options='{"field":"servicestate","title":"施工状态","dataType":"String","editType":"string","renderType":"event.renderConstructionStatus"}'></div>
+                </div>
+            </div>
+            <div id='pagination' class='pagination u-pagination pagination-sm'></div>
+        </div>
+
+        <!--新增支付-->
+        <div id="dialog_content_dispayment" class="modal-dialog" style="display:none;">
+            <div class="u-msg-title">
+                <h4>新增优惠</h4>
+            </div>
+            <HR width="100%" color=#F8F9FB SIZE=3 align="center"/>
+            <div class="u-msg-content dispayment ">
+                <div class="u-form" id="add-form">
+                    <div class="u-col-md-12 form-group" style="line-height: 36px;margin-bottom: 15px;">
+                        <div class="u-col-md-3 control-label">
+                            <label style="color: red;">*</label>
+                            <label>金额</label>
+                        </div>
+                        <input class="u-col-md-6 u-form-control " type="float" id="paymoney"
+                               u-meta='{"type":"string","data":"objdatanew","field":"paymoney"}'
+                               placeholder="请输入金额"/>
+                    </div>
+                    <div class="u-col-md-12 form-group" style="line-height: 36px;margin-bottom: 15px;" >
+                        <div class="u-col-md-3 control-label">
+                            <label style="color: red;">*</label>
+                            <label>业务摘要</label>
+                        </div>
+                        <input class="u-col-md-6 u-form-control " type="text" id="billnote"
+                               u-meta='{"type":"string","data":"objdatanew","field":"billnote"}' placeholder="请输入业务摘要"/>
+                    </div>
+                    <div class="u-col-md-12 form-group" style="line-height: 36px;margin-bottom: 15px;" >
+                        <div class="u-col-md-3 control-label">
+                            <label>备注</label>
+                        </div>
+                        <!--<textarea id="meno" class="u-col-md-6 u-form-control " rows="2" cols="40"></textarea>-->
+                        <textarea class="u-col-md-6 u-form-control " type="text"
+                                  u-meta='{"type":"textarea","data":"objdatanew","field":"memo"}' placeholder="备注"
+                        ></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="u-msg-footer">
+                <button id="savedispayment" class="u-msg-ok u-button u-button-primary bg_blue"
+                        data-bind="click: event.saveClick">
+                    保存 <span class="u-button-container"></span>
+                </button>
+                <button id="canceldispayment" class="u-msg-cancel u-button u-button-white"
+                        data-bind="click: event.cancelClick">
+                    取消 <span class="u-button-container"></span>
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>

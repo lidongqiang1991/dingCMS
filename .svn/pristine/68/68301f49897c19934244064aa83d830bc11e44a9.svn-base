@@ -1,0 +1,619 @@
+define(['text!pages/project/projected.html','css!pages/project/projected','pages/project/projectedmeta','uuigrid'], function(template) {
+
+    //初始化方法,页面加载后被 调用
+    var init=function  (element) {
+        var viewModel = {
+            app:{},
+            /* 数据模型 */
+            draw:1,
+            totlePage:0,
+            pageSize:15,
+            totleCount:0,
+
+            // 工程
+            listUrl:ctx + '/servicelist/page.do',
+            addUrl:ctx + '',
+            delUrl:ctx + '',
+            objdata:new u.DataTable(projectedmeta),
+            objdatanew:new u.DataTable(projectedmeta),
+
+            searchdatanew:new u.DataTable(projectedmeta),
+
+            //加载页面
+            getViewUrl:ctx + "/templet/find.do",
+            saveViewUrl:ctx + "/templet/save.do",
+            exportUrl:ctx + '/excel/download1.do',
+            viewList:[],
+            viewFormname:'projected',
+            viewContainer:'#table-projected',
+
+            // 运营中心，运营商列表
+            orgOrAgentListUrl:ctx + "/org/agent.do",
+
+            // 筛选列表
+            orgnameList:[
+                {name: "全部运营中心", value: "-1"}
+            ],
+            agentnameList:[
+                {name: "全部运营商", value: "-1"}
+            ],
+            agentnameList_temp:[
+                {name: "全部运营商", value: "-1"}
+            ],
+            modedatanew:new u.DataTable(),
+            plandatanew:new u.DataTable(),
+            planSaveUrl: ctx + '/servicelist/plan.do',
+
+            event:{
+                pageInit:function () {
+                	id:[];
+                    viewModel.app = u.createApp({
+                        el:element,
+                        model:viewModel
+                    });
+                    //隐藏
+					$(element).find('#returnBtn').hide();
+                    var paginationDiv = $(element).find('#pagination')[0];
+                    this.comps=new u.pagination({el:paginationDiv,jumppage:true});
+                    // this.comps.update({pageSize: 10 });  //默认每页显示5条数据
+
+                    viewModel.event.pageChange();
+                    viewModel.event.sizeChange();
+
+                    //回车搜索
+                    $('.input_enter').keydown(function(e){
+                        if(e.keyCode==13){
+                            viewModel.event.searchClick();
+                            u.stopEvent(e);
+                        }
+                    });
+
+                    // 初始化筛选
+                    viewModel.event.clearDt(viewModel.searchdatanew);
+                    viewModel.searchdatanew.clear();
+                    var newr = viewModel.searchdatanew.createEmptyRow();
+                    viewModel.searchdatanew.setRowSelect(newr);
+
+                    viewModel.event.orgOrAgentList();
+					// this.loadList();
+                },
+                //反显筛选条件
+                setSearchValue:function(){
+                    var obj = sessionStorage['searchObj'];
+                    if(obj){
+                        var searchObj = JSON.parse(obj);
+                        if(searchObj.type =='projected'){
+                            var obj_new = viewModel.searchdatanew.getSelectedRows()[0];
+                            for(var key in searchObj){
+                                for(var key in searchObj){
+                                    if(key == 'pageIndex' && searchObj[key]){
+                                        viewModel.draw = searchObj[key];
+                                    }else if(key == 'pageSize' && searchObj[key]){
+                                        viewModel.pageSize = searchObj[key];
+                                    }else if(key != 'type'){
+                                        obj_new.setValue(key,searchObj[key]);
+                                    }
+                                }
+                            }
+                        }else{
+                            sessionStorage['searchObj'] = "";
+                        }
+                    }
+                    this.loadList();
+                },
+                //清除datatable数据
+                clearDt: function (dt) {
+                    dt.removeAllRows();
+                    dt.clear();
+                },
+
+                // 搜索
+                searchClick:function(){
+                	$(element).find('#returnBtn').show();
+                    viewModel.event.resetfilterclick(true);
+                    viewModel.draw = 1;
+                    viewModel.event.loadList();
+                },
+                //返回初始化点击
+				returnClick : function  () {
+				  $(element).find('#returnBtn').hide();
+				  $("#search").val('');
+				  viewModel.event.loadList();
+				},
+                // 筛选
+                filterClick:function(){
+                    $("#search").val('');
+                    var obj = viewModel.event.resetfilterclick(false);
+                    viewModel.event.loadList('',obj);
+                },
+                resetClick:function(){
+                    	viewModel.event.resetfilterclick(true);
+                    	viewModel.event.loadList(id);
+                },
+                // 重置 筛选条件
+                resetfilterclick:function(bool){
+                    var data = viewModel.searchdatanew.getSelectedRows()[0];
+                    if(!data)return;
+                    if(bool){
+                        data.setValue('orgname','');
+                        data.setValue('agentname','');
+                        data.setValue('startTime1', '');
+						data.setValue('endTime1', '');
+						data.setValue('startTime2', '');
+						data.setValue('endTime2', '');
+						data.setValue('startTime3', '');
+						data.setValue('endTime3', '');
+						data.setValue('startTime4', '');
+						data.setValue('endTime4', '');
+                    }else{
+                        var orgname = data.getValue('orgname');
+                        var agentname = data.getValue('agentname');
+                        if(agentname&&agentname!="-1") orgname = "-1";
+                        var startTime1 = data.getValue('startTime1');
+						var endTime1 = data.getValue('endTime1');
+						var startTime2 = data.getValue('startTime2');
+						var endTime2 = data.getValue('endTime2');
+						var startTime3 = data.getValue('startTime3');
+						var endTime3 = data.getValue('endTime3');
+						var startTime4 = data.getValue('startTime4');
+						var endTime4 = data.getValue('endTime4');
+
+                        var obj = {};
+                        obj.search_orgname = orgname;
+                        obj.search_agentname = agentname;
+                        obj.search_starttime1 = startTime1;
+						obj.search_endtime1 = endTime1;
+						obj.search_starttime2 = startTime2;
+						obj.search_endtime2 = endTime2;
+						obj.search_starttime3 = startTime3;
+						obj.search_endtime3 = endTime3;
+						obj.search_starttime4 = startTime4;
+						obj.search_endtime4 = endTime4;
+
+                        return obj;
+                    }
+                },
+                //分页相关
+                pageChange:function(){
+                    viewModel.event.comps.on('pageChange', function (pageIndex) {
+                        viewModel.draw = pageIndex + 1;
+                        viewModel.event.saveSearchObj("pageIndex",viewModel.draw);
+                        viewModel.event.loadList();
+                    });
+                },
+                sizeChange:function(){
+                    viewModel.event.comps.on('sizeChange', function (arg) {
+                        viewModel.pageSize = parseInt(arg);
+                        viewModel.draw = 1;
+                        viewModel.event.saveSearchObj("pageIndex",viewModel.draw);
+                        viewModel.event.saveSearchObj("pageSize",viewModel.pageSize);
+                        viewModel.event.loadList();
+                    });
+                },
+                //加载 工程列表
+                loadList:function(obj,filter){
+                    var jsonData={
+                        pageIndex:viewModel.draw-1,
+                        pageSize:viewModel.pageSize,
+                        sortField:"",
+                        sortDirection:"asc",
+                        search_servicestate:2,
+                    };
+                    // 搜索
+                    $(element).find("#search").each(function(){
+                        if(this.value == undefined || this.value =='' || this.value.length ==0 ){
+                            //不执行操作
+                        }else{
+                            jsonData['search_searchParam'] =  this.value.replace(/(^\s*)|(\s*$)/g, "");  //去掉空格
+                        }
+                    });
+                    // 根据id获取
+                    if(obj){
+                        if(obj!=''||obj.length!=0){
+                            jsonData['search_id'] = obj.join();
+                        }
+                    }
+                    // 根据条件筛选
+                    if(filter){
+                        if(filter!=''||filter.length!=0){
+                            // jsonData['search_'+ filter.key ] = filter[key];
+                            u.extend(jsonData,filter);
+                        }
+                    }else{
+                        var filterobj = viewModel.event.resetfilterclick(false);
+                        u.extend(jsonData,filterobj);
+                    }
+                    $.ajax({
+                        type : 'get',
+                        url : viewModel.listUrl,
+                        dataType : 'json',
+                        data:jsonData,
+                        contentType: 'application/json;charset=utf-8',
+                        success : function(res) {
+                            if(res){
+                                if( res.success =='success'){
+                                    if(!res.detailMsg.data){
+                                        viewModel.totleCount=0;
+                                        viewModel.totlePage=1;
+                                        viewModel.event.comps.update({totalPages:viewModel.totlePage,pageSize:viewModel.pageSize,currentPage:viewModel.draw,totalCount:viewModel.totleCount});
+                                        viewModel.objdata.removeAllRows();
+                                        viewModel.objdata.clear();
+                                    }else{
+                                        viewModel.totleCount=res.detailMsg.data.totalElements;
+                                        viewModel.totlePage=res.detailMsg.data.totalPages;
+                                        viewModel.event.comps.update({totalPages:viewModel.totlePage,pageSize:viewModel.pageSize,currentPage:viewModel.draw,totalCount:viewModel.totleCount});
+                                        viewModel.objdata.removeAllRows();
+                                        viewModel.objdata.clear();
+                                        viewModel.objdata.setSimpleData(res.detailMsg.data.content,{unSelect:true});
+                                    }
+                                }else{
+                                    var msg = "";
+                                    if(res.success == 'fail_global'){
+                                        msg = res.message;
+                                    }else{
+                                        for (var key in res.detailMsg) {
+                                            msg += res.detailMsg[key] + "<br/>";
+                                        }
+                                    }
+                                    $vue.$alert(msg, '请求错误', {
+                                        confirmButtonText: '确定',
+                                        callback: action => {
+                                            $vue.$message({
+                                                type: 'info',
+                                                message: `action: ${ action }`
+                                            });
+                                        }
+                                    });
+                                }
+                            }else{
+                                $vue.$message({
+                                    showClose: true,
+                                    message: '后台返回数据格式有误，请联系管理员！',
+                                    type: 'error',
+                                    offset: '60'
+                                });
+                            }
+
+                        },
+                        error:function(er){
+                            $vue.$message({
+                                    showClose: true,
+                                    message: '请求超时，请稍后重试！',
+                                    type: 'error',
+                                    offset: '60'
+                                });
+                        }
+                    })
+                },
+                //加载 运营中心/运营商 列表
+                orgOrAgentList:function(){
+                    var jsonData={
+                        sortField:"d.createtime",
+                        sortDirection:"desc",
+                    };
+                    $.ajax({
+                        type : 'get',
+                        url : viewModel.orgOrAgentListUrl,
+                        dataType : 'json',
+                        data:jsonData,
+                        contentType: 'application/json;charset=utf-8',
+                        success : function(res) {
+                            if(res){
+                                var arr = viewModel.orgnameList||[];
+                                for(let i=0,j=res.length;i<j;i++){
+                                    let { orgname : name,orgid:orgid, orgs :orgs } = res[i];
+                                    let obj = { name:name,value:orgid,orgs:orgs };
+                                    arr.push(obj);
+                                }
+                                viewModel.orgnameList = arr;
+                                var combo1Obj = document.getElementById('combobox_orgname')['u.Combo'];
+                                combo1Obj.setComboData(arr);
+
+                                viewModel.event.setSearchValue();
+
+                                // var row = viewModel.searchdatanew.getSelectedRows()[0];
+                                // row.setValue('orgname','-1');
+                            }
+                        }
+                    })
+                },
+                // 渲染详情
+                renderTypeAjax:function (obj) {
+                    var id = obj.row.value.billid;
+                    var text = obj.value;
+                    var html = "<a style='text-decoration: underline;' class='c_green' href='#/project/projectDetail?type=ed&id="+ id +"'>" + text||'' + "</a>";
+                    obj.element.innerHTML = html;
+                },
+                //渲染工程进展状态
+                renderNote: function (obj) {
+                    var val = '';
+                    switch (Number(obj.value)){
+                        case 1:
+                            val = '待分配';
+                            break;
+                        case 2:
+                            val = '已拒绝';
+                            break;
+                        case 3:
+                            val = '已接单';
+                            break;
+                        case 4:
+                            val = '未上门';
+                            break;
+                        case 5:
+                            val = '已上门';
+                            break;
+                        case 6:
+                            val = '已报价';
+                            break;
+                        case 7:
+                            val = '已下单';
+                            break;
+                        case 8:
+                            val = '施工中';
+                            break;
+                        case 9:
+                            val = '在施工';
+                            break;
+                    }
+                    obj.element.innerHTML = val;
+                },
+                // 渲染f分数
+                renderRate:function (obj) {
+                    if(obj.value && obj.value.slice(obj.value.length-1) == '/'){
+                        var val = obj.value.slice(0,obj.value.length-1);
+                        obj.element.innerHTML = val +"星";
+                    }else{
+                        obj.element.innerHTML = '未评价';
+                    }
+                },
+                confirm_mode:function () {
+                    // viewModel.event.loadList();
+                    viewModel.event.allow_cancle();
+                },
+                allow_cancle:function () {
+                    md.close();
+                },
+                //缓存筛选，分页数据
+                saveSearchObj:function (filename,newValue) {
+                    var obj = sessionStorage['searchObj'];
+                    if(obj){
+                        obj = JSON.parse(obj);
+                    }else{
+                        obj = {};
+                    }
+                    obj[filename] = newValue;
+                    obj.type = 'projected';
+                    sessionStorage['searchObj'] = JSON.stringify(obj);
+                },
+                // 加载页面
+                loadView:function(){
+                    $.ajax({
+                        type : 'get',
+                        url : viewModel.getViewUrl,
+                        // dataType : 'json',
+                        data:{
+                            templatename:viewModel.viewFormname
+                        },
+                        contentType: 'application/json;charset=utf-8',
+                        success : function(res) {
+                            if(res.detailMsg.data){
+                                viewModel.viewList = res.detailMsg.data||[];
+                                viewModel.event.viewRender(res.detailMsg.data);
+                            }else{
+                                viewModel.event.viewRender();
+                            }
+                        },error:function () {
+                            viewModel.event.viewRender();
+                        }
+                    })
+                },
+                viewRender:function(res){
+                    var list = res||[];
+                    function getvalue(filed,key) {
+                        let value = '';
+                        if(key=='visible')value = true;
+                        if(key=='visibleindex')value =  1;
+                        for(let i = 0,j=list.length;i<j;i++){
+                            let obj = list[i];
+                            if(obj.attribute == filed){
+                                value = obj[key];
+                                break;
+                            }
+                        }
+                        return value;
+                    }
+                    var obj = [
+                        {index:`${getvalue('name','visibleindex')}`,html:`<div options='{"visibleindex":${getvalue('name','visibleindex')},"visible":${getvalue('name','visible')},"field":"name","title":"客户姓名","dataType":"String","editType":"string","renderType":"event.renderTypeAjax"}'></div>`},
+                        {index:`${getvalue('phone','visibleindex')}`,html:`<div options='{"visibleindex":${getvalue('phone','visibleindex')},"visible":${getvalue('phone','visible')},"field":"phone","title":"客户手机号","dataType":"String","editType":"string"}'></div>`},
+                        {index:`${getvalue('vbillcode','visibleindex')}`,html:`<div options='{"visibleindex":${getvalue('vbillcode','visibleindex')},"visible":${getvalue('vbillcode','visible')},"field":"vbillcode","title":"工程编号","dataType":"String","editType":"string"}'></div>`},
+                        {index:`${getvalue('startdate','visibleindex')}`,html:`<div options='{"visibleindex":${getvalue('startdate','visibleindex')},"visible":${getvalue('startdate','visible')},"field":"startdate","title":"开工时间","dataType":"String","editType":"string"}'></div>`},
+                        {index:`${getvalue('enddate','visibleindex')}`,html:`<div options='{"visibleindex":${getvalue('enddate','visibleindex')},"visible":${getvalue('enddate','visible')},"field":"enddate","title":"完工时间","dataType":"String","editType":"string"}'></div>`},
+                        {index:`${getvalue('note','visibleindex')}`,html:`<div options='{"visibleindex":${getvalue('note','visibleindex')},"visible":${getvalue('note','visible')},"field":"note","title":"工程进展状态","dataType":"String","editType":"string","renderType":"event.renderNote"}'></div>`},
+                        {index:`${getvalue('evaluatetime','visibleindex')}`,html:`<div options='{"visibleindex":${getvalue('evaluatetime','visibleindex')},"visible":${getvalue('evaluatetime','visible')},"field":"evaluatetime","title":"客户评价时间","dataType":"Datetime","editType":"string"}'></div>`},
+                        {index:`${getvalue('values','visibleindex')}`,html:`<div options='{"visibleindex":${getvalue('values','visibleindex')},"visible":${getvalue('values','visible')},"field":"values","title":"客户评价分数","dataType":"String","editType":"String","renderType":"event.renderRate"}'></div>`},
+                        {index:`${getvalue('servername','visibleindex')}`,html:`<div options='{"visibleindex":${getvalue('servername','visibleindex')},"visible":${getvalue('servername','visible')},"field":"servername","title":"客服","dataType":"String","editType":"string","renderType":"event.renderTypeSex"}'></div>`},
+                        {index:`${getvalue('surveyname','visibleindex')}`,html:`<div options='{"visibleindex":${getvalue('surveyname','visibleindex')},"visible":${getvalue('surveyname','visible')},"field":"surveyname","title":"勘察","dataType":"String","editType":"string"}'></div>`},
+                        {index:`${getvalue('constructionname','visibleindex')}`,html:`<div options='{"visibleindex":${getvalue('constructionname','visibleindex')},"visible":${getvalue('constructionname','visible')},"field":"constructionname","title":"工长","dataType":"String","editType":"string"}'></div>`},
+                        {index:`${getvalue('supervisor','visibleindex')}`,html:`<div options='{"visibleindex":${getvalue('supervisor','visibleindex')},"visible":${getvalue('supervisor','visible')},"field":"supervisor","title":"管家","dataType":"String","editType":"string"}'></div>`},
+                        {index:`${getvalue('planneddate','visibleindex')}`,html:`<div options='{"visibleindex":${getvalue('planneddate','visibleindex')},"visible":${getvalue('planneddate','visible')},"field":"planneddate","title":"工期","dataType":"String","editType":"string"}'></div>`},
+                        {index:`${getvalue('address','visibleindex')}`,html:`<div options='{"visibleindex":${getvalue('address','visibleindex')},"visible":${getvalue('address','visible')},"field":"address","title":"详细地址","dataType":"String","editType":"string"}'></div>`},
+                        {index:`${getvalue('dealcreatetime','visibleindex')}`,html:`<div options='{"visibleindex":${getvalue('dealcreatetime','visibleindex')},"visible":${getvalue('dealcreatetime','visible')},"field":"dealcreatetime","title":"客户创建时间","dataType":"String","editType":"string"}'></div>`},
+                        {index:`${getvalue('ordercreatetime','visibleindex')}`,html:`<div options='{"visibleindex":${getvalue('ordercreatetime','visibleindex')},"visible":${getvalue('ordercreatetime','visible')},"field":"ordercreatetime","title":"下单时间","dataType":"String","editType":"string"}'></div>`},
+                        {index:`${getvalue('createtime','visibleindex')}`,html:`<div options='{"visibleindex":${getvalue('createtime','visibleindex')},"visible":${getvalue('createtime','visible')},"field":"createtime","title":"工程创建时间","dataType":"String","editType":"string"}'></div>`}
+                    ];
+                    function objvalueSort(obj) {//排序的函数
+                        var newkey = Object.keys(obj).sort(function(key1,key2){
+                            var a = obj[key1]['index'];
+                            var b = obj[key2]['index'];
+                            return a-b;
+                        })
+                        let html = '';
+                        for (let i = 0; i < newkey.length; i++) {//遍历newkey数组
+                            let val = obj[newkey[i]].html;
+                            html+=val;
+                        }
+                        return html;
+                    }
+                    $(viewModel.viewContainer).append(objvalueSort(obj));
+                    viewModel.event.pageInit();
+                },
+                //保存配置
+                onSaveSetFun:function(){
+                    var list = viewModel.viewList||[];
+                    var list_pro = [];
+                    var arr = $("#objdata_header_thead th");
+                    for(let i=0,j=arr.length;i<j;i++){
+                        let visibleindex = $(arr[i]).attr('visibleindex');
+                        let visible = $(arr[i]).is(":visible");
+                        let filed = $(arr[i]).attr("data-filed");
+                        if(list.length>0){
+                            for(let ii = 0,jj=list.length;ii<jj;ii++){
+                                if(list[ii].attribute == filed){
+                                    list[ii].visibleindex = Number(visibleindex);
+                                    list[ii].visible = visible;
+                                    list[ii].templatename = viewModel.viewFormname;
+                                    break;
+                                }
+                            }
+                        }else{
+                            let obj = {};
+                            obj.visibleindex = visibleindex;
+                            obj.visible = visible;
+                            obj.templatename = viewModel.viewFormname;
+                            obj.attribute = filed;
+                            list_pro.push(obj);
+                        }
+                    }
+                    if(list.length<1)list=list_pro;
+                    console.log(list);
+                    viewModel.event.saveView(list);
+                },
+                saveView:function(list){
+                    $.ajax({
+                        type : 'post',
+                        url : viewModel.saveViewUrl,
+                        dataType : 'json',
+                        data:JSON.stringify(list),
+                        contentType: 'application/json;charset=utf-8',
+                        success : function(res) {
+                            var msgContent = '保存成功！';
+                            $vue.$message({
+                                showClose: true,
+                                message: msgContent,
+                                type: 'success',
+                                offset: '60'
+                            });
+                        },error:function () {
+                            viewModel.event.viewRender();
+                        }
+                    })
+                },
+                //数据导出
+                exportClick:function(){
+                    var jsonData={
+                        pageIndex:viewModel.draw-1,
+                        pageSize:viewModel.pageSize,
+                        sortField:"",
+                        sortDirection:"asc",
+                        search_servicestate:2,
+                    };
+                    // 搜索
+                    $(element).find("#search").each(function(){
+                        if(this.value == undefined || this.value =='' || this.value.length ==0 ){
+                            //不执行操作
+                        }else{
+                            jsonData['search_searchParam'] =  this.value.replace(/(^\s*)|(\s*$)/g, "");  //去掉空格
+                        }
+                    });
+                    // 根据条件筛选
+                    var filterobj = viewModel.event.resetfilterclick(false);
+                    u.extend(jsonData,filterobj);
+
+                    $.ajax({
+                        type : 'get',
+                        url : viewModel.exportUrl,
+                        dataType : 'json',
+                        data:jsonData,
+                        contentType: 'application/json;charset=utf-8',
+                        success : function(res) {
+                            if(res){
+                                window.location.href = "/dingCMS" + res;
+                            }else{
+                                $vue.$message({
+                                    showClose: true,
+                                    message: '后台返回数据格式有误，请联系管理员！',
+                                    type: 'error',
+                                    offset: '60'
+                                });
+                            }
+                        },
+                        error:function(er){
+                            $vue.$message({
+                                showClose: true,
+                                message: '请求超时，请稍后重试！',
+                                type: 'error',
+                                offset: '60'
+                            });
+                        }
+                    })
+                }
+            },
+        };
+
+        $(element).html(template);
+        // viewModel.event.pageInit();
+        viewModel.event.loadView();
+        // viewModel.event.orgOrAgentList();
+		// 筛选条件
+        viewModel.searchdatanew.on('valueChange', function(event){
+            let filename = event.field;  // 改变的字段
+            // var oldValue = event.oldValue;
+            var newValue = event.newValue;
+
+            viewModel.event.saveSearchObj(filename,newValue);
+
+            if(filename == 'orgname'){ //选择运营中心，联动 运营商
+                let org = viewModel.orgnameList.concat();
+                let agent = viewModel.agentnameList_temp.concat();
+                var row = viewModel.searchdatanew.getSelectedRows()[0];
+                row.setValue('agentname','');
+                if(newValue=="-1"){
+                    for(let i=0,j=org.length;i<j;i++){
+                        let item = org[i].orgs||[];
+                        if(item.length>0){
+                            for (let ii = 0, jj = item.length; ii < jj; ii++) {
+                                let {orgname: name,orgid:orgid} = org[i].orgs[ii];
+                                let obj = {name: name, value: orgid};
+                                agent.push(obj);
+                            }
+                        }
+                    }
+                }else{
+                    for(let i=0,j=org.length;i<j;i++){
+                        if(org[i].value == newValue){
+                            if(org[i].orgs.length>0) {
+                                for (let ii = 0, jj = org[i].orgs.length; ii < jj; ii++) {
+                                    let {orgname: name,orgid:orgid} = org[i].orgs[ii];
+                                    let obj = {name: name, value: orgid};
+                                    agent.push(obj);
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+                viewModel.agentnameList = agent;
+                var combo1Obj = document.getElementById('combobox_agentname')['u.Combo'];
+                combo1Obj.setComboData(agent);
+            }
+        });
+
+    };
+
+    return {
+        // 'model': viewModel,
+        'template': template,
+        'init': init
+    };
+});

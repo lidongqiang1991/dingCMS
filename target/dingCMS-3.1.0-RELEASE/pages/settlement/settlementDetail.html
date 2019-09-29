@@ -1,0 +1,71 @@
+<!-- 页面内容区(HTML片段，不能放置HTML 及 BODY 标签 )-->
+<!-- 若要正常使用实时预览功能，请在首页index.html中添加路由#settlementDetail/settlementDetail -->
+<div id="settlementDetail">
+	<div class="u-row margin-0 padding-0 ">
+		<div class="ec-search u-col-md-12 u-col-sm-12 u-media-middle margin-0 padding-0">
+			<div class="js_href padding-15 padding-left-20 content-title margin-0">
+				<a href="#/settlement/settlement" class="c_green c_size_24"> &lt; 订单列表</a>
+				<!-- <div id="searchdiv" class="margin-right-10 pull-right  u-has-feedback  input_enter">
+					<input type="text" class="u-form-control c-sm " id="search"
+					placeholder="流水号">
+					<span class="u-form-control-feedback uf uf-search-light-2" id="searchBtn"
+					data-bind="click: event.searchClick"></span>
+				</div> -->
+			</div>
+		</div>
+	</div>
+	<!-- <div class="u-row  padding-20  padding-top-0">
+		<div class=" pull-left">
+			<div class="u-col-md-3">
+				<div class="u-combo"
+				u-meta='{"type":"u-combobox","datasource":"typeList","data":"searchdatanew","field":"type","onlySelect":true}'>
+					<div class="u-input-group u-has-feedback">
+						<span class="u-form-control-feedback fa fa-angle-down"
+						data-role="combo-button"></span>
+						<input id="searchType" placeholder="账单类型" class="u-form-control" readonly/>
+					</div>
+				</div>
+			</div>
+			<div class="u-col-md-3 ">
+				<div class="u-combo"
+				u-meta='{"type":"u-combobox","datasource":"statusList","data":"searchdatanew","field":"auditstate","onlySelect":true}'>
+					<div class="u-input-group u-has-feedback">
+						<span class="u-form-control-feedback fa fa-angle-down"
+						data-role="combo-button"></span>
+						<input id="searchStatus" placeholder="审核状态"  class="u-form-control" readonly/>
+					</div>
+				</div>
+			</div>
+			<div class="u-col-md-3 ">
+				<div class="u-combo"
+				u-meta='{"type":"u-combobox","datasource":"timeList","data":"searchdatanew","field":"time","onlySelect":true}'>
+					<div class="u-input-group u-has-feedback">
+						<span class="u-form-control-feedback fa fa-angle-down"
+						data-role="combo-button"></span>
+						<input id="searchTime" placeholder="快捷时间"  class="u-form-control" readonly/>
+					</div>
+				</div>
+			</div>
+			<div class="u-col-md-3">
+				<div class="u-combo">
+					<input type="button" class="margin-right-10 u-button u-button-primary u-buttom-sm bg_blue"
+					  value="过滤" data-bind="click: event.searchClick">
+				</div>
+			</div>
+		</div>
+	</div> -->
+	<!--列表展示-->
+	<div class="main-container padding-top-0 contacts-container">
+		<div class="hr-table ">
+			<div class="u-table b-table width-full"
+			u-meta='{"id":"settlementDetaildata","type":"grid","data":"objdata","columnWidth":"150px","onDblClickFun":"event.selectClick"}'>
+				<div options='{"field":"agentname","title":"收款方","dataType":"String","editType":"string"}'></div>
+				<div options='{"field":"type","title":"类型","dataType":"String","editType":"string","renderType":"event.renderType"}'></div>
+				<div options='{"field":"money","title":"本次支付总金额","dataType":"String","editType":"string"}'></div>
+				<!-- <div options='{"field":"domoney","title":"应支付总金额","dataType":"String","editType":"string"}'></div> -->
+				<!-- <div options='{"field":"totalamount","title":"合同金额","dataType":"String","editType":"string"}'></div> -->
+				<div options='{"field":"memo","title":"备注","dataType":"String","editType":"string"}'></div>
+			</div>
+		<div id='pagination' class='pagination u-pagination pagination-sm'></div>
+	</div>
+</div>

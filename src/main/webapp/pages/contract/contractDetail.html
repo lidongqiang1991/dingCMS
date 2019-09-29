@@ -1,0 +1,222 @@
+<!-- 页面内容区(HTML片段，不能放置HTML 及 BODY 标签 )-->
+<!-- 若要正常使用实时预览功能，请在首页index.html中添加路由#customer/customerDetail -->
+<div>
+  <div class="js_href padding-15 padding-left-20 content-title margin-0">
+    <a href="#/contract/contract" class="c_green c_size_24"> &lt; 合同列表</a>
+  </div>
+  <div class="u-tabs c_border_box">
+    <div class="u-tabs__tab-bar" style="justify-content:flex-start;margin-bottom:30px;">
+      <a href="#tab-panel-1" class="u-tabs__tab is-active" data-type="1">合同详情</a>
+      <a href="#tab-panel-2" class="u-tabs__tab" data-type="2">财务流水</a>
+    </div>
+    <!--合同详情-->
+    <div class="u-tabs__panel is-active" id="tab-panel-1">
+      <button id='exportToPdf' style='margin-left:30px;padding:5px 10px;' data-bind="click: event.exportToPdf">打印合同</button>
+      <!--合同内容开始-->
+      <div id="exportContent" style='width:595.28px;box-shadow:0 0 5px #ccc;position:absolute;left:50%;margin-left:-300px;margin-bottom:50px;line-height:25px;'>
+        <img src="./static/yh.png" style='position: absolute;top:720px;left:120px;opacity:.2;'>
+        <img src="./static/logo_yuhong.png" style='width:60px;position: absolute;top:-2px;left:20px;'>
+        <div style='padding:0 20px 50px;'>
+          <div class="c_center" style='font-weight:bold;font-size:22px;margin-top:30px;margin-bottom:10px;'>防水技术服务合同</div>
+          <div class="c_right">签订日期：<span class=" d-date" style='text-decoration: underline;'> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>&nbsp;&nbsp;&nbsp;&nbsp;</div>
+          <div class="c_right">签订地点： <span class=" d-place" style='text-decoration: underline;'> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></div>
+          <div class="bold">委托方：<span class=" d-a" style='text-decoration: underline;'></span>（甲方）</div>
+          <div class="bold">经办人：<span class=" d-aPerson" style='text-decoration: underline;'> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></div>
+          <div class="bold">电话：<span class=" d-aPhone" style='text-decoration: underline;'> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></div>
+          <div class="bold">身份证号：<span class=" d-aId" style='text-decoration: underline;'> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></div>
+          <div class="bold">通讯地址：<span class="c_flex_1  d-aPlace" style='text-decoration: underline;'> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></div>
+          <div class="bold">受托方：<span class=" d-b" style='text-decoration: underline;'> 北京顶之美建筑科技有限责任公司(系东方雨虹集团全资子公司) </span>（乙方）</div>
+          <div class="bold">电话：<span class=" d-bPhone" style='text-decoration: underline;'> 400-770-8966 </span></div>
+          <div class="bold">通讯地址：<span class=" d-bPlace" style='text-decoration: underline;'> 北京市北京经济技术开发区景园北街2号27幢1层8106室  </span></div>
+          <div class="c_inent_10 part">
+            经协商，甲、乙双方就
+            <input type="checkbox" style='margin-left:10px;' disabled data-value='卫生间'>卫生间
+            <input type="checkbox" style='margin-left:10px;' disabled data-value='平屋面'>平屋面
+            <input type="checkbox" style='margin-left:10px;' disabled data-value='斜屋面'>斜屋面
+            <input type="checkbox" style='margin-left:10px;' disabled data-value='露台'>露台
+            <input type="checkbox" style='margin-left:10px;' disabled data-value='金属屋面'>金属屋面
+            <input type="checkbox" style='margin-left:10px;' disabled data-value='窗户'>窗户
+            <input type="checkbox" style='margin-left:10px;' disabled data-value='采光顶'>采光顶
+            等类型屋面防水技术服务达成如下协议：
+          </div>
+          <div style='font-weight:bold;'>第一条 服务内容</div>
+          <div>
+            <table style='border:0;margin:0;border: 0;border-collapse: collapse;width: 100%;text-align:center;font-size:14px;line-height:25px;'>
+              <thead>
+              <tr>
+                <th style='border: 1px solid #ccc; width: 16.5%;'>序号</th>
+                <th style='border: 1px solid #ccc; width: 16.5%;' colspan="2">项目内容</th>
+                <th style='border: 1px solid #ccc; width: 16.5%;'>单价(元/㎡)</th>
+                <th style='border: 1px solid #ccc; width: 16.5%;'>面积(㎡)</th>
+                <th style='border: 1px solid #ccc; width: 16.5%;'>费用(元)</th>
+              </tr>
+              </thead>
+              <tbody>
+
+              </tbody>
+            </table>
+          </div>
+          <div style='font-weight:bold;'>第二条 服务地点</div>
+          <div class="c_inent_10  d-aPlace" style='text-decoration: underline;'>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          </div>
+          <div style='font-weight:bold;'>第三条 服务时间</div>
+          <div class="c_inent_10 " style='text-decoration: underline;'>
+            <span class="d-startDate">  </span> 至
+            <span class="d-endDate">  </span>
+          </div>
+          <div style='font-weight:bold;'>第四条 结算方式</div>
+          <div class="c_inent_10 " style='text-decoration: underline;'>
+            进场前支付不低于合同总金额的50%，整体验收完成后2日内结清尾款
+          </div>
+          <div style='font-weight:bold;'>第五条 双方责任</div>
+          <div class="c_flex">
+            <div class="">甲方：</div>
+            <div class="c_flex_1">
+              1.免费提供乙方所需水电等必要物资设备。<br>
+              2.做好前期准备工作，协助乙方按时进场，并协调现场关系。<br>
+              3.为乙方提供材料放置空间等方便。<br>
+              4.服务过程中如有变更，应提前一天通知乙方，并负责随时检查、督促工作进度和质量。<br>
+              5.按合同约定及时付款。<br>
+            </div>
+          </div>
+          <div class="c_flex">
+            <div class="">乙方：</div>
+            <div class="c_flex_1">
+              1.按相关服务方案、技术指标及有关规范组织技术服务，保证质量。<br>
+              2.精心组织防水技术服务，保证服务进度。<br>
+            </div>
+          </div>
+          <div style='font-weight:bold;'>第六条 现场负责人</div>
+          <div class="c_inent_10">
+            甲方负责人： <span class=" d-a" style='text-decoration: underline;'>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
+            &nbsp;&nbsp;&nbsp;联系方式： <span class=" d-aPhone" style='text-decoration: underline;'>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
+          </div>
+          <div class="c_inent_10">
+            乙方负责人： <span class=" d-bName" style='text-decoration: underline;'>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
+            &nbsp;&nbsp;&nbsp;联系方式： <span class=" d-bMobile" style='text-decoration: underline;'>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
+          </div>
+          <div class="c_inent_10">双方现场负责人有权就本防水技术服务相关签证验收资料、洽商、通知等文件代表乙方签发签收。</div>
+
+          <div style='font-weight:bold;'>第七条 服务项目验收</div>
+          <div class="c_inent_10">
+            项目服务过程中关键节点验收，需提前告知甲方验收时间，甲方不能到场查验的应拍摄照片传给甲方，合格后进行下一道工序。
+          </div>
+          <div class="c_inent_10">
+            验收资料加盖甲乙双方印章或双方在合同中指定的负责人（或双方合同签约代表）签字后即具有法律效力。
+          </div>
+          <div class="c_inent_10">
+            本服务项目验收合格后，乙方对所涉项目提供质保单，质保单在甲方完全支付全部款项后生效。
+          </div>
+
+          <div style='font-weight:bold;'>第八条  保修期</div>
+          <div class="c_inent_10">
+            本防水技术服务由乙方负责承保____年（自验收合格之日起计算）。保修期内，因乙方责任造成的防水服务质量问题，乙方负有免费提供后续服务的责任；不在乙方保修范围之列的，乙方同意有偿服务。
+          </div>
+
+          <div style='font-weight:bold;'>第九条  送达</div>
+          <div class="c_inent_10">
+            在合同执行期内，甲乙双方应将其联系电话、传真、邮箱及通讯地址、联系人等内容在本合同中列明。如有变更，应提前以书面形式向对方告知。一方根据对方提供的联系方式联系不上，视已经履行相应的通知义务。
+          </div>
+
+          <div style='font-weight:bold;'>第十条  不可抗力</div>
+          <div class="c_inent_10">
+            在合同内，如因地震、暴雨、冰雹、火灾、强风等自然因素或因政府命令、法律规定等客观因素不利于项目进展的，均视为不可抗力；由此不可抗力导致延误或无法履行本协议的，双方均不承担任何违约责任。
+          </div>
+
+          <div style='font-weight:bold;'>第十三条 其他事项及约定</div>
+          <div class="c_inent_10">
+            1、甲乙双方必须切实履行合同义务，如因一方违约，导致延误，全部责任由违约方承担。
+          </div>
+          <div class="c_inent_10">
+            2、本合同所有款项应以票据、汇款方式支付。汇款方式支付应汇至乙方在合同中指定的户名、账号内；支票支付必须在票据中注明乙方为收款人；如现金付款，应先向乙方财务联系，在由乙方服务人员代收。
+          </div>
+          <div class="c_inent_10">
+            3、乙方任何人员均无权代表乙方对本合同进行任何变更及承诺。如在本合同履行过程中需要对合同进行变更，包括但不限于变更、增加服务项目及做法、调价等，须经乙方盖章或签字确认后方可生效。
+          </div>
+          <div class="c_inent_10">
+            4、发生争议，双方应协商解决，协商不成，双方约定施工项目所在地人民法院裁决。
+          </div>
+          <div class="c_inent_10">
+            5、本合同自双方盖章或签字后生效，本合同一式叁份，甲方执壹份，乙方执贰份。
+          </div>
+          <br>
+          <div style='font-weight:bold;'>（以下无正文）</div>
+          <div style='display:flex;align-items: center;justify-content:center;'>
+            <div style='text-align: left;flex: 1;'>甲方（签章）</div>
+            <div style='text-align: left;flex: 1;'>乙方（签章）</div>
+          </div>
+          <div class="c_flex c_flex_center">
+            <div style='text-align: left;flex: 1;'>经办人： <span class='d-aPerson'>  </span></div>
+            <div style='text-align: left;flex: 1;'>联系人： <span class="d-bName"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></div>
+          </div>
+          <div class="c_flex c_flex_center">
+            <div style='text-align: left;flex: 1;'>汇款开户银行： <span>  </span></div>
+            <div style='text-align: left;flex: 1;'>汇款开户银行： <span> 中国建设银行股份有限公司北京财满街支行 </span></div>
+          </div>
+          <div class="c_flex c_flex_center">
+            <div style='text-align: left;flex: 1;'></div>
+            <div style='text-align: left;flex: 1;'>汇款户名： <span> 北京顶之美建筑科技有限责任公司 </span></div>
+          </div>
+          <div class="c_flex c_flex_center">
+            <div style='text-align: left;flex: 1;'>汇款帐号： <span>  </span></div>
+            <div style='text-align: left;flex: 1;'>汇款帐号： <span> 1105 0172 7900 0000 1105 </span></div>
+          </div>
+          <div class="c_right c_p_10">
+            <img style="width:80px;" src="./static/alipay.png">
+            <img style="width:80px;padding-right:100px;" src="./static/tmall.png">
+          </div>
+
+          <div style='font-weight:bold;margin-top:50px;'>附件：</div>
+          <div class="c-title c_center">委托付款说明</div>
+          <div class="c_inent_10 ">
+            致： <span class=""> 北京顶之美建筑科技有限责任公司  </span>
+          </div>
+          <div class="c_inent_10 ">
+            兹有我本司/本人 <span class=" d-a" style='text-decoration: underline;'> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span> 于 <span class="" style='text-decoration: underline;'> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span> 年 <span class="" style='text-decoration: underline;'> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span> 月  <span class="" style='text-decoration: underline;'> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span> 日汇入 <span class=""> 北京顶之美建筑科技有限责任公司 </span>  <span class=" d-totalamount" style='text-decoration: underline;'> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>元（大写：人民币 <span class="" style='text-decoration: underline;'> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>元整），此笔款项是由我司/我自愿代 <span class=" d-a" style='text-decoration: underline;'> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span> 支付给  <span class=" d-aPlace" style='text-decoration: underline;'> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>项目的  <span class=" " style='text-decoration: underline;'> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>（例如：材料款/维修服务款），上述事宜由此引起的一切经济责任与他人无关，由本司/本人自行承担。
+          </div>
+          <div class="c_inent_10 ">
+            特此说明
+          </div>
+
+          <div class="c_flex c_flex_center">
+            <div style='text-align: left;flex: 1;'>债务方（盖章/签字）：<span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></div>
+            <div style='text-align: left;flex: 1;'>付款方（盖章/签字）：<span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></div>
+          </div>
+          <div class="c_flex c_flex_center">
+            <div style='text-align: left;flex: 1;'>日期：<span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></div>
+            <div style='text-align: left;flex: 1;'>日期：<span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></div>
+          </div>
+        </div>
+      </div>
+      <!--合同内容结束-->
+    </div>
+    <!--财务流水-->
+    <div class="u-tabs__panel" id="tab-panel-2">
+      <!--列表展示-->
+      <div class="main-container padding-20 padding-top-0 contacts-container">
+        <div class="hr-table ">
+          <div class="u-table b-table width-full"
+               u-meta='{"id":"auditdata","type":"grid","data":"objdata","columnWidth":"150px","onDblClickFun":"event.selectClick"}'>
+            <div options='{"field":"name","title":"客户姓名","dataType":"String","editType":"string","renderType":"event.renderTypeAjax"}'></div>
+            <div options='{"field":"phone","title":"手机号","dataType":"String","editType":"string"}'></div>
+            <div options='{"field":"serialnum","title":"流水号","dataType":"String","editType":"string"}'></div>
+            <div options='{"field":"vbillcode","title":"订单号","dataType":"String","editType":"string","renderType":"event.renderTypeAjax"}'></div>
+            <div options='{"field":"auditstate","title":"审核状态","dataType":"String","editType":"string","renderType":"event.renderStatus"}'></div>
+            <div options='{"field":"type","title":"类型","dataType":"String","editType":"string","renderType":"event.renderType"}'></div>
+            <div options='{"field":"paymoney","title":"金额（元）","dataType":"String","editType":"string"}'></div>
+            <div options='{"field":"creator","title":"流水操作人","dataType":"String","editType":"string"}'></div>
+            <div options='{"field":"paymenter","title":"付款人","dataType":"String","editType":"string"}'></div>
+            <div options='{"field":"paymentmethod","title":"付款方式","dataType":"String","editType":"string","renderType":"event.renderPayMethod"}'></div>
+            <div options='{"field":"paymenttype","title":"款项类型","dataType":"String","editType":"string","renderType":"event.renderPayType"}'></div>
+            <div options='{"field":"paymenttime","title":"付款时间","dataType":"String","editType":"string"}'></div>
+            <div options='{"field":"memo","title":"备注","dataType":"String","editType":"string"}'></div>
+            <div options='{"field":"auditnote","title":"审核批语","dataType":"String","editType":"string"}'></div>
+          </div>
+        </div>
+        <div id='pagination' class='pagination u-pagination pagination-sm'></div>
+      </div>
+    </div>
+  </div>
+</div>
+

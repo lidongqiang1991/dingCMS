@@ -1,0 +1,48 @@
+<!-- 页面内容区(HTML片段，不能放置HTML 及 BODY 标签 )-->
+<!-- 若要正常使用实时预览功能，请在首页index.html中添加路由#procedure/procedure -->
+<div id="procedure">
+    <div class="u-container-fluid padding-0">
+
+        <!-- 头 -->
+        <div class="u-row margin-0 padding-0 content-title">
+            <div class="u-col-md-12 u-col-sm-12 u-media-middle margin-0 padding-0">
+                <h3 class="c-title pull-left padding-15 padding-left-20 c_size_28">流程列表</h3>
+                <div class="pull-right padding-15 padding-left-0 padding-right-0">
+                    <div class="pull-right">
+                        <input type="button" class="margin-right-15 pull-right u-button u-button-primary bg_blue"
+                               value="删除" data-bind="click: event.delClick">
+                        <input type="button" class="margin-right-15 pull-right u-button u-button-primary bg_blue "
+                          value="新建" data-bind="click: event.addClick">
+                    </div>
+                    <!--<div id="searchdiv" class="margin-right-10 pull-right  u-has-feedback  input_enter">-->
+                        <!--<input type="text" class="u-form-control c-sm " id="search"-->
+                               <!--placeholder="工程编号">-->
+                        <!--<span class="u-form-control-feedback uf uf-search-light-2" id="searchBtn"-->
+                              <!--data-bind="click: event.searchClick"></span>-->
+                    <!--</div>-->
+                </div>
+            </div>
+        </div>
+
+        <!--列表展示-->
+        <div class="main-container contacts-container">
+            <div class="hr-table">
+                <div class="u-table b-table width-full"
+                     u-meta='
+                     {"id":"objdata",
+                     "type":"grid",
+                     "data":"objdata",
+                     "columnWidth":"150px"}'>
+                    <div options='{"field":"procedurecode","title":"流程编号","dataType":"String","editType":"string","renderType":"event.renderTypeAjax"}'></div>
+                    <div options='{"field":"procedurename","title":"流程名称","dataType":"String","editType":"string"}'></div>
+                    <div options='{"field":"version","title":"流程版本","dataType":"String","editType":"string"}'></div>
+                    <!-- <div options='{"field":"procedurebody","title":"流程包含细项","dataType":"String","editType":"string"}'></div> -->
+                    <div options='{"field":"memo","title":"说明","dataType":"String","editType":"string"}'></div>
+                    <!--<div options='{"field":"opera","title":"操作","dataType":"String","editType":"string"}'></div>-->
+                </div>
+            </div>
+            <div id='pagination' class='pagination u-pagination pagination-sm'></div>
+        </div>
+
+    </div>
+</div>

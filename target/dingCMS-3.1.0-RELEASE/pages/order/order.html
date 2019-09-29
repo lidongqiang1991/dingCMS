@@ -1,0 +1,163 @@
+<!-- 页面内容区(HTML片段，不能放置HTML 及 BODY 标签 )-->
+<!-- 若要正常使用实时预览功能，请在首页index.html中添加路由#project/project -->
+<div id="project">
+
+    <div class="u-container-fluid padding-0">
+        <div class="u-row margin-0 padding-0 content-title">
+            <div class="ec-search u-col-md-12 u-col-sm-12 u-media-middle margin-0 padding-0">
+                <h3 class="c-title pull-left padding-15 padding-left-20 c_size_28">订单列表</h3>
+                <div class="pull-right padding-15 padding-left-0 padding-right-0">
+                    <!--<div class="margin-right-10 pull-right">-->
+                    <!--<input type="button" class="margin-right-10 u-button u-button-primary bg_blue "-->
+                    <!--  value="新建" data-bind="click: event.addClick">-->
+                    <!--<input type="button" class=" pull-right u-button u-button-primary u-buttom-sm"-->
+                    <!--id="import_file" value="批量导入" data-bind="click: event.importClick">-->
+                    <!--</div>-->
+                    <div id="searchdiv" class="margin-right-10 pull-right u-has-feedback input_enter">
+                        <input type="text" class="u-form-control c-sm" id="search" placeholder="订单编号/姓名/手机号">
+                        <span class="uf zoom uf-search-light-2" id="searchBtn" data-bind="click: event.searchClick"></span>
+                        <span class="u-form-control-feedback-1  uf-search-light-0 uf uf-close" id="returnBtn"
+                              data-bind="click: event.returnClick"></span>
+                    </div>
+                    <div class="pull-right">
+                        <input type="button" class="margin-right-15 u-button u-button-primary bg_blue"
+                               id="operater" value="取消订单" data-bind="click: event.operateClick">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--筛选-->
+        <div class="u-container-fluid padding-10 prefilter">
+            <div class="u-row" id="condition-row-user">
+                <div class="u-col-md-9 padding-0 margin-0">
+                    <div class="u-row padding-0 margin-0">
+                        <!-- 运营中心 -->
+                        <div class="u-col-md-2 u-col-xs-3 " style="width:19%;">
+                            <div class=" u-form-control " id="combobox_orgname"  style="padding:0;"
+                                 u-meta='{"type":"u-combobox","datasource":"orgnameList","data":"searchdatanew","field":"orgname","onlySelect":true}'>
+                                <div class="c_rela">
+								<span class="u-form-control-feedback fa fa-angle-down"
+                                      data-role="combo-button" data-bind=""></span>
+                                    <input placeholder="运营中心" class="u-form-control" style="border:0;width:100%;height:32px;background:#fff;" readonly/>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 运营商 -->
+                        <div class="u-col-md-2  u-col-xs-3 " style="width:19%;">
+                            <div class=" u-form-control " id="combobox_agentname" style="padding:0;"
+                                 u-meta='{"type":"u-combobox","datasource":"agentnameList","data":"searchdatanew","field":"agentname","onlySelect":true}'>
+                                <div class="c_rela">
+                                    <span class="u-form-control-feedback fa fa-angle-down"
+                                          data-role="combo-button" ></span>
+                                    <input placeholder="运营商" class="u-form-control" style="border:0;width:100%;height:32px;background:#fff;" readonly/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 订单状态 -->
+                        <div class="u-col-md-2  u-col-xs-3 " style="width:19%;">
+                            <div class=" u-form-control "   style="padding:0;"
+                                 u-meta='{"type":"u-combobox","datasource":"DRList","data":"searchdatanew","field":"dr","onlySelect":true}'>
+                                <div class="c_rela">
+                                    <span class="u-form-control-feedback fa fa-angle-down"
+                                          data-role="combo-button" ></span>
+                                    <input placeholder="订单状态" class="u-form-control" style="border:0;width:100%;height:32px;background:#fff;" readonly/>
+                                </div>
+                            </div>
+                        </div>
+
+						<div class="u-col-md-2"  style='width:19%;' >
+							<div class="">
+								<div class="u-input-group u-has-feedback"  id="startTime"
+									 u-meta='{"type":"u-date","data":"searchdatanew","field":"startTime"}'>
+									<input type="text" class="u-form-control" placeholder="开始日期" style="background:#fff;padding-right:0;"  >
+								</div>
+							</div>
+						</div>
+
+
+						<div class="u-col-md-2"  style='width:19%;' >
+							<div class="">
+								<div class="u-input-group u-has-feedback" id="endTime"
+									 u-meta='{"type":"u-date","data":"searchdatanew","field":"endTime"}'>
+									<input type="text" class="u-form-control" placeholder="截止日期" style="background:#fff;padding-right:0;"  >
+								</div>
+							</div>
+						</div>
+
+                    </div>
+                </div>
+                <div class="u-col-md-3 padding-0" style="line-height: 34px;">
+                    <input type="button" class="margin-right-10 u-button u-button-primary bg_blue"
+                             value="过滤" data-bind="click: event.filterClick">
+                    <input type="button" class="margin-right-10 u-button u-button-primary bg_blue"
+						     value="重置" data-bind="click: event.resetClick">
+                </div>
+            </div>
+        </div>
+
+        <!--列表展示-->
+        <div class="main-container contacts-container">
+            <div class="hr-table ">
+                <div class="u-table b-table width-full"
+                     u-meta='
+					 {"id":"objdata",
+					 "type":"grid",
+					 "data":"objdata",
+					 "columnWidth":"150px","onRowSelected":"event.selectClick"}'>
+                    <div options='{"field":"name","title":"客户姓名","dataType":"String","editType":"string","renderType":"event.renderTypeAjax"}'></div>
+                    <div options='{"field":"phone","title":"手机号码","dataType":"String","editType":"string"}'></div>
+                    <div options='{"field":"vbillcode","title":"订单编号","dataType":"String","editType":"string"}'></div>
+                    <div options='{"field":"servicecode","title":"工程编号","dataType":"String","editType":"string"}'></div>
+                    <div options='{"field":"product","title":"套餐名称","dataType":"String","editType":"string"}'></div>
+                    <div options='{"field":"sex","title":"性别","dataType":"String","editType":"string","renderType":"event.renderTypeSex"}'></div>
+                    <div options='{"field":"dr","title":"订单状态","dataType":"String","editType":"string","renderType":"event.renderTypeDR"}'></div>
+                    <div options='{"field":"totalmny","title":"订单金额","dataType":"String","editType":"string"}'></div>
+                    <!--<div options='{"field":"supervisor","title":"施工状态","dataType":"String","editType":"string"}'></div>-->
+                    <div options='{"field":"orgname","title":"运营中心","dataType":"String","editType":"string"}'></div>
+                    <div options='{"field":"agentname","title":"运营商","dataType":"String","editType":"string"}'></div>
+<!--
+                    <div options='{"field":"paystate","title":"付款状态","dataType":"String","editType":"string","renderType":"event.renderPayStatus"}'></div>
+-->
+<!--
+                    <div options='{"field":"state","title":"订单状态","dataType":"String","editType":"string"}'></div>
+-->
+                    <div options='{"field":"createtime","title":"创建时间","dataType":"String","editType":"string"}'></div>
+                </div>
+            </div>
+            <div id='pagination' class='pagination u-pagination pagination-sm'></div>
+        </div>
+
+        <!--取消订单-->
+        <div id="dialog_custserver" tabindex="-1" role="dialog" style="display:none;">
+            <div class="u-msg-title">
+                <h4 class="treetitle" id="allow-title">取消订单</h4>
+            </div>
+            <div class="u-msg-content">
+                <div class="u-form"  >
+                    <div class="u-row form-group">
+                        <div class="u-col-md-3 c_center">
+                            <label style="color: red;">*</label>
+                            <label>原因：</label>
+                        </div>
+                        <div class="u-col-md-9">
+                            <textarea class="u-col-md-9 u-form-control " id="operater_reason"  placeholder="请输入原因"/>
+                            <!--<textarea class="u-col-md-9 u-form-control "  -->
+                                      <!--u-meta='{"type":"textarea","data":"objdatanew","field":"memo"}' placeholder="请输入原因"-->
+                            <!--&gt;</textarea>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="u-msg-footer">
+                <button type="button" id="confirm_select" class="u-button u-button-primary pull-right" data-bind="click: event.confirm_operate">确定</button>
+                <button type="button" class="u-button button-cancel pull-right margin-right-15" data-bind="click:event.cancel_operate">
+                    取消
+                </button>
+            </div>
+        </div>
+
+
+    </div>
+</div>

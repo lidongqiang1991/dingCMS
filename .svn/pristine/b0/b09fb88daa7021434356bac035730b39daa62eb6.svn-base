@@ -1,0 +1,118 @@
+
+<div class="u-container-fluid padding-0">
+    <div class="u-row margin-0 padding-15">
+        <div class="ec-search u-col-md-12 u-col-sm-12 padding-bottom-15 u-media-middle ">
+            <div class="c-title pull-left ">顾客跟进</div>
+            <div class="pull-right">
+                <!--<div class="margin-right-10 pull-right">-->
+                    <!--<input type="button" class="margin-right-10 u-button u-button-primary u-buttom-sm"-->
+                           <!--  value="新建" data-bind="click: event.addManClick">-->
+                    <!--<input type="button" class=" pull-right u-button u-button-primary u-buttom-sm"-->
+                           <!--id="import_file" value="批量导入" data-bind="click: event.importClick">-->
+                <!--</div>-->
+                <div id="searchdiv" class="margin-right-10 pull-right  u-has-feedback  input_enter">
+                    <input type="text" class="u-form-control sm " id="search"
+                           placeholder="姓名/编码/邮件">
+                    <span class="u-form-control-feedback uf uf-search-light-2" id="searchBtn"
+                          data-bind="click: event.searchClick"></span>
+                    <span class="u-form-control-feedback-1  uf-search-light-0 " id="returnBtn"
+		  		    	  data-bind="click: event.returnClick">X</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--筛选-->
+    <div class="u-container-fluid prefilter">
+        <div class="u-row" id="condition-row-user">
+            <!-- 运营商 -->
+            <div class="u-col-md-2 " style="">
+                <div class=" u-form-control "   style="padding:0;"
+                     u-meta='{"type":"u-combobox","datasource":"testselect","data":"objdatanew","field":"id","onlySelect":true}'>
+                    <div class="c_rela">
+								<span class="u-form-control-feedback fa fa-angle-down"
+                                      data-role="combo-button" ></span>
+                        <input placeholder="请选择角色" class="u-form-control" style="border:0;width:100%;height:100%;background:#fff;" readonly/>
+                    </div>
+                </div>
+            </div>
+            <!-- 运营商 -->
+            <div class="u-col-md-2 " style="">
+                <div class=" u-form-control " id="comboSex" style="padding:0;"
+                     u-meta='{"type":"u-combobox","datasource":"testselect","data":"objdatanew","field":"id","onlySelect":true}'>
+                    <div class="c_rela">
+                                    <span class="u-form-control-feedback fa fa-angle-down"
+                                          data-role="combo-button" ></span>
+                        <input placeholder="请选择角色" class="u-form-control" style="border:0;width:100%;height:100%;background:#fff;" readonly/>
+                    </div>
+                </div>
+            </div>
+            <!-- 运营商 -->
+            <div class="u-col-md-1 " style="line-height: 36px;">报备时间</div>
+            <div class="u-col-md-2 " style="">
+                <div class="">
+                    <div class="u-input-group u-has-feedback"
+                         u-meta='{"type":"u-date","data":"objdatanew","field":"startTime"}'>
+                        <input type="text" class="u-form-control" placeholder="" id="birthdate">
+                    </div>
+                </div>
+            </div>
+            <div class="u-col-md-1 " style="line-height: 36px;">跟进时间</div>
+            <div class="u-col-md-2 " style="">
+                <div class="">
+                    <div class="u-input-group u-has-feedback"
+                         u-meta='{"type":"u-date","data":"objdatanew","field":"updataTime"}'>
+                        <input type="text" class="u-form-control" placeholder="" id="birthdate">
+                    </div>
+                </div>
+            </div>
+            <div class="u-col-md-1">
+                <input type="button" class="margin-right-10 u-button u-button-primary  bg_blue"
+                         value="筛选" data-bind="click: event.searchClick">
+            </div>
+            <div class="u-col-md-1">
+                <input type="button" class="margin-right-10 u-button u-button-primary  bg_blue"
+                       id="power_click" value="跟进分配" data-bind="click: event.powerClick">
+            </div>
+        </div>
+    </div>
+
+    <!--列表展示-->
+    <div class="main-container padding-15 contacts-container">
+        <div class="hr-table ">
+            <div class="u-table b-table width-full"
+                 u-meta='{"id":"gridaddress","type":"grid","data":"objdata","columnWidth":"150px","onRowSelected":"event.selectClick"}'>
+                <div options='{"field":"username","title":"顾客编号","dataType":"String","editType":"string"}'>
+                </div>
+                <div options='{"field":"usercode","title":"顾客状态","dataType":"String","editType":"string"}'></div>
+                <div options='{"field":"orgname","title":"顾客姓名","dataType":"String","editType":"string"}'></div>
+                <div options='{"field":"usermobile","title":"性别","dataType":"String","editType":"string"}'></div>
+                <div options='{"field":"levelname","title":"手机号码","dataType":"String","editType":"string"}'></div>
+                <div options='{"field":"useremail","title":"所在区域","dataType":"String","editType":"string"}'></div>
+                <div options='{"field":"address","title":"详细地址","dataType":"String","editType":"string"}'></div>
+            </div>
+        </div>
+        <div id='pagination' class='pagination u-pagination pagination-sm'></div>
+    </div>
+
+    <!--跟进分配-->
+    <!-- 树展示的弹出层  -->
+    <div id="dialog_content_power" tabindex="-1" role="dialog" style="display:none">
+        <div class="u-msg-title">
+            <h4 class="treetitle" id="tree-title">跟进分配</h4>
+        </div>
+        <div class="u-msg-content">
+            <!--   <div class="ztree" id="commonTree"></div> -->
+            <div id="tree" class="ztree"
+                 u-meta='{"id":"commonTree","data":"treeobjdata","type":"tree","idField":"orgid","pidField":"parentid","nameField":"orgname","setting":"treeSetting"}'></div>
+        </div>
+        <div class="u-msg-footer">
+            <button type="button" id="confirm_select" data-bind="click:event.savepowerClick" class="u-button u-button-primary pull-right bg_blue">确定</button>
+            <button type="button" class="u-button button-cancel pull-right margin-right-15 bg_blue" data-bind="click:event.cancelpowerClick">
+                取消
+            </button>
+        </div>
+
+    </div>
+
+
+</div>

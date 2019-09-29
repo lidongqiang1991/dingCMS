@@ -1,0 +1,329 @@
+package com.ding.cms.web.controller;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.ding.cms.entity.BillDeal;
+import com.ding.cms.entity.BillService;
+import com.ding.cms.entity.ServiceListEntity;
+import com.ding.cms.repository.AgentDao;
+import com.ding.cms.service.ServiceService;
+import com.ding.cms.util.BeanUtil;
+import com.ding.cms.util.ExportUtils;
+import com.yonyou.iuap.context.InvocationInfoProxy;
+import com.yonyou.iuap.mvc.type.SearchParams;
+import com.yonyou.iuap.persistence.bs.dao.MetadataDAO;
+import com.yonyou.iuap.persistence.jdbc.framework.processor.MapListProcessor;
+import com.yonyou.iuap.persistence.jdbc.framework.util.FastBeanHelper;
+import com.yonyou.iuap.system.entity.Org;
+import com.yonyou.iuap.system.entity.SysUser;
+import com.yonyou.iuap.system.service.OrgService;
+import com.yonyou.iuap.system.web.controller.BaseController;
+
+@Controller
+@RequestMapping(value = " /excel ")
+public class ExcelController extends BaseController{
+	@Autowired
+	private ServiceService serviceService;
+	static final String[] SHUJUAttributes = {"客户编号","客户姓名","运营商","城市","区","项目地址","信息来源","建单时间","派单时间","是否预约成功","是否勘察","未上门原因","计划勘察时间","勘察时间","是否下单","部位","产品代码","产品面积","项目报价","是否成交","未成交原因","合同签订时间","施工状态"};
+	static final String[] SHICHANGAttributes = {"建单时间","信息来源","了解途径","途径细分","城市","区","姓名","性别","电话","房屋地址","小区名称","渗漏部位","房屋类型","概况","运营商名称","派单日期","派单用时","是否上门","上门人员","未上门原因","预约上门日期","实际上门日期","上门用时","产品单价","产品面积","总价","产品名称","是否达成","达成时间","未达成原因","施工负责人","合同签订时间","达成用时","NPS","客诉"};
+	static final String[] WEIXIUFUWUAttributes = {"信息编号","信息来源","签订日期","合同编号","业主姓名","联系电话","身份证号","通讯地址","合同金额","实付金额","施工队","管家","施工地址","部位","产品面积","进场日期","完工日期","验收日期","防水主材金额","首付款金额","首付款时间","付款人姓名","尾款金额","尾款时间","付款人姓名","优惠金额","优惠方式","付款方式","已付款金额","差额","合同原件是否返回","验收单是否返回","防水主材金额确认","客诉编号","保单生效日期","质保年限","质保截止时间","保险单号","业务流水号","发票是否开具","发票编号","合同邮寄日期","邮寄单号","保单邮寄日期","邮寄单号","发票邮寄日期","邮寄单号","结算比例","结算金额","质保金额","结算日期","结算进度"};
+	static final String[] YUNYINGAttributes = {"序号","建单","运营中心（片区）","运营商名称","信息来源","城市","区县","客户姓名","手机号码","渗漏部位","第一次派单时间","最后一次派单时间","是否派单","改派原因（派单未接受原因）","派单接受时间","管家姓名","信息预约情况（是、否、等）","信息预约操作时间","预约失败原因(勾选)","预约上门日期","勘察开始时间","是否更改渗漏部位","勘察结束时间","勘察时间与预约时间不符原因","报价提交时间","报价金额","项目面积","套餐","信息达成情况（是、否、等待）","未达成原因（勾选）","合同提交时间","首款支付时间","首款金额","付款方式","付款人","派工操作时间","派工是否接受","改派工原因（派工未接单原因）","派工接受时间","工队姓名","预计进场时间","实际进场时间","实际进场时间与预计进场时间不符原因","进场照片数量","工序1审核时间","工序1审核情况（通过、未通过）","工序1不合格原因","。。。","竣工验收时间","尾款支付时间","金额","客户评价时间","客户评价分数"};
+	
+	public static final String SHUJUDAOCHUSQL = "SELECT customer.NAME AS 客户姓名, customer.customerid AS 客户编号, service.orgname AS 运营商, house.city AS 城市, house.district AS 区, house.address AS 项目地址, deal.sourcetype AS 信息来源, deal.createtime AS 建单时间, log.createtime AS 派单时间, deal.issurvey AS 是否勘察, deal.surveydate AS 勘察时间, '' AS 维修部位, '' AS 产品代码, '' AS 产品面积, service.totalamount AS 项目报价, SUBSTRING_INDEX( contract.createtime, '.', 1 ) AS 合同签订时间, service.servicestate AS 施工状态, service.billid serviceid "
+			+ " FROM bill_service service "
+			+ " LEFT JOIN bd_customer customer ON service.customerid = customer.customerid "
+			+ " LEFT JOIN bill_deal deal ON deal.billid = service.dealid "
+			+ " LEFT JOIN bd_house house ON house.houseid = service.houseid "
+			+ " LEFT JOIN bd_contract contract ON contract.dealid = deal.billid LEFT "
+			+ " JOIN log_service log ON log.serviceid = service.billid AND log.action = '分配管家' ";
+	
+	public static final String SHICHANGSQL = "SELECT deal.createtime AS 建单时间, deal.sourcetype AS 信息来源, house.city AS 城市, house.district AS 区, customer.NAME AS 姓名, customer.sex AS 性别, customer.phone AS 电话, house.address AS 房屋地址, deal.community AS 小区名称, '' AS 维修部位, replace(house.type,',','|') AS 房屋类型, deal.orgname AS 运营商名称, service.surveyname AS 上门人员, deal.surveydate AS 预约上门时间, service.startdate AS 实际上门时间, '' AS 产品名称, '' AS 产品面积, service.totalamount AS 总价, SUBSTRING_INDEX( contract.createtime, '.', 1 ) AS 达成时间, SUBSTRING_INDEX( contract.createtime, '.', 1 ) AS 合同签订时间, service.surveyname AS 施工负责人, deal.nps AS NPS, service.billid serviceid "
+			+ " FROM bill_deal deal LEFT JOIN bd_house house ON house.houseid = deal.houseid "
+			+ " LEFT JOIN bd_customer customer ON customer.customerid = deal.customerid "
+			+ " LEFT JOIN bill_service service ON service.dealid = deal.billid "
+			+ " LEFT JOIN bd_contract contract ON contract.dealid = deal.billid ";
+	
+	public static final String WEIXIUFUWUSQL = "SELECT deal.vbillcode AS '信息编号' ,deal.sourcetype AS '信息来源' ,contract.createtime AS '签订日期' ,contract.contractcode AS '合同编号' ,contract.customername AS '业主姓名' ,contract.telphone AS '联系电话'  ,contract.idnumber AS '身份证号' ,contract.postaladdress as '通讯地址' ,contract.paymoney as '合同金额' ,service.paidamount as '实付金额' ,service.constructionname as '施工队' ,service.surveyname as '管家'  ,service.startdate as '进场日期' ,service.enddate as '完工日期' ,service.enddate as '验收日期' ,contract.picc as '保单编号' ,contract.contractcode as '业务流水号' ,contract.invoicedocunum as '发票编号' ,contract.contractdocunum as '合同邮寄单号' ,contract.policydocunum as '保单邮寄单号' ,contract.invoicedocunum as '发票邮寄单号', service.billid serviceid "
+			+ " FROM bill_deal deal "
+			+ " LEFT JOIN bd_contract contract ON deal.billid = contract.dealid "
+			+ " left join bill_service service on deal.billid=service.dealid ";
+//	public static final String WEIXIUFUWUSQL = "SELECT deal.vbillcode AS '信息编号' ,deal.sourcetype AS '信息来源' ,contract.createtime AS '签订日期' ,contract.contractcode AS '合同编号' ,contract.customername AS '业主姓名' ,contract.telphone AS '联系电话'  ,contract.idnumber AS '身份证号' ,contract.postaladdress as '通讯地址' ,contract.paymoney as '合同金额' ,service.paidamount as '实付金额' ,service.constructionname as '施工队' ,service.surveyname as '管家' ,ty.type as '维修部位' ,service.startdate as '进场日期' ,service.enddate as '完工日期' ,service.enddate as '验收日期' ,contract.picc as '保单编号' ,contract.contractcode as '业务流水号' ,contract.invoicedocunum as '发票编号' ,contract.contractdocunum as '合同邮寄单号' ,contract.policydocunum as '保单邮寄单号' ,contract.invoicedocunum as '发票邮寄单号' "
+//			+ " FROM bill_deal deal "
+//			+ " LEFT JOIN bd_contract contract ON deal.billid = contract.dealid "
+//			+ " left join bill_service service on deal.billid=service.dealid left join "
+//			+ " (SELECT o.serviceid,GROUP_CONCAT(o.type separator '|') type FROM(SELECT orders.serviceid,orders.billid orderid,pro.type FROM  bill_order orders "
+//			+ " LEFT JOIN bd_product pro ON orders.productid = pro.productid "
+//			+ " LEFT JOIN bill_service serv ON serv.billid = orders.serviceid ORDER BY orders.serviceid ) o "
+//			+ " GROUP BY o.serviceid) ty on service.billid=ty.serviceid ";
+	
+	@Autowired
+	private MetadataDAO metaDao;
+	
+	@Autowired
+	private OrgService orgService;
+	
+	@RequestMapping(value = "/download", method = RequestMethod.GET)
+    public @ResponseBody Object exportVehicleInfo(HttpServletRequest req, HttpServletResponse resp) {
+        String filename = req.getParameter("filename");
+        String fileWriteTime = String.valueOf(System.currentTimeMillis());
+//        String fileWriteTime = "2019-03-11";
+        // 得到上传文件的保存目录，将上传的文件存放于WEB-INF目录下，不允许外界直接访问，保证上传文件的安全
+        String savePath = req.getServletContext().getRealPath("/dingCMS/temp");
+        //清空文件夹
+        try {
+			FileUtils.cleanDirectory(new File(savePath));
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+        File folder=new  File(savePath);
+        if(!folder.exists())folder.mkdir();
+        String tmpFileName = savePath + "/" + filename + fileWriteTime + ".csv";
+        File file = new File(tmpFileName);
+        System.out.println(file.getAbsolutePath());
+        try {
+        	if(!file.getParentFile().exists()){
+        		file.getParentFile().mkdirs();
+        	}
+        	if(!file.exists())file.createNewFile();
+	        // write
+	        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false), "GBK"));
+	        //写数据
+	        StringBuilder sql = new StringBuilder() ;
+	        if("数据".equals(filename)){
+	        	sql.append(ExcelController.SHUJUDAOCHUSQL);
+	        	//数据过滤
+	        	sql.append(" where service.dr = 0 ");
+		        sql.append(getTrueData(BillService.class, "service."));
+		        sql.append("ORDER BY deal.createtime ");
+	        }else if("市场".equals(filename)){
+	        	sql.append(ExcelController.SHICHANGSQL);
+	        	//数据过滤
+	        	sql.append(" where service.dr = 0 ");
+		        sql.append(getTrueData(BillDeal.class, "deal."));
+		        sql.append(" ORDER BY deal.createtime ");
+	        }else if("服务".equals(filename)){
+	        	sql.append(ExcelController.WEIXIUFUWUSQL);
+	        	//数据过滤
+	        	sql.append(" where service.dr = 0 ");
+		        sql.append(getTrueData(BillDeal.class, "deal."));
+		        sql.append(" ORDER BY deal.createtime ");
+	        }
+	        
+	        List list=(List)metaDao.queryForList(sql.toString(), new MapListProcessor());
+	        if(list!=null){
+	        	//先写表头
+	        	String[] title = null;
+	        	if("数据".equals(filename)){
+	        		title = SHUJUAttributes;
+	        	}else if("市场".equals(filename)){
+	        		title = SHICHANGAttributes;
+	        	}else if("服务".equals(filename)){
+	        		title = WEIXIUFUWUAttributes;
+	        	}
+	        	for (int i = 0; i < title.length; i++) {
+	        		bw.write(title[i]+",");
+				}
+	        	bw.write("\r\n");
+//	        	Map mapT=(Map)list.get(0);
+//	        	Set<String> keysT=mapT.keySet();
+//	        	for (Iterator iterator = keysT.iterator(); iterator.hasNext();) {
+//	        		String key = (String) iterator.next();
+//	        		bw.write(key+",");
+//	        	}
+//	        	bw.write("\r\n");
+	        	//写数据
+	        	for (int i = 0; i < list.size(); i++) {
+	        		Map map=(Map)list.get(i);
+	    			Set<String> keys=map.keySet();
+	    			//查询sql无法查出的数据 start
+	    			StringBuilder value1 = new StringBuilder();
+	    			StringBuilder value2 = new StringBuilder();
+	    			StringBuilder value3 = new StringBuilder();
+	    			StringBuilder value4 = new StringBuilder();
+//	    			if("市场".equals(filename)||"数据".equals(filename)){
+	    				String serviceid = (String)map.get("serviceid");
+	    				String sql1 = "SELECT pro.productcode,pro.productname,pro.type,ord.num from bill_order ord left join bd_product pro on ord.productid = pro.productid where serviceid = '"+serviceid+"'  and pro.productcode is not null";
+	    				List list1=(List)metaDao.queryForList(sql1, new MapListProcessor());
+	    				if(list1!=null){
+	    					for(int a = 0 ; a <list1.size() ; a++){
+	    						Map map1 = (Map)list1.get(a);
+	    						Set<String> keys1=map1.keySet();
+	    						for (Iterator iterator1 = keys1.iterator(); iterator1.hasNext();) {
+	    							String key1 = (String) iterator1.next();
+	    							String values = map1.get(key1).toString();
+	    							if(values==null)values="";
+	    							if("productcode".equals(key1)){
+	    								value1.append(values+"|");
+	    							}else if("type".equals(key1)){
+	    								value2.append(values+"|");
+	    							}else if("num".equals(key1)){
+	    								values = values.substring(0, values.indexOf("."));
+	    								value3.append(values+"|");
+	    							}else if("productname".equals(key1)){
+	    								value4.append(values+"|");
+	    							}
+	    						}
+	    					}
+	    				}
+//	    			}
+	    			//查询sql无法查出的数据 end
+	    			//开始写数据
+	    			for (int a = 0; a < title.length; a++) {
+	    				if("部位".equals(title[a])){
+							bw.write(value2+",");
+						}else if("产品代码".equals(title[a])){
+							bw.write(value1+",");
+						}else if("产品面积".equals(title[a])){
+							bw.write(value3+",");
+						}else if("产品名称".equals(title[a])){
+							bw.write(value4+",");
+						}else{							
+							Object value = map.get(title[a]);
+							if(value==null)value="";
+							bw.write(value+",");
+						}
+//		        		bw.write(map.get(title[a])+",");
+					}
+//	    			for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
+//						String key = (String) iterator.next();
+//						if("维修部位".equals(key)){
+//							bw.write(value2+",");
+//						}else if("产品代码".equals(key)){
+//							bw.write(value1+",");
+//						}else if("产品面积".equals(key)){
+//							bw.write(value3+",");
+//						}else if("产品名称".equals(key)){
+//							bw.write(value4+",");
+//						}else{							
+//							Object value = map.get(key);
+//							if(value==null)value="";
+//							bw.write(value+",");
+//						}
+//					}
+	    			bw.write("\r\n");
+	        	}
+	        }
+	        bw.flush();
+	        bw.close();
+	        //流返回下载的文件
+//	        req.setCharacterEncoding("UTF-8");
+//        	resp.setCharacterEncoding("UTF-8");  
+//        	resp.setContentType("application/msexcel");// 定义输出类型
+//            //下面两种方式都可以
+//        	// 以流的形式下载文件。
+//            InputStream fis = new BufferedInputStream(new FileInputStream(file.getAbsolutePath()));
+//            byte[] buffer = new byte[fis.available()];
+//            fis.read(buffer);
+//            fis.close();
+//            // 清空response
+//            resp.reset();
+//            // 设置response的Header
+////            resp.addHeader("Content-Disposition", "attachment;filename=" + new String(filename.getBytes()));
+//            resp.addHeader("Content-Disposition", "attachment;filename="
+//            		+ filename + fileWriteTime + ".csv");
+//            resp.addHeader("Content-Length", "" + file.length());
+//            OutputStream toClient = new BufferedOutputStream(resp.getOutputStream());
+//            resp.setContentType("application/octet-stream");
+//            toClient.write(buffer);
+//            toClient.flush();
+//            toClient.close();
+//            return new FileInputStream(file);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}finally{
+//			file.delete();
+		}
+        String filePath = file.getAbsolutePath();
+        int index = filePath.indexOf("temp");
+        String realPath = "/dingCMS/" + filePath.substring(index);
+        return realPath;
+        
+    }
+	
+	@RequestMapping(value="download1",method = RequestMethod.GET)
+	@ResponseBody
+	public void download(HttpServletRequest request,HttpServletResponse response,PageRequest pageRequest,SearchParams searchParams) throws IOException{
+        //生成样例数据
+        Page<ServiceListEntity> page = serviceService.selectAllByPage(searchParams.getSearchMap(), pageRequest);
+        List<ServiceListEntity> list = new ArrayList<ServiceListEntity>();
+        if(page!=null){
+        	list=page.getContent();
+        }
+        //设置文件名
+        String fileName = "工程列表";
+        //获得打印流
+        //OutputStream outputStream = response.getOutputStream();
+        String[] keys = {"name","phone","enddate","vbillcode","startdate","evaluatetime","servername","values","constructionname","surveyname","supervisor","planneddate","dealcreatetime","address","ordercreatetime","createtime"};
+        List<Map<String,Object>> dataList = new ArrayList<Map<String,Object>>();
+        for (ServiceListEntity item : list) {
+        	Map<String, Object> map = BeanUtil.transBean2Map(item, keys);
+        	dataList.add(map);
+        }
+        ExportUtils.responseSetProperties(fileName, response);
+        ExportUtils.doExport(dataList,keys ,keys,response.getOutputStream());
+	}
+	@RequestMapping(value = "/dl", method = RequestMethod.GET)
+    public Object exportVehicleInfo11(HttpServletRequest req, HttpServletResponse resp) {
+		
+		return "111111111";
+	}
+	
+	/**
+     * 工具
+     * 获取当前登录用户的数据sql片段
+     * @return
+     */
+	private String getTrueData(Class<?> clz,String alias) {
+		StringBuilder sql_ = new StringBuilder();
+		Org or= metaDao.queryByPK(Org.class, ((SysUser)InvocationInfoProxy.getExtendAttribute("currentUser")).getOrgid());
+		String key;
+		if(or!=null){
+			if(AgentDao.agentType.equals(or.getOrgtype())){
+				key = FastBeanHelper.getColumn(clz, "agentid");
+				sql_.append(" and "+alias+key+" = '"+or.getOrgid()+"'");
+			} else if(or.getParentid()!=null) {
+				List<Org> orgs = orgService.selectAll();
+				key = FastBeanHelper.getColumn(clz, "agentid");
+				if(key==null||"".equals(key))key = FastBeanHelper.getColumn(clz, "agentid");
+				if (!orgs.isEmpty()) {
+					sql_.append(" and "+alias+key+" in (");
+					for (Org org : orgs) {
+						sql_.append("'" + org.getOrgid() + "',");
+					}
+					sql_.delete(sql_.length() - 1, sql_.length());
+					sql_.append(")");
+				}
+			}
+		}
+		return sql_.toString();
+	}
+	
+}

@@ -1,0 +1,16 @@
+#project .c-title{
+    margin:0;
+    line-height: 30px;
+}
+#project .u-form-control{
+    font-size: 12px;
+}
+#project .opera_arrow{
+	width:30px;
+	margin-left:15px;
+}
+/*接单状态的样式*/
+#project .u-tag{font-weight:normal;font-size:100%;}
+#project .u-tag-primary{
+	background-color:rgb(3,162,228);
+}

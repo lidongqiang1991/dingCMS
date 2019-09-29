@@ -1,0 +1,175 @@
+<!-- 页面内容区(HTML片段，不能放置HTML 及 BODY 标签 )-->
+<!-- 若要正常使用实时预览功能，请在首页index.html中添加路由#material/material -->
+
+<!-- 列表区域  -->
+<div>
+    <div class="u-container-fluid  padding-0" id="material">
+        <div class="u-row margin-0 padding-0 content-title">
+            <div class="ec-search u-col-md-12 u-col-sm-12 u-media-middle margin-0 padding-0">
+                <h3 class="c-title pull-left padding-15 padding-left-20 c_size_28">材料列表</h3>
+                <div class="pull-right padding-15 padding-left-0 padding-right-0">
+                    <div id="searchdiv" class="margin-right-10 pull-right u-has-feedback input_enter">
+                        <input type="text" class="u-form-control c-sm" id="search" placeholder="名称/编码">
+                        <span class="uf zoom uf-search-light-2" id="searchBtn" data-bind="click: event.searchClick"></span>
+                        <span class="u-form-control-feedback-1  uf-search-light-0 uf uf-close" id="returnBtn"
+                              data-bind="click: event.returnClick"></span>
+                    </div>
+                    <div class="pull-right">
+                        <input type="button" class="margin-right-15 u-button u-button-primary  bg_blue"
+                               value="删除材料" data-bind="click: event.delClick">
+                    </div>
+                    <div class="pull-right">
+                        <input type="button" class="margin-right-15 u-button u-button-primary bg_blue"
+                               value="编辑材料" data-bind="click: event.editClick">
+                    </div>
+                    <div class="pull-right">
+                        <input type="button" class="margin-right-15 u-button u-button-primary bg_blue"
+                               value="新增材料" data-bind="click: event.addClick">
+                    </div>
+                    <!--<div class="margin-right-10 pull-right">
+                        <input type="button" class="margin-right-10 u-button u-button-primary bg_blue"
+                               value="查询" data-bind="click: event.searchClick">
+                    </div>-->
+                </div>
+            </div>
+        </div>
+
+        <!-- material 材料展示列表 -->
+        <div class="main-container padding-top-0 contacts-container">
+            <div class="hr-table">
+                <div class="u-table b-table width-full"
+                     u-meta='{"id":"gridaddress","type":"grid","data":"materialDa","columnWidth":"150px","onDblClickFun":"event.dblClick"}'>
+                    <div
+                            options='{"field":"code","title":"编码","dataType":"String","editType":"string","renderType":"event.renderTypeAjax"}'></div>
+                    <div
+                            options='{"field":"name","title":"名称","dataType":"String","editType":"string"}'></div>
+                    <div
+                            options='{"field":"price","title":"单价（元）","dataType":"String","editType":"string"}'></div>
+                    <div
+                            options='{"field":"cost","title":"成本（元）","dataType":"String","editType":"string"}'></div>
+                    <div
+                            options='{"field":"note","title":"备注","dataType":"String","editType":"string"}'></div>
+                </div>
+            </div>
+            <div id='pagination' class='pagination u-pagination pagination-sm'></div>
+        </div>
+
+
+        <!--  添加。 编辑 材料-->
+        <div id="dialog_content_material" class="modal-dialog" style="display:none;">
+            <div class="u-msg-title">
+                <h4>新增材料</h4>
+            </div>
+            <HR width="100%" color=#F8F9FB SIZE=3 align="center"/>
+            <div class="u-msg-content add-man">
+                <div class="u-form material" id="add-form">
+                    <div class="u-col-md-12 form-group">
+                        <div class="u-col-md-3 control-label">
+                            <label style="color: red;">*</label>
+                            <label>名称</label>
+                        </div>
+                        <input class="u-col-md-6 u-form-control " type="text" id="add_name"
+                               u-meta='{"type":"string","data":"materialDaNew","field":"name"}'
+                               placeholder="请输入名称"
+                        />
+                    </div>
+
+                    <div class="u-col-md-12 form-group">
+                        <div class="u-col-md-3 control-label">
+                            <label style="color: red;">*</label>
+                            <label >编号</label>
+                        </div>
+                        <input class="u-col-md-6 u-form-control " type="text" id="add_code"
+                               u-meta='{"type":"string","data":"materialDaNew","field":"code"}'
+                               placeholder="请输入编号"
+                        />
+                    </div>
+                    <div class="u-col-md-12 form-group">
+                        <div class="u-col-md-3 control-label">
+                            <label style="color: red;">*</label>
+                            <label >规格</label>
+                        </div>
+                        <input class="u-col-md-6 u-form-control " type="text" id="add_spec"
+                               u-meta='{"type":"string","data":"materialDaNew","field":"spec"}'
+                               placeholder="请输入规格"
+                        />
+                    </div>
+                    <div class="u-col-md-12 form-group" style="">
+                        <div class="u-col-md-3 control-label">
+                            <label style="color: red;">*</label>
+                            <label>型号</label>
+                        </div>
+                        <input class="u-col-md-6 u-form-control " type="text" id="add_model"
+                               u-meta='{"type":"string","data":"materialDaNew","field":"model"}'
+                               placeholder="请输入型号"
+                        />
+                    </div>
+                    <div class="u-col-md-12 form-group">
+                        <div class="u-col-md-3 control-label">
+                            <label style="color: red;">*</label>
+                            <label >单位</label>
+                        </div>
+                        <div id="unit" class="u-col-md-9" u-meta='{"type":"u-radio","data":"materialDaNew","field":"unit","datasource":"unitList","hasOther":true}'>
+                            <label  class="u-radio" style="margin-right:20px;">
+                                <input type="radio" class="u-radio-button" name="options1">
+                                <span class="u-radio-label"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="u-col-md-12 form-group" style="">
+                        <div class="u-col-md-3 control-label">
+                            <!-- <label style="color: red;">*</label> -->
+                            <label>单价（元）</label>
+                        </div>
+                        <input class="u-col-md-6 u-form-control " type="text" id="add_price"
+                               u-meta='{"type":"string","data":"materialDaNew","field":"price"}'
+                               onkeyup="value=value.replace(/[^\d{1,}\.\d{1,}|\d{1,}]/g,'')"
+                               placeholder="请输入单价"
+                        />
+                    </div>
+                    <div class="u-col-md-12 form-group" style="">
+                        <div class="u-col-md-3 control-label">
+                            <!-- <label style="color: red;">*</label> -->
+                            <label>成本（元）</label>
+                        </div>
+                        <input class="u-col-md-6 u-form-control " type="text" id="add_cost"
+                               u-meta='{"type":"string","data":"materialDaNew","field":"cost"}'
+                               onkeyup="value=value.replace(/[^\d{1,}\.\d{1,}|\d{1,}]/g,'')"
+                               placeholder="请输入成本"
+                        />
+                    </div>
+
+                    <div class="u-col-md-12 form-group">
+                        <div class="u-col-md-3 control-label">
+                            <label >备注</label>
+                        </div>
+                        <textarea class="u-col-md-6 u-form-control " type="text" id="add_note"
+                                  placeholder="请输入备注"
+                                  u-meta='{"type":"textarea","data":"materialDaNew","field":"note"}'
+                        ></textarea>
+                        <!--<textarea  class="u-col-md-6 u-form-control" id="add_note_area"-->
+                        <!--placeholder="请输入备注" -->
+                        <!--rows="3" cols="10" ></textarea>-->
+                    </div>
+                </div>
+            </div>
+            <div class="u-msg-footer">
+                <button id="savematerial" class="u-msg-ok u-button u-button-primary bg_blue"
+                        data-bind="click: event.saveMaterialClick">保存
+                    <span class="u-button-container"></span>
+                </button>
+                <button id="cancelmaterial" class="u-msg-cancel u-button u-button-white"
+                        data-bind="click: event.cancelManClick">取消
+                    <span class="u-button-container"></span>
+                </button>
+
+            </div>
+        </div>
+
+
+
+
+
+    </div>
+</div>
+

@@ -1,0 +1,2 @@
+ create table sys_dictionary ( createorid varchar ( 50 ) NULL , createorname varchar ( 50 ) NULL , modifyname varchar ( 50 ) NULL , type varchar ( 50 ) NULL , modifyid varchar ( 50 ) NULL , parentid varchar ( 50 ) NULL , value varchar ( 50 ) NULL , createtime datetime NULL , id char ( 36 ) NOT NULL , CONSTRAINT PK_SYS_DICTIONARY PRIMARY KEY ( id ) , ts datetime NULL , dr smallint default 0 );
+ create table ext_sys_dictionary ( ext_id char ( 36 ) NOT NULL , CONSTRAINT PK_ext_sys_dictionary PRIMARY KEY ( ext_id ) , ts datetime NULL , dr smallint default 0 );

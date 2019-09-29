@@ -1,0 +1,158 @@
+package com.ding.cms.web.controller;
+
+import java.util.Date;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.druid.support.logging.Log;
+import com.alibaba.druid.util.StringUtils;
+import com.ding.cms.entity.BillService;
+import com.ding.cms.entity.CustomerListEntity;
+import com.ding.cms.entity.LogOrderAllot;
+import com.ding.cms.entity.LogOrderNote;
+import com.ding.cms.service.BillDealService;
+import com.ding.cms.service.CustomerListService;
+import com.ding.cms.service.ServiceService;
+import com.ding.cms.util.DateUtils;
+import com.yonyou.iuap.mvc.type.SearchParams;
+import com.yonyou.iuap.system.web.controller.BaseController;
+import com.yonyou.iuap.system.web.controller.OrgController;
+
+import freemarker.template.utility.DateUtil;
+
+@Controller
+@RequestMapping(value = "/custlist")
+public class CustomerListController extends BaseController{
+	
+	@Autowired
+	private CustomerListService custService;
+	
+	@Autowired
+	private BillDealService dealService;
+	
+	@Autowired
+	private ServiceService serviceService;
+	
+	 public static Logger logger = LoggerFactory.getLogger(CustomerListController.class);
+	
+	/**
+    *
+    * @param pageRequest
+    * @param searchParams
+    * @return
+    */
+   @RequestMapping(value = "/page", method = RequestMethod.GET)
+   public @ResponseBody Object page(PageRequest pageRequest, SearchParams searchParams) {
+       Page<CustomerListEntity> tmpdata = custService.selectAllByPage( searchParams.getSearchMap(),pageRequest);
+       return buildSuccess(tmpdata);
+   }
+   
+   @RequestMapping(value = "/save", method = RequestMethod.POST)
+   public @ResponseBody Object save(@RequestBody List<CustomerListEntity> list) {
+	   CustomerListEntity custList=list.get(0);
+	   if(!StringUtils.isEmpty(custList.getSurveydate())&&custList.getSurveydate().indexOf("m")<0){
+		   Date d=new Date(Long.valueOf(custList.getSurveydate()));
+		   String sDate=DateUtils.format(d, "yyyy-MM-dd HH:00:00");
+		   custList.setSurveydate(sDate);
+	   }
+       return buildSuccess(custService.saveAll(custList));
+//       return  custList;
+   }	
+   
+   @RequestMapping(value = "/listnote", method = RequestMethod.GET)
+   public @ResponseBody Object pageNote(PageRequest pageRequest, SearchParams searchParams) {
+       Page<LogOrderNote> tmpdata = dealService.selectNoteByPage( pageRequest,searchParams.getSearchMap());
+       return buildSuccess(tmpdata);
+   }
+	
+	@RequestMapping(value = "/addnote", method = RequestMethod.GET)
+	public @ResponseBody LogOrderNote addNote(HttpServletRequest request, HttpServletResponse reponse) {
+		String note = request.getParameter("content");
+		String dealid = request.getParameter("dealid");
+		String orderid = request.getParameter("orderid");
+		String nps = request.getParameter("nps");
+		String visitstate = request.getParameter("visitstate");
+		LogOrderNote entity = new LogOrderNote();
+		if(!StringUtils.isEmpty(note))entity.setNote(note);
+		if(!StringUtils.isEmpty(dealid))entity.setDealid(dealid);
+		if(!StringUtils.isEmpty(orderid))entity.setOrderid(orderid);
+		if(!StringUtils.isEmpty(visitstate))return dealService.saveNoteVisit(entity,nps,visitstate);
+		else return dealService.saveNote(entity);
+		
+		
+	}
+	
+	@RequestMapping(value = "/listallot", method = RequestMethod.GET)
+	public @ResponseBody Object pageAllot(PageRequest pageRequest, SearchParams searchParams) {
+		Page<LogOrderAllot> tmpdata = dealService.selectAllotByPage( pageRequest,searchParams.getSearchMap());
+		return buildSuccess(tmpdata);
+	}
+	
+	@RequestMapping(value = "/addallot", method = RequestMethod.POST)
+	public @ResponseBody Object addAllot(HttpServletRequest request, HttpServletResponse reponse) {
+		String dealid = request.getParameter("dealid");
+		String agentid = request.getParameter("agentid");
+		String reason = request.getParameter("reason");
+		if(!StringUtils.isEmpty(dealid)&&!StringUtils.isEmpty(agentid)){
+			BillService service = serviceService.queryByDealid(dealid);
+			if(service!=null&&StringUtils.isEmpty(service.getSurveyid())){
+				dealService.allot(dealid,agentid,reason);				
+			}else if(service==null){
+				dealService.allot(dealid,agentid,null);				
+			}else{
+				return buildGlobalErrorWithMessage("该工程已分配管家，无法重新分配");
+			}
+		}
+		return buildSuccess();
+	}
+	
+	@RequestMapping(value = "/resume", method = RequestMethod.POST)
+	public @ResponseBody Object resumeDeal(HttpServletRequest request, HttpServletResponse reponse) {
+		String dealid = request.getParameter("billid");
+		dealService.resumeDeal(dealid);
+		return buildSuccess();
+	}
+	
+	/**
+	 * 关闭客户
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/closeCustomer")
+	public @ResponseBody Object closeCustomer(HttpServletRequest request){
+		String billid = request.getParameter("billid");
+		String note = request.getParameter("note");
+		dealService.closeCustomer(billid, note);
+		return buildSuccess();
+		
+	}
+	
+	/**
+	 * 修改状态
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/changeState")
+	public @ResponseBody Object changeDealState(HttpServletRequest request){
+		String billid = request.getParameter("billid");
+		String state = request.getParameter("state");
+		String note = request.getParameter("note");
+		dealService.changeDealState(billid,state, note);
+		return buildSuccess();
+		
+	}
+   
+}

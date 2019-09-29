@@ -1,0 +1,725 @@
+define(['text!pages/project/projectDetail.html','css!pages/project/projectDetail','pages/project/projectmeta','pages/json/addressList','uuigrid'],function(html) {
+
+    var init = function(element){
+
+        var viewModel = {
+            app:{},
+            /* 数据模型 */
+            draw:1,
+            totlePage:0,
+            pageSize:10,
+            totleCount:0,
+            // 全局id
+            billid:'',
+            href:{
+              type:''
+            },
+			page:{
+				    url:'',
+            },
+            ServiceUrl:'',
+            //客户来源
+            sourceList:[
+                {name: "400", value: "400"},
+                {name: "天猫", value: "天猫"},
+                {name: "网络搜索", value: "网络搜索"},
+                {name: "媒体广告", value: "媒体广告"},
+                {name: "推广活动", value: "推广活动"},
+                {name: "运营商", value: "运营商"},
+                {name: "转介绍", value: "转介绍"},
+                {name: "今日头条", value: "今日头条"},
+                {name: "京东", value: "京东"},
+                {name: "腾讯", value: "腾讯"},
+                {name: "百度", value: "百度"},
+                {name: "短信", value: "短信"},
+                {name: "齐家网", value: "齐家网"},
+                {name: "U会员", value: "U会员"}
+            ],
+            sourceList1:[],
+            sourceList1_temp:{
+                "400":[
+                    {name: "8966",value:"8966"},
+                    {name: "5756",value:"5756"},
+                ],
+                "天猫":[
+                    {name: "天猫",value:"天猫"},
+                ],
+                "网络搜索":[
+                    {name: "百度",value:"百度"},
+                    {name: "官网",value:"官网"},
+                    {name: "其他",value:"其他"},
+                ],
+                "媒体广告":[
+                    {name: "今日头条",value:"今日头条"},
+                    {name: "百度",value:"百度"},
+                    {name: "腾讯",value:"腾讯"},
+                    {name: "微信",value:"微信"},
+                    {name: "抖音",value:"抖音"},
+                    {name: "微博",value:"微博"},
+                    {name: "电台",value:"电台"},
+                    {name: "其他",value:"其他"},
+                ],
+                "推广活动":[
+                    {name: "小区推广",value:"小区推广"},
+                    {name: "短信",value:"短信"},
+                    {name: "微信公众号",value:"微信公众号"},
+                    {name: "其他",value:"其他"},
+                    {name: "社区推广",value:"社区推广"},
+                ],
+                "运营商":[
+                    {name: "自建单",value:"自建单"},
+                    {name: "工长介绍",value:"工长介绍"},
+                    {name: "其他",value:"其他"},
+                    {name: "自引单",value:"自引单"},
+                    {name: "网络搜索",value:"网络搜索"},
+                    {name: "媒体广告",value:"媒体广告"},
+                    {name: "微信",value:"微信"},
+                    {name: "电商",value:"电商"},
+                    {name: "雨虹公司内推",value:"雨虹公司内推"},
+                    {name: "其他",value:"其他"},
+                ],
+                "转介绍":[
+                    {name: "家人朋友介绍",value:"家人朋友介绍"},
+                    {name: "老客户介绍",value:"老客户介绍"},
+                    {name: "雨虹公司内推",value:"雨虹公司内推"},
+                    {name: "其他",value:"其他"},
+                    {name: "雨虹内部介绍",value:"雨虹内部介绍"},
+                    {name: "工长介绍",value:"工长介绍"},
+                    {name: "家装公司介绍",value:"家装公司介绍"},
+                ],
+                "京东":[
+                    {name: "京东",value:"京东"},
+                ],
+                "今日头条":[
+                    {name: "今日头条",value:"今日头条"},
+                ],
+                "腾讯":[
+                    {name: "腾讯",value:"腾讯"},
+                ],
+                "百度":[
+                    {name: "百度",value:"百度"},
+                ],
+                "齐家网":[
+                    {name: "齐家网",value:"齐家网"},
+                ],
+                "短信":[
+                    {name: "短信",value:"短信"},
+                ],
+                "U会员":[
+                    {name: "U会员",value:"U会员"},
+                ]
+            },
+            provinceList:[],
+            cityList:[],
+            districtList:[],
+            typeList:[
+                {name: "平屋面",value:"平屋面"},
+                {name: "露台",value:"露台"},
+                {name: "斜屋面",value:"斜屋面"},
+                {name: "卫生间",value:"卫生间"},
+                {name: "窗户",value:"窗户"},
+                {name: "采光顶",value:"采光顶"},
+                {name: "金属屋面",value:"金属屋面"},
+            ],
+            // 客户信息
+            customerListUrl:ctx + '/servicelist/custom.do',
+            /* 客户 列表 */
+            customerdata : new u.DataTable(metacustomer),
+            /* 编辑框 数据 */
+            // customerdata : new u.DataTable(metacustomer),
+
+			// 跟进列表
+            followListUrl:ctx + '/servicelist/log.do',
+            // 跟进列表
+            followupdata:new u.DataTable(metafollowup),
+
+            //物料明细
+            MaterialDetailUrl :ctx + '/servicelist/material.do',
+            //工程物料
+            metamaterialdata:new u.DataTable(metamaterial),
+
+            sexList:[{name: "男",value:1}, {name: "女",value:2}],
+
+            // 工序参数
+            procedureListUrl:ctx + "/servicelist/procedure.do",
+            procedureList:new u.DataTable({meta:{}}),
+            // procedureList:[
+                // {itemname:"工序开始"},
+                // {itemname:"工序2"},
+                // {itemname:"工序3"},
+            // ],
+            procedureDetailUrl: ctx + "/formvaluedata/all.do",
+            procedureDetail: [
+                // res: [
+                //         {
+                //             village: '楼盘名称',
+                //             area: '22',
+                //         },
+                //         {
+                //             village: '楼盘',
+                //             area: '33',
+                //         },
+                    // ],
+            ],
+            // 图片显示
+            showimg:{
+              url:'',
+              isshow:false,
+            },
+
+            event:{
+                jshrefclick:function(){
+                	window.history.back(-1);
+                    // var type = viewModel.href.type;
+                    // if(type == 'ing'){
+                        // window.location.href = ctx + '/#/project/projecting';
+                    // }else{
+                        // window.location.href = ctx + '/#/project/projected';
+                    // }
+                },
+                //页面初始化
+                pageInit : function() {
+                    id=[];
+                    viewModel.app = u.createApp({
+                        el :element /* Document.body */,
+                        model : viewModel
+                    });
+
+                    // 编辑客户基本信息
+                    viewModel.event.clearDt(viewModel.customerdata);
+                    var newr = viewModel.customerdata.createEmptyRow();
+                    viewModel.customerdata.setRowSelect(newr);
+
+                    if(this.getUrlParams('id')){
+                        var billid = this.getUrlParams('id');
+                        var type = this.getUrlParams('type');
+                        viewModel.billid = billid;
+                        viewModel.href.type = type;
+                        //id.push(billid);
+                        this.loadList_customer(billid);
+                    }
+
+                    // input
+                    $('#add-form-customer input').attr('readonly','readonly');
+                    $('.u-input-group').css("pointerEvents","none");
+
+                },
+                // 获取url 后缀
+                getUrlParams: function(name) {
+                    var url = window.location.href;
+                    var search_temp = '?'+ url.split('?')[1];
+                    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+                    var r = search_temp.substr(1).match(reg);
+                    if (r != null)
+                        return r[2];
+                    return null;
+                },
+                //清除datatable数据
+                clearDt: function (dt) {
+                    dt.removeAllRows();
+                    dt.clear();
+                },
+
+                //组装list
+                genDataList:function(data){
+                    var datalist = [];
+                    datalist.push(data);
+                    return datalist ;
+                },
+
+                //分页相关
+                pageChange:function(){
+                    viewModel.event.comps.on('pageChange', function (pageIndex) {
+                        viewModel.draw = pageIndex + 1;
+                        if(viewModel.page.url == 'loadFollowList'){
+                            viewModel.event.loadFollowList();
+                        }else if(viewModel.page.url == 'ServiceMaterialList'){
+                            viewModel.event.ServiceMaterialList();
+                        }else{
+                            viewModel.event.loadList_customer();
+                        }
+                    });
+                },
+                sizeChange:function(){
+                    viewModel.event.comps.on('sizeChange', function (arg) {
+                        viewModel.pageSize = parseInt(arg);
+                        viewModel.draw = 1;
+                        if(viewModel.page.url == 'loadFollowList'){
+                            viewModel.event.loadFollowList();
+                        }else if(viewModel.page.url == 'ServiceMaterialList'){
+                            viewModel.event.ServiceMaterialList();
+                        }else {
+                            viewModel.event.loadList_customer();
+                        }
+                    });
+                },
+
+
+                // 加载 客户列表
+                loadList_customer:function(obj){
+                    var jsonData={
+                        pageIndex:viewModel.draw-1,
+                        pageSize:viewModel.pageSize,
+                        sortField:"",
+                        sortDirection:"asc"
+                    };
+                    $.ajax({
+                        type : 'get',
+                        url : viewModel.customerListUrl,
+                        //dataType : 'json',
+                        data:{
+                        	billid : obj
+                        	},
+                        contentType: 'application/json;charset=utf-8',
+                        success : function(res) {
+                            if(res){
+                                if( res.success =='success'){
+                                    var newrow = viewModel.customerdata.getSelectedRows()[0];
+                                    var data = res.detailMsg.data;
+                                    newrow.setSimpleData(data);
+                                }else{
+                                    var msg = "";
+                                    if(res.success == 'fail_global'){
+                                        msg = res.message;
+                                    }else{
+                                        for (var key in res.detailMsg) {
+                                            msg += res.detailMsg[key] + "<br/>";
+                                        }
+                                    }
+                                    $vue.$alert(msg, '请求错误', {
+    confirmButtonText: '确定',
+    callback: action => {
+        $vue.$message({
+            type: 'info',
+            message: `action: ${ action }`
+        });
+    }
+});
+                                }
+                            }else{
+                                $vue.$message({
+    showClose: true,
+    message: '后台返回数据格式有误，请联系管理员！',
+    type: 'error',
+    offset: '60'
+});
+                            }
+                        },
+                        error:function(er){
+                            $vue.$message({
+    showClose: true,
+    message: '请求超时，请稍后重试！',
+    type: 'error',
+    offset: '60'
+});
+                        }
+                    })
+                },
+                // 渲染男女
+                renderTypeSex:function (obj) {
+                    var val;
+                    if (obj.value == '2') {
+                        val='女';
+                    } else if(obj.value == '1'){
+                        val='男';
+                    }else{
+                        val='未知';
+                    };
+                    obj.element.innerHTML = val;
+                },
+                //渲染数量加上单位
+                numUnit:function(obj){
+                    if(obj.value == ""){ obj.value = 0}
+                        var unit = obj.row.value.unit;
+                        if(unit){
+                            obj.element.innerHTML = obj.value + " " + unit;
+                        }else{
+                            obj.element.innerHTML = obj.value;
+                        }
+                },
+                // 获取工程日志列表
+                loadFollowList:function () {
+                    var billid = viewModel.billid;
+                    var jsonData={
+                        pageIndex:viewModel.draw-1,
+                        pageSize:viewModel.pageSize,
+                        sortField:"",
+                        sortDirection:"asc",
+                        "search_serviceid":billid
+                    };
+                    $.ajax({
+                        type:'get',
+                        url : viewModel.followListUrl,
+                        dataType : 'json',
+                        data:jsonData,
+                        contentType: 'application/json;charset=utf-8',
+                        success : function(res) {
+                            if(!res.detailMsg.data){
+                                viewModel.totleCount=0;
+                                viewModel.totlePage=1;
+                                viewModel.event.comps.update({totalPages:viewModel.totlePage,pageSize:viewModel.pageSize,currentPage:viewModel.draw,totalCount:viewModel.totleCount});
+                                viewModel.followupdata.removeAllRows();
+                                viewModel.followupdata.clear();
+                            }else{
+                                viewModel.totleCount=res.detailMsg.data.totalElements;
+                                viewModel.totlePage=res.detailMsg.data.totalPages;
+                                viewModel.event.comps.update({totalPages:viewModel.totlePage,pageSize:viewModel.pageSize,currentPage:viewModel.draw,totalCount:viewModel.totleCount});
+                                viewModel.followupdata.removeAllRows();
+                                viewModel.followupdata.clear();
+                                viewModel.followupdata.setSimpleData(res.detailMsg.data.content,{unSelect:true});
+                            }
+
+                        }
+                    });
+                },
+                // 获取工程物料详情
+                ServiceMaterialList:function () {
+                    var billid = viewModel.billid;
+                    var jsonData={
+                        pageIndex:viewModel.draw-1,
+                        pageSize:viewModel.pageSize,
+                        sortField:"",
+                        sortDirection:"asc",
+                        "search_serviceid":billid
+                    };
+                    $.ajax({
+                        type:'get',
+                        url : viewModel.MaterialDetailUrl,
+                        dataType : 'json',
+                        data:jsonData,
+                        contentType: 'application/json;charset=utf-8',
+                        success : function(res) {
+                            if(!res.detailMsg.data){
+                                viewModel.totleCount=0;
+                                viewModel.totlePage=1;
+                                viewModel.event.comps.update({totalPages:viewModel.totlePage,pageSize:viewModel.pageSize,currentPage:viewModel.draw,totalCount:viewModel.totleCount});
+                                viewModel.metamaterialdata.removeAllRows();
+                                viewModel.metamaterialdata.clear();
+                            }else{
+                                viewModel.totleCount=res.detailMsg.data.totalElements;
+                                viewModel.totlePage=res.detailMsg.data.totalPages;
+                                viewModel.event.comps.update({totalPages:viewModel.totlePage,pageSize:viewModel.pageSize,currentPage:viewModel.draw,totalCount:viewModel.totleCount});
+                                viewModel.metamaterialdata.removeAllRows();
+                                viewModel.metamaterialdata.clear();
+                                viewModel.metamaterialdata.setSimpleData(res.detailMsg.data.content,{unSelect:true});
+                            }
+
+                        }
+                    });
+                },
+
+                //获取工序列表
+                procedureList:function (res) {
+                    var billid = viewModel.billid;
+                    if(!billid)return;
+                    $.ajax({
+                        type: 'get',
+                        url: viewModel.procedureListUrl,
+                        data: {
+                            billid:billid
+                        },
+                        contentType: 'application/json;charset=utf-8',
+                        success: function (res) {
+                            if (res) {
+                                if (res.success == 'success') {
+                                    if(res.detailMsg.data){
+                                        var data = res.detailMsg.data;
+                                        viewModel.procedureList.removeAllRows();
+                                        viewModel.procedureList.clear();
+                                        viewModel.procedureList.setSimpleData(data, {unSelect: true});
+
+                                        $(".procedure-list .item-body").removeClass("bg_gray_light");
+                                        $(".procedure-list .item:first-child .item-body").addClass("bg_gray_light");
+                                        viewModel.event.procedureClick(res.detailMsg.data[0].billbid,res.detailMsg.data[0].formid);
+                                    }
+                                }
+                            } else {
+                                $vue.$message({
+                                    showClose: true,
+                                    message: '后台返回数据格式有误，请联系管理员！',
+                                    type: 'error',
+                                    offset: '60'
+                                });
+                            }
+
+                            viewModel.event.hideTime();
+                        },
+                    });
+                },
+                //获取当前工序详情
+                procedureClick:function (sid,formid) {
+                    // var sid = res.getValue("billbid");
+                    // var formid = res.getValue("formid");
+                    if(!sid||!formid){return;}
+                    $.ajax({
+                        type: 'get',
+                        url: viewModel.procedureDetailUrl,
+                        data: {
+                            sid:sid,
+                            formid:formid,
+                        },
+                        contentType: 'application/json;charset=utf-8',
+                        success: function (res) {
+                            if (res) {
+                                if (res.success == 'success') {
+                                    if(res.detailMsg.data){
+                                        var data = res.detailMsg.data;
+                                        var data_temp = data.map((item)=>{
+                                            if(!item.value)return item;
+                                            let _attr = item.type;
+                                            if(_attr == "checkbox"){
+                                                item.value = JSON.parse(item.value);
+                                            }else if(_attr == "img"){
+                                                var base = "http://dmzoss.iyuhong.com.cn/";
+                                                if(item.value.indexOf(",") > -1){
+                                                    item.value = item.value.split(",");
+                                                    for(var i=0,j=item.value.length;i<j;i++){
+                                                        item.value[i] = base + item.value[i];
+                                                    }
+                                                }else{
+                                                    var arr = [];
+                                                    arr.push(base + item.value);
+                                                    item.value = arr;
+                                                }
+                                            }
+                                            return item;
+                                        });
+                                        //console.log(data_temp);
+                                        viewModel.procedureDetail = data_temp;
+                                        viewModel.event.render("#procedure-showdata", data_temp, ".procedure-showdata");
+                                    }
+                                }
+                            } else {
+                                $vue.$message({
+                                    showClose: true,
+                                    message: '后台返回数据格式有误，请联系管理员！',
+                                    type: 'error',
+                                    offset: '60'
+                                });
+                            }
+                        },
+                    });
+                },
+                //时间转换函数
+                procedure_temp_ts:function (when,time,state) {
+                    if(when == 'start'){
+                        var whenName = '开始时间 ';
+                    }else{
+                        var whenName = '结束时间 ';
+                    }
+                    state = state();
+                    if(state == 0){ //未开始 不显示时间
+                        return '';
+                    }
+                    if(state == 1 && when == 'end'){ //进行中 不显示结束时间
+                        return '';
+                    }
+                    //已完成 显示开始时间和结束时间
+                    time = time();
+                    if(!time){  //之前为记录开始时间的返回空
+                        return '';
+                    }
+                    if(time){
+                        if(time.toString().indexOf('-')>-1){
+                            time = time.replace(/-/g,'/');
+                        }
+                        var _Date = new Date(time);
+                    }else{
+                        var _Date = new Date();
+                    }
+                    var y = _Date.getFullYear();
+                    var m = _Date.getMonth()+1;
+                    var d = _Date.getDate();
+                    var hours = _Date.getHours();
+                    var minutes = _Date.getMinutes();
+                    var seconds = _Date.getSeconds();
+                    return whenName +  y +'-'+
+                        (m <10 ? '0'+m : m) +'-'+
+                        (d <10 ? '0'+d : d) +' '+
+                        (hours <10 ? '0'+hours : hours)+':'+
+                        (minutes <10 ? '0'+minutes : minutes)+':'+
+                        (seconds <10 ? '0'+seconds : seconds);
+                },
+                procedure_state:function (state) {
+                    state = state();
+                    var temp = state == 0 ? "未开始" : (state == 1 ? "进行中" : "已完成");
+                    return temp;
+                },
+                hideTime:function(){
+                	var elements = document.getElementsByClassName('tsnull');
+                	for(var element of elements){
+                		if(element.innerHTML == ''){
+                			element.className += ' tsBlock';
+                		}
+                	}
+                },
+                // 查看图片
+                showimgClick:function () {
+                    // viewModel.showimg.isshow = false;
+                    $(".part-imgshow").addClass("c_hide");
+                },
+                // 渲染
+                render: function(tmpl, data, container) {
+                    if (tmpl.indexOf('#') == 0) {
+                        tmpl = $(tmpl).html();
+                    }
+                    var doTtmpl = doT.template(tmpl);
+
+                    var html = doTtmpl(data);
+
+                    if (typeof container == 'string') {
+                        $(container).html(html);
+                    } else if (typeof container == 'object') {
+                        container.html(html);
+                    }
+
+                    return html;
+                },
+                // 绑定省市区列表
+                loadAddress:function () {
+                    var addressList = addressData;
+
+                    var province=[],city=[],district = [];
+                    for(var i=0,j = addressList.length;i<j; i++){
+                        addressList[i].value = addressList[i].name;
+                        province.push(addressList[i]);
+                    }
+                    viewModel.provinceList = province;
+                },
+            },
+        };
+
+        $(element).html(html);
+        viewModel.event.loadAddress();
+        viewModel.event.pageInit();
+
+
+        // 绑定地址触发
+        viewModel.customerdata.on('valueChange', function(event){
+            let filename = event.field;  // 改变的字段
+            var oldValue = event.oldValue;
+            var newValue = event.newValue;
+            if(filename == 'province'){
+                var row = viewModel.customerdata.getSelectedRows()[0];
+                row.setValue('city','');
+                row.setValue('district','');
+
+                var province = viewModel.provinceList;
+                var city = [];
+                for(var i=0,j = province.length;i<j; i++){
+                    if(newValue == province[i].name){
+                        city = province[i].child;
+                        break;
+                    }
+                }
+                var city_new = city.map(function (item) {
+                    item.value = item.name;
+                    return item;
+                });
+
+                viewModel.cityList = city_new;
+                viewModel.districtList = [];
+                var combo1Obj = document.getElementById('combobox_city')['u.Combo'];
+                combo1Obj.setComboData(city_new);
+
+            }else if(filename == 'city'){
+                var row = viewModel.customerdata.getSelectedRows()[0];
+                row.setValue('district','');
+
+                var city = viewModel.cityList;
+                var district = [];
+                for(var i=0,j = city.length;i<j; i++){
+                    if(newValue == city[i].name){
+                        district = city[i].child;
+                        break;
+                    }
+                }
+                var district_new = district.map(function (item) {
+                    item.value = item.name;
+                    return item;
+                });
+
+                viewModel.districtList = district_new;
+                var combo1Obj = document.getElementById('combobox_district')['u.Combo'];
+                combo1Obj.setComboData(district_new);
+            }else if(filename == 'sourcetype'){
+                // var sourcetype1 = viewModel.sourceList1_temp[newValue]||'';
+                // if(newValue != oldValue){
+                //     var row = viewModel.customerdata.getSelectedRows()[0];
+                //     row.setValue('sourcetype1','');
+                // }
+                // var combo1Obj = document.getElementById('combobox_sourcetype1')['u.Combo'];
+                // combo1Obj.setComboData(sourcetype1);
+
+            }
+            var row = viewModel.customerdata.getSelectedRows()[0];
+
+
+        });
+
+
+        // tab   切换
+        $('.u-tabs__tab').click(function () {
+            var typer = $(this).attr('data-type');
+            if(typer == 1){
+            	//客户信息
+            	viewModel.event.loadList_customer();
+            }else if(typer == 3 ){
+            	//物料明细
+            	var paginationDiv = $(element).find('#pagination_allot')[0];
+                viewModel.event.comps=new u.pagination({el:paginationDiv,jumppage:true});
+                viewModel.event.comps.update({pageSize: 5 });  //默认每页显示5条数据
+                viewModel.event.pageChange();
+                viewModel.event.sizeChange();
+                viewModel.page.url = 'ServiceMaterialList';
+                viewModel.event.ServiceMaterialList();
+            }else if(typer == 4){
+            	//跟进日志
+            	var paginationDiv = $(element).find('#pagination_follow')[0];
+                viewModel.event.comps=new u.pagination({el:paginationDiv,jumppage:true});
+                viewModel.event.comps.update({pageSize: 5 });  //默认每页显示5条数据
+                viewModel.event.pageChange();
+                viewModel.event.sizeChange();
+                viewModel.page.url = 'loadFollowList';
+                viewModel.event.loadFollowList();
+            }else if(typer == 5){
+            	//工序更新
+                viewModel.event.procedureList();
+            }
+        });
+        //查看详情
+        $(".procedure-list").on("click",".item",function () {
+            var sid = $(this).attr("data-sid");
+            var formid = $(this).attr("data-formid");
+            $(this).find(".item-body").addClass("bg_gray_light");
+            $(this).siblings().find(".item-body").removeClass("bg_gray_light");
+            viewModel.event.procedureClick(sid,formid);
+        });
+        //查看图片
+        $(".showimg").on("click","img.display",function () {
+            var url = $(this).attr("data-url");
+            $(".part-imgshow img").attr("src",url);
+            $(".part-imgshow").removeClass("c_hide");
+
+        });
+
+        // 滚动事件
+        $("#content").scroll(function () {
+            let scrollTop = $("#content").scrollTop();
+            if(scrollTop>200){
+                $(".procedure-content").addClass("fix");
+            }else{
+                $(".procedure-content").removeClass("fix");
+            }
+        });
+
+
+
+    };
+
+    return {
+        'template': html,
+        init: init
+    }
+
+});

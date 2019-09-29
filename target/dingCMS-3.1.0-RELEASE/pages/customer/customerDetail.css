@@ -1,0 +1,60 @@
+
+
+/*标题*/
+#customerDetail .ec-search{
+	border-bottom:1px solid #ccc;
+}
+#customerDetail .c_rela{
+	position:relative;
+}
+
+#customerDetail .pearls > div{
+	width:100px;
+	text-align: center;
+	float: left;
+}
+#customerDetail .pearls .pearl-number{
+	width: 25px;
+	height: 25px;
+	border: 1px solid #000;
+	border-radius: 50%;
+	text-align: center;
+	margin: auto;
+	margin-top: 5px;
+	z-index: 10;
+	background: #fff;
+}
+#customerDetail .pearls .pearl{
+	position: relative;
+}
+#customerDetail .pearls .pearl-number:after{
+	content: '';
+	display: block;
+	position: absolute;
+	left: 50px;
+	bottom: 13px;
+	width: 100px;
+	height: 0;
+	border-top: 1px solid #000;
+	z-index:-1;
+}
+#customerDetail .pearls .pearl:last-child .pearl-number:after{
+	opacity: 0;
+}
+#customerDetail .tab-1-title{
+	padding: 15px 0;
+}
+#customerDetail .tab-1-name{
+	text-align: center;
+	line-height: 36px;
+	padding: 0;
+	margin: 0;
+}
+
+#customerDetail .tab-1-content .u-row{
+	margin-left: 0;
+}
+
+#customerDetail .u-has-feedback .u-form-control{
+	padding-right: 0;
+}

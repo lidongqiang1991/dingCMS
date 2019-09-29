@@ -1,0 +1,40 @@
+#board .group{
+	border:1px solid #ccc;
+	border-radius:	3px;
+	box-sizing:border-box;
+	padding: 10px;
+	width:100%;
+	height:200px;
+	overflow: hidden;
+}
+#board .group > div{
+    width: 100%;
+}
+#board .group .title{
+	font-size:20px;
+	/*line-height:20px;*/
+	color: #666;
+	margin-bottom:12px;
+}
+#board .group .num{
+	font-size: 60px;
+	line-height:60px;
+	color: #666;
+}
+
+/*数据*/
+#board .board-list{
+	padding: 20px;
+}
+
+#board .board-group{
+	width: 49%;
+	overflow: hidden;
+	box-sizing: border-box;
+	padding: 0;
+	margin: 0;
+	display: inline-block;
+}
+
+
+

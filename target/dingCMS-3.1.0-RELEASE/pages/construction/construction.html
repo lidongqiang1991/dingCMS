@@ -1,0 +1,166 @@
+<!-- 页面内容区(HTML片段，不能放置HTML 及 BODY 标签 )-->
+<!-- 若要正常使用实时预览功能，请在首页index.html中添加路由#construction/construction -->
+
+<!-- 列表区域  -->
+<div class="u-container-fluid u-widget-bg padding-0" id="material">
+    <div class="u-widget margin-0">
+        <div class="u-widget-body">
+            <div class="u-row margin-left-0 margin-right-0">
+            	
+            	<!-- 工队列表 -->
+            	<div class="u-col-md-12 padding-left-0 padding-right-0" style="border-left:1px solid #cecece;">
+                    <div class="infoPanel" id="infoPanel">工队列表</div>
+                    <div class="treefrom">
+                        <div class="ec-search u-col-md-12 u-col-sm-12  ">
+                            <div class="u-button-group">
+                                <input
+                                        type="button" class="u-button u-button-primary u-buttom-sm"
+                                        id="add_construction" value="新增"
+                                        style="" data-bind="click: event.addClick">
+                                <input
+                                        type="button" class="u-button u-button-primary u-buttom-sm"
+                                        id="edit_construction" value="编辑"
+                                        style="" data-bind="click: event.editClick">
+                                <input
+                                        type="button" class="u-button u-button-primary u-buttom-sm"
+                                        id="del_construction" value="删除"
+                                        style="" data-bind="click: event.delClick">
+                             </div>
+                            
+                            <!--  添加。 编辑 工队-->
+                            <div id="dialog_content_construction" class="modal-dialog" style="display:none;">
+                                <div class="u-msg-title">
+                                    <h4>新增工队</h4>
+                                </div>
+                                <HR width="100%" color=#F8F9FB SIZE=3 align="center"/>
+                                <div class="u-msg-content add-man">
+                                    <div class="u-form" id="add-form">
+                                        <div class="u-col-md-12 form-group">
+                                            <div class="u-col-md-3 control-label">
+                                                <label style="color: red;">*</label>
+                                                <label>工长名称</label>
+                                            </div>
+                                            <input class="u-col-md-9 u-form-control " type="text" id="add_name"
+                                                   u-meta='{"type":"string","data":"constructionDaNew","field":"teamname"}'
+                                                   placeholder="请输入工长名称"
+                                                    />
+                                           </div>
+
+                                        <div class="u-col-md-12 form-group">
+                                            <div class="u-col-md-3 control-label">
+                                            	<label style="color: red;">*</label>
+                                                <label >手机号</label>
+                                            </div>
+                                            <input class="u-col-md-9 u-form-control " type="text" id="add_phone"
+                                                   u-meta='{"type":"string","data":"constructionDaNew","field":"phone"}'
+                                                   placeholder="请输入手机号"
+                                                    />
+                                        </div>
+                                        <div class="u-col-md-12 form-group">
+                                            <div class="u-col-md-3 control-label">
+                                            	<label style="color: red;">*</label>
+                                                <label >工种</label>
+                                            </div>
+                                            <input class="u-col-md-9 u-form-control " type="text" id="add_jobscope"
+                                                   u-meta='{"type":"string","data":"constructionDaNew","field":"jobscope"}'
+                                                   placeholder="请输入工种"
+                                                    />
+                                        </div>
+                                        <div class="u-col-md-12 form-group" style="">
+                                            <div class="u-col-md-3 control-label">
+                                                <label style="color: red;">*</label>
+                                                <label>运营商</label>
+                                            </div>
+                                            <input class="u-col-md-9 u-form-control " type="text" id="add_agent"
+                                                   u-meta='{"type":"string","data":"constructionDaNew","field":"agent"}'
+                                                   placeholder="请输入运营商"
+                                                    />
+                                        </div>
+                                        <div class="u-col-md-12 form-group" style="">
+                                            <div class="u-col-md-3 control-label">
+                                                <!-- <label style="color: red;">*</label> -->
+                                                <label>负责人</label>
+                                            </div>
+                                            <input class="u-col-md-9 u-form-control " type="text" id="add_owner"
+                                                   u-meta='{"type":"string","data":"constructionDaNew","field":"owner"}'
+                                                   placeholder="请输入负责人"
+                                                    />
+                                        </div>
+                                        <div class="u-col-md-12 form-group" style="">
+                                            <div class="u-col-md-3 control-label">
+                                                <!-- <label style="color: red;">*</label> -->
+                                                <label>创建人</label>
+                                            </div>
+                                            <input class="u-col-md-9 u-form-control " type="text" id="add_creator"
+                                                   u-meta='{"type":"string","data":"constructionDaNew","field":"creator"}'
+                                                   placeholder="请输入创建人"
+                                                    />
+                                        </div>
+
+                                        <div class="u-col-md-12 form-group">
+                                            <div class="u-col-md-3 control-label">
+                                                <label >备注</label>
+                                            </div>
+                                            <input class="u-col-md-9 u-form-control " type="text" id="add_teammemo"
+                                                   placeholder="请输入备注" 
+                                                   u-meta='{"type":"string","data":"constructionDaNew","field":"teammemo"}'
+                                                    />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="u-msg-footer">
+                                    <button id="savematerial" class="u-msg-ok u-button u-button-primary bg_blue"
+                                            data-bind="click: event.saveConstructionClick">保存
+                                        <span class="u-button-container"></span>
+                                    </button>
+                                    <button id="cancel" class="u-msg-cancel u-button u-button-white"
+                                            data-bind="click: event.cancelClick">取消
+                                        <span class="u-button-container"></span>
+                                    </button>
+                                    
+                                </div>
+                            </div>
+                            
+                            <!-- 搜索 -->
+                            <div id="searchdiv" class="u-input-group u-has-feedback pull-right input_enter">
+                                <input type="text" class="u-form-control sm " id="search"
+                                       placeholder="工长名称/手机号">
+                                <span class="u-form-control-feedback uf uf-search-light-2" id="searchBtn"
+                                      data-bind="click: event.searchClick"></span>
+                                <span class="u-form-control-feedback-1  uf-search-light-0 " id="returnBtn"
+		  		    				  data-bind="click: event.returnClick">×</span>
+                            </div>
+                         </div>
+                         
+                         <!-- construction 工队展示列表 -->
+                         <div class="main-container padding-0 contacts-container">
+                             <div class="hr-table ">
+                                 <div class="u-table b-table width-full"
+                                      u-meta='{"id":"gridconstruction","type":"grid","data":"constructionDa","columnWidth":"150px"}'>
+                                     <div
+                                            options='{"field":"teamname","title":"工长名称","dataType":"String","editType":"string"}'></div>
+                                     <div
+                                            options='{"field":"phone","title":"手机号","dataType":"String","editType":"string"}'></div>
+                                     <div
+                                            options='{"field":"jobscope","title":"工种","dataType":"String","editType":"string"}'></div>
+                                     <div
+                                            options='{"field":"agent","title":"运营商","dataType":"String","editType":"string"}'></div>
+                                     <div
+                                            options='{"field":"owner","title":"负责人","dataType":"String","editType":"string"}'></div>
+                                     <div
+                                            options='{"field":"creator","title":"创建人","dataType":"String","editType":"string"}'></div>
+                                     <div
+                                            options='{"field":"teammemo","title":"备注","dataType":"String","editType":"string"}'></div>
+                                 </div>
+                             </div>
+                             <div id='pagination' class='pagination u-pagination pagination-sm'></div>
+                          </div>
+                         
+                         
+                      </div>
+                  </div>   
+
+			</div>
+        </div>
+    </div>
+</div>

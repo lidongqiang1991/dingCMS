@@ -1,0 +1,240 @@
+<!-- 页面内容区(HTML片段，不能放置HTML 及 BODY 标签 )-->
+<!-- 若要正常使用实时预览功能，请在首页index.html中添加路由#project/project -->
+<div id="projecting">
+
+    <div class="u-container-fluid padding-0">
+        <div class="u-row margin-0 padding-0 content-title">
+            <div class="u-col-md-12 u-col-sm-12 u-media-middle margin-0 padding-0">
+                <h3 class="c-title pull-left padding-15 padding-left-20 c_size_28">工程列表</h3>
+                <div class="pull-right padding-15 padding-left-0 padding-right-0">
+                    <!--<div class="margin-right-10 pull-right">-->
+                    <!--<input type="button" class="margin-right-10 u-button u-button-primary bg_blue "-->
+                    <!--  value="新建" data-bind="click: event.addClick">-->
+                    <!--<input type="button" class=" pull-right u-button u-button-primary u-buttom-sm"-->
+                    <!--id="import_file" value="批量导入" data-bind="click: event.importClick">-->
+                    <!--</div>-->
+                    <div id="searchdiv" class="margin-right-10 pull-right u-has-feedback input_enter">
+                        <input type="text" class="u-form-control c-sm" id="search" placeholder="工程编号/姓名/手机号" style="width:185px;">
+                        <span class="uf zoom uf-search-light-2" id="searchBtn" data-bind="click: event.searchClick"></span>
+                        <span class="u-form-control-feedback-1  uf-search-light-0 uf uf-close" id="returnBtn"
+                              data-bind="click: event.returnClick"></span>
+                    </div>
+                    <!--功能操作-->
+                    <div class="pull-right opera_show c_hide">
+                        <input type="button"  class="margin-right-15 u-button bg_blue"
+                               id="allow_mode" value="施工模式" data-bind="click: event.modeClick">
+                        <input type="button" class="margin-right-15 u-button  bg_blue "
+                               id="allow_plan" value="计划拟定" data-bind="click: event.planClick">
+                        <input type="button" class="margin-right-15 u-button  bg_blue "
+                               id="allocate_material" value="调配物料" data-bind="click: event.materialClick">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--筛选-->
+        <div class="u-container-fluid padding-10 prefilter">
+            <div class="u-row" id="condition-row-user">
+                <!--<div class="u-col-md-10 padding-0 margin-0">-->
+                    <!--<div class="u-row padding-0 margin-0">-->
+                        <!-- 运营中心 -->
+                        <div class="u-col-md-2 u-col-xs-3 " style="">
+                            <div class=" u-form-control "  id="combobox_orgname" style="padding:0;"
+                                 u-meta='{"type":"u-combobox","datasource":"orgnameList","data":"searchdatanew","field":"orgname","onlySelect":true}'>
+                                <div class="c_rela">
+								<span class="u-form-control-feedback fa fa-angle-down"
+                                      data-role="combo-button" data-bind=""></span>
+                                    <input placeholder="运营中心" class="u-form-control" style="border:0;width:100%;height:32px;background:#fff;" readonly/>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 运营商 -->
+                        <div class="u-col-md-2  u-col-xs-3 " style="">
+                            <div class=" u-form-control " id="combobox_agentname" style="padding:0;"
+                                 u-meta='{"type":"u-combobox","datasource":"agentnameList","data":"searchdatanew","field":"agentname","onlySelect":true}'>
+                                <div class="c_rela">
+                                    <span class="u-form-control-feedback fa fa-angle-down"
+                                          data-role="combo-button" ></span>
+                                    <input placeholder="运营商" class="u-form-control" style="border:0;width:100%;height:32px;background:#fff;" readonly/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="u-col-md-2 u-col-xs-3 ">
+							<div u-meta='{"type":"u-date","data":"searchdatanew","field":"startTime1"}'>
+								<input type="text" class="u-form-control" placeholder="客户创建开始日期" style="background:#fff;padding-right:0;"  >
+							</div>
+						</div>
+						<div class="u-col-md-2 u-col-xs-3 ">
+							<div u-meta='{"type":"u-date","data":"searchdatanew","field":"endTime1"}'>
+								<input type="text" class="u-form-control" placeholder="客户创建结束日期" style="background:#fff;padding-right:0;"  >
+							</div>
+						</div>
+						<div class="u-col-md-2 u-col-xs-3 ">
+							<div u-meta='{"type":"u-date","data":"searchdatanew","field":"startTime2"}'>
+								<input type="text" class="u-form-control" placeholder="下单开始日期" style="background:#fff;padding-right:0;"  >
+							</div>
+						</div>
+						<div class="u-col-md-2 u-col-xs-3 ">
+							<div u-meta='{"type":"u-date","data":"searchdatanew","field":"endTime2"}'>
+								<input type="text" class="u-form-control" placeholder="下单结束日期" style="background:#fff;padding-right:0;"  >
+							</div>
+						</div>
+                    <!--</div>-->
+                <!--</div>-->
+                <div class="u-col-md-12 margin-top-10 padding-0">
+                    <div class="u-col-md-2 u-col-xs-3">
+                        <div u-meta='{"type":"u-date","data":"searchdatanew","field":"startTime3"}'>
+                            <input type="text" class="u-form-control" placeholder="建单开始日期" style="background:#fff;padding-right:0;"  >
+                        </div>
+                    </div>
+                    <div class="u-col-md-2 u-col-xs-3 ">
+                        <div u-meta='{"type":"u-date","data":"searchdatanew","field":"endTime3"}'>
+                            <input type="text" class="u-form-control" placeholder="建单结束日期" style="background:#fff;padding-right:0;"  >
+                        </div>
+                    </div>
+                    <div class="u-col-md-2 padding-0" style="line-height: 34px;">
+                        <input type="button" class="margin-left-15 u-button u-button-primary bg_blue"
+                                 value="过滤" data-bind="click: event.filterClick">
+                        <input type="button" class="margin-left-15 u-button u-button-primary bg_blue"
+                                id="allot_man" value="重置" data-bind="click: event.resetClick">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--列表展示-->
+        <div class="main-container contacts-container">
+            <div class="hr-table ">
+                <div class="u-table b-table width-full"
+                     u-meta='
+					 {"id":"objdata",
+					 "type":"grid",
+					 "data":"objdata",
+					 "columnWidth":"150px"}'>
+                    <div options='{"field":"name","title":"客户姓名","dataType":"String","editType":"string","renderType":"event.renderTypeAjax"}'></div>
+                    <div options='{"field":"phone","title":"客户手机号","dataType":"String","editType":"string"}'></div>
+                    <div options='{"field":"vbillcode","title":"工程编号","dataType":"String","editType":"string"}'>
+                    </div>
+                    <div options='{"field":"startdate","title":"开工时间","dataType":"String","editType":"string"}'></div>
+                    <div options='{"field":"currentProcedure","title":"计划执行状态","dataType":"String","editType":"string","renderType":"event.renderTypeState"}'></div>
+                    <div options='{"field":"constructionname","title":"工长","dataType":"String","editType":"string"}'></div>
+                    <div options='{"field":"supervisor","title":"管家","dataType":"String","editType":"string"}'></div>
+                    <div options='{"field":"planneddate","title":"计划工期","dataType":"String","editType":"string"}'></div>
+                    <div options='{"field":"materialstate","title":"物料调配","dataType":"String","editType":"string","renderType":"event.renderMaterialstate"}'></div>
+                    <div options='{"field":"address","title":"详细地址","dataType":"String","editType":"string"}'></div>
+               		<div options='{"field":"dealcreatetime","title":"客户创建时间","dataType":"String","editType":"string"}'></div>
+					<div options='{"field":"ordercreatetime","title":"下单时间","dataType":"String","editType":"string"}'></div>
+					<div options='{"field":"createtime","title":"工程创建时间","dataType":"String","editType":"string"}'></div>
+                </div>
+            </div>
+            <div id='pagination' class='pagination u-pagination pagination-sm'></div>
+        </div>
+        <!--分配施工 mode -->
+        <div id="dialog_mode" tabindex="-1" role="dialog" style="display:none;">
+            <div class="u-msg-title">
+                <h4 class="treetitle" id="mode-title">分配施工</h4>
+            </div>
+            <div class="u-msg-content">
+                <!--<div u-meta='{"id":"modelist","type":"u-radio","data":"modedatanew","field":"mode","datasource":"modelist","hasOther":false}'>-->
+                    <!--<div class="margin-top-15">-->
+                        <!--<label  class="u-radio">-->
+                            <!--<input type="radio" disabled="disabled" class="u-radio-button" name="mode">-->
+                            <!--<span class="u-radio-label"></span>-->
+                        <!--</label>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <div class="margin-top-15">
+                    <label  class="u-radio">
+                        <input type="radio" checked="checked" class="u-radio-button" name="mode">
+                        <span class="u-radio-label">劳务模式</span>
+                    </label>
+                </div>
+                <div class="margin-top-15">
+                    <label  class="u-radio">
+                        <input type="radio" disabled="disabled" class="u-radio-button" name="mode">
+                        <span class="u-radio-label">工人模式</span>
+                        <span class="u-radio-label margin-left-15">正在建设中...</span>
+                    </label>
+                </div>
+            </div>
+            <div class="u-msg-footer">
+                <button type="button" id="confirm_select" class="u-button u-button-primary pull-right" data-bind="click: event.confirm_mode">确定</button>
+                <button type="button" class="u-button button-cancel pull-right margin-right-15" data-bind="click:event.allow_cancle">
+                    取消
+                </button>
+            </div>
+        </div>
+
+        <!--计划拟定 plan -->
+        <div id="dialog_plan" tabindex="-1" role="dialog" style="display:none;">
+            <div class="u-msg-title">
+                <h4 class="treetitle" id="plan-title">计划拟定</h4>
+            </div>
+            <div class="u-msg-content" style="min-height: 300px;">
+                <div class="u-row margin-top-15">
+                    <div class="u-col-md-2" style="line-height: 36px;">开工时间:</div>
+                    <div class="u-col-md-5">
+                        <div class="u-input-group u-has-feedback width-full"
+                             u-meta='{"type":"u-date","data":"plandatanew","field":"startDate"}'>
+                            <input type="text" class="u-form-control" placeholder="开工时间" style="background:#fff;padding-right:0;"  >
+                        </div>
+                    </div>
+                </div>
+                <div class="u-row margin-top-15">
+                    <div class="u-col-md-2 " style="line-height: 36px;white-space: nowrap;">预计工期时间(天):</div>
+                    <div class="u-col-md-5">
+                        <div class=" u-form-control "   style="padding:0;"
+                         u-meta='{"type":"u-combobox","datasource":"planlist","data":"plandatanew","field":"plannedDate","onlySelect":false}'>
+                        <div class="c_rela">
+                                        <span class="u-form-control-feedback fa fa-angle-down"
+                                              data-role="combo-button" ></span>
+                            <input placeholder="预计工期时间" class="u-form-control" style="border:0;width:100%;height:32px;background:#fff;" readonly/>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="u-msg-footer">
+                <button type="button" id="confirm_plan" class="u-button u-button-primary pull-right" data-bind="click: event.confirm_plan">确定</button>
+                <button type="button" class="u-button button-cancel pull-right margin-right-15" data-bind="click:event.allow_cancle">
+                    取消
+                </button>
+            </div>
+        </div>
+
+        <!--分配执行 perform -->
+
+
+        <!--调配物料-->
+        <div id="dialog_material" tabindex="-1" role="dialog" style="display:none;">
+            <div class="u-msg-title">
+                <h4 class="treetitle" id="material-title">调配物料</h4>
+            </div>
+            <div class="u-msg-content">
+                <div class="hr-table">
+                    <div class="u-table b-table width-full"
+                         u-meta='{"id":"gridaddress1","type":"grid","data":"material_data","columnWidth":"150px","editType":"default","showNumCol":true,"columnMenu":true,"editable":true}'>
+                        <!--<div options='{"field":"billid","title":"订单","editable":false,"dataType":"String"}'></div>-->
+                        <div options='{"field":"vbillcode","title":"订单编号","editable":false,"dataType":"string"}'></div>
+                        <div options='{"field":"product","title":"套餐名称","editable":false,"dataType":"string"}'></div>
+                        <div options='{"field":"material","title":"物料名称","editable":false,"dataType":"string"}'></div>
+                        <div options='{"field":"num","title":"计算物料数量","editable":false,"dataType":"float"}'></div>
+                        <div options='{"field":"allocatednum","title":"已调配数量","editable":false,"dataType":"float"}'></div>
+                        <!--<div options='{"field":"price","title":"价格","editable":false,"dataType":"String"}'></div>-->
+                        <div options='{"field":"allotnum","title":"输入调配数量","dataType":"float","editType":"float"}'></div>
+                        <div options='{"field":"memo","title":"备注","dataType":"String","editType":"string"}'></div>
+                    </div>
+                    <div id='pagination_material' class='pagination u-pagination pagination-sm'></div>
+                </div>
+            </div>
+            <div class="u-msg-footer">
+                <button type="button" id="confirm_select_material" class="u-button u-button-primary pull-right" data-bind="click: event.confirm_allot">
+                    确定
+                </button>
+                <button type="button" class="u-button button-cancel pull-right margin-right-15" data-bind="click:event.allow_cancle">
+                    取消
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>

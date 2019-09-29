@@ -1,0 +1,122 @@
+<!-- 页面内容区(HTML片段，不能放置HTML 及 BODY 标签 )-->
+<!-- 若要正常使用实时预览功能，请在首页index.html中添加路由#worker/worker -->
+<div>
+    <div class="u-container-fluid padding-0" id="worker">
+        <!--操作按钮-->
+        <div class="u-row margin-0 padding-0 content-title">
+            <div class="u-col-md-12 u-col-sm-12 u-media-middle margin-0 padding-0">
+                <h3 class="c-title pull-left padding-15 padding-left-20 c_size_28">工队列表</h3>
+                <div class="pull-right padding-15 padding-left-0 padding-right-0">
+                    <!--<div class="margin-right-10 pull-right">
+                        <input type="button" class="margin-right-10 u-button u-button-primary u-buttom-sm bg_blue"
+                                 value="删除" data-bind="click: event.delClick">
+                    </div>-->
+                    <!--<div class="margin-right-10 pull-right">
+                        <input type="button" id="searchBtn" class="margin-right-10 u-button u-buttom-sm"
+                                 value="搜索" data-bind="click: event.searchClick">
+                    </div>
+                    <div id="searchdiv" class="margin-right-0 pull-right  u-has-feedback  input_enter">
+                        <input type="text" id="searchInp" class="u-form-control c-sm width-200" id="search"
+                               placeholder="姓名/手机号"  >
+                       <span class="u-form-control-feedback-1  uf-search-light-0 " id="returnBtn"
+                                data-bind="click: event.returnClick" style="right:0;top:-4px;">×</span>
+                    </div>-->
+
+                    <div id="searchdiv" class="margin-right-10 pull-right u-has-feedback input_enter">
+                        <input type="text" class="u-form-control c-sm" id="searchInp" placeholder="姓名/手机号">
+                        <span class="uf zoom uf-search-light-2" id="searchBtn" data-bind="click: event.searchClick"></span>
+                        <span class="u-form-control-feedback-1  uf-search-light-0 uf uf-close" id="returnBtn"
+                              data-bind="click: event.returnClick"></span>
+                    </div>
+
+                    <div class="pull-right" style="border:gray;">
+                        <input type="button" class="margin-right-15 u-button u-button-white u-buttom-sm blacklist"
+                               value="黑名单" data-bind="click: event.blList">
+                    </div>
+                    <div class="margin-right-0 pull-right">
+                        <input type="button" class="margin-right-0 u-button u-button-white u-buttom-sm whitelist"
+                               value="白名单" data-bind="click: event.wlList">
+                    </div>
+
+                    <div class="pull-right">
+                        <input type="button" class="margin-right-15 u-button u-button-primary u-buttom-sm bg_blue"
+                               value="新建" data-bind="click: event.addClick">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--列表展示-->
+        <div class="main-container padding-top-0 contacts-container icons">
+            <div class="hr-table">
+                <div class="u-table b-table width-full"
+                     u-meta='{"id":"workerlist","type":"grid","data":"objdata","columnWidth":"150px"}'>
+                    <div options='{"field":"teamname","title":"工队姓名","dataType":"String","editType":"string","renderType":"event.renderTypeAjax"}'>
+                    </div>
+                    <div options='{"field":"phone","title":"手机号","dataType":"String","editType":"string"}'></div>
+                    <div options='{"field":"rate","title":"等级评分","dataType":"String","editType":"string"}'></div>
+                    <div options='{"field":"jobscope","title":"工种","dataType":"String","editType":"string"}'></div>
+                    <div options='{"field":"teammemo","title":"备注","dataType":"String","editType":"string"}'></div>
+                    <div class="icons" options='{"field":"operate","dataType":"String","title":"操作","renderType":"event.optFun"}'></div>
+                </div>
+            </div>
+            <div id='pagination' class='pagination u-pagination pagination-sm'></div>
+        </div>
+
+        <!--弹出确认框-->
+        <div id="dialog_bl" style="display:none;">
+            <div class="u-msg-title">
+                <h4>加入/移除黑名单</h4>
+            </div>
+            <HR width="100%" color=#F8F9FB SIZE=3 align="center"/>
+            <div class="u-msg-content">
+                <div class="u-row margin-bottom-20 left" style="padding-left:72px;">
+                    <p class="font-size-16 remind" style=""> </p>
+                </div>
+                <div class="u-row margin-bottom-20">
+                    <div class="u-col-3 ">
+                        <label for="code" class="u-input-label right font-size-16">原因:</label>
+                    </div>
+                    <div class="u-col-7">
+                        <div class="u-input-group-before padding-left-10 "
+                             style="color: red;">*
+                        </div>
+                        <input type="text" id="blInp" class="u-form-control padding-left-20" placeholder="请填写原因">
+                    </div>
+                </div>
+            </div>
+            <div class="u-msg-footer">
+                <button class="u-msg-ok u-button primary" data-bind="click: event.saveClick">确认<span class="u-button-container"><span class="u-ripple"></span></span>
+                </button>
+                <button class="u-msg-cancel u-button  u-grey" data-bind="click: event.cancelClick">取消<span class="u-button-container"><span class="u-ripple"></span></span>
+                </button>
+            </div>
+        </div>
+
+        <!--黑名单操作记录-->
+        <div class="u-col-md-12">
+            <div id="dialog_record" tabindex="-1" role="dialog" style="display:none;">
+                <div class="u-msg-title">
+                    <h4 class="treetitle">黑名单操作记录</h4>
+                </div>
+                <div class="u-msg-content">
+                    <div class="hr-table">
+                        <div class="u-table b-table width-full"
+                             u-meta='{"id":"blrecord","type":"grid","data":"blacklist_data","columnWidth":"150px","editType":"default","columnMenu":true}'>
+                            <div options='{"field":"username","title":"工人姓名","editable":false,"dataType":"string"}'></div>
+                            <div options='{"field":"createname","title":"操作人","editable":false,"dataType":"string"}'></div>
+                            <div options='{"field":"memotype","title":"操作内容","editable":false,"dataType":"string"}'></div>
+                            <div options='{"field":"memo","title":"原因","editable":false,"dataType":"string"}'></div>
+                            <div options='{"field":"ts","title":"操作时间","editable":false,"dataType":"data","renderType":"event.renderDatetime"}'></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="u-msg-footer">
+                    <button type="button" id="" class="u-button u-button-primary pull-right" data-bind="click: event.cancelClick">
+                        确定
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
